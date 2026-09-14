@@ -71,13 +71,44 @@ approval
 
 Không tạo master/full pet trước rồi crop, tách hoặc reconstruct. Concept/full artwork đã tồn tại chỉ là reference. Production PNG phải được thiết kế như bộ phận hoàn chỉnh ngay từ đầu. `preview.png` và `master.png` là output ghép từ layers, không phải source.
 
+## Production artwork package
+
+Một request tạo pet nghĩa là tạo **toàn bộ production artwork package của đúng evolution stage**, không chỉ tạo hình pet hoặc một layer đầu tiên. Package gồm ba nhóm; danh sách chính xác vẫn do executable recipe quyết định.
+
+### A. Character layers
+
+Các PNG anatomy/state theo recipe, ví dụ:
+
+- `body`, `head`, `head-closed`;
+- `rear-far`, `rear-near`, `front-far`, `front-near` với quadruped;
+- `tail` hoặc các tail group ở evolution đặc biệt;
+- wing, ear, horn, mane, jaw, shell và anatomy riêng của species khi recipe có slot;
+- `shadow` khi recipe yêu cầu hoặc cho phép.
+
+### B. Pet Visual VFX
+
+Các layer visual luôn gắn hoặc presentation quanh pet, ví dụ:
+
+- `effect-back`;
+- `effect-front`;
+- `particles`;
+- aura, mane glow hoặc element effect nếu executable recipe có slot.
+
+Pet Visual VFX thuộc model composition. `effect-front` không phải projectile và không được tự động dùng thay Combat VFX.
+
+### C. Combat VFX
+
+Các visual asset theo combat identity và evolution stage:
+
+- `attack-cast`;
+- `attack-trail`;
+- `projectile` chỉ khi recipe là ranged và có slot;
+- `impact` độc lập;
+- special travel/AoE asset như `meteor`, `ground-wave`, `vortex`, `cage`, `beam`, `slash` hoặc `bite-flash` chỉ khi executable recipe khai báo.
+
+Nếu recipe đã quy định Combat VFX, người dùng không cần nhắc riêng “tạo impact”, “tạo trail” hoặc “tạo projectile”. ChatGPT phải tự hoàn thành toàn bộ set phù hợp, nhưng không tự phát minh runtime slot mới.
+
 ## Execution contract cho Image Generation
-
-Một yêu cầu tạo pet nghĩa là tạo toàn bộ package artwork của đúng evolution stage:
-
-- A. character layers: anatomy, appendage, head/blink và shadow theo recipe;
-- B. pet visual VFX: các layer luôn gắn với model như `effect-back`, `effect-front`, `particles`;
-- C. combat VFX: `attack-cast`, `attack-trail`, `projectile`, `impact` hoặc special semantic đúng combat identity của species.
 
 - mỗi production asset — character layer, Pet Visual VFX hoặc Combat VFX — là một PNG độc lập;
 - mỗi image-generation hoặc edit operation chỉ tạo đúng một PNG asset;
@@ -232,7 +263,7 @@ Manifest mới bind file theo semantic trong `effects.attack`: `cast`, `trail`, 
 
 Rig template phát marker generic `attack-release` tại thời điểm tung đòn; consumer chọn projectile, trail hoặc special binding từ manifest. `pet-base` và manifest cũ có thể vẫn phát marker tên `projectile` để giữ backward compatibility.
 
-Mỗi Combat VFX là một PNG trong suốt riêng, một image-generation operation cho một asset, cùng element/style với pet và đọc rõ ở gameplay size. Không contact sheet. ChatGPT Web tạo artwork; Codex/Asset Studio tạo binding manifest, preview và cho phép thay từng file độc lập.
+Mỗi Combat VFX được sản xuất giống production layer: một PNG trong suốt riêng và một image-generation operation cho đúng một asset. Không contact sheet, không sprite sheet, không ghép nhiều effect vào một ảnh nếu recipe tách chúng. Mỗi effect phải cùng style, palette, element và evolution với pet, có safe padding và đọc rõ ở gameplay size. ChatGPT Web tạo artwork; Codex/Asset Studio tạo binding manifest, preview và cho phép thay từng file độc lập.
 
 Sau khi upload, Asset Studio có thể thêm các optional slot còn thiếu, thay từng PNG, bật/tắt và chỉnh toàn bộ presentation của từng Combat VFX rồi lưu vào manifest của stage; ChatGPT Web không cần tạo code hoặc nhúng timing/position vào artwork.
 
@@ -241,6 +272,24 @@ Với layer đặc biệt như multi-tail, người dùng nhân bản/thêm anim
 `impact` là effect của attacker/skill, spawn tại target/impact point khi hit được xác nhận. Không tạo asset target-specific như `fire-wolf-hit-slime.png` hoặc `fire-wolf-hit-golem.png`; một Fire Wolf impact phải dùng được với mọi target phù hợp. Hurt animation, flash, knockback và death thuộc target/runtime gameplay.
 
 Burn, slow, poison, drain và radiant mark chỉ là future shared/global status VFX concept. Pet Layer Factory không tạo status asset riêng cho từng pet, trừ khi executable recipe sau này yêu cầu.
+
+### Ví dụ ranged và melee
+
+Fox là ranged theo recipe hiện tại:
+
+```text
+attack-cast → projectile → impact
+```
+
+Wolf là melee theo recipe hiện tại:
+
+```text
+attack-cast → attack-trail → impact
+```
+
+Wolf không tạo projectile mặc định vì executable recipe không có slot đó. Cả hai chuỗi đều optional theo từng binding; thiếu một asset không buộc phải tạo placeholder hoặc dùng asset khác thay thế.
+
+Asset Studio hiện mô phỏng lifecycle này để duyệt visual: cast ở lúc bắt đầu, projectile/trail/special tại attack marker và impact sau effect chính. Schema đã chuẩn bị `impact` cho consumer gameplay, nhưng repo hiện chưa triển khai combat hit-confirm/damage system đầy đủ; không suy diễn preview thành gameplay collision.
 
 ## Multi-tail / special evolution
 

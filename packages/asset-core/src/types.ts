@@ -25,11 +25,13 @@ export interface Rig {
   idle: { duration: number; bob: number };
   clips?: Record<State, Clip>;
 }
+/** Optional visual asset bindings for one evolution stage's attack lifecycle. */
 export interface CombatAttackVfx {
   cast?: string;
   trail?: string;
   projectile?: string;
   impact?: string;
+  /** Recipe-defined visual semantic such as meteor, vortex, cage or beam. */
   [semantic: string]: string | undefined;
 }
 export type CombatVfxTrigger = 'attack-start' | 'attack-release' | 'after-primary';
@@ -60,6 +62,7 @@ export interface CombatVfxPresentation {
 }
 export interface PetEffects {
   color?: number;
+  /** Visual bindings only. Damage, collision and target reactions belong to gameplay. */
   attack?: CombatAttackVfx;
   attackPresentation?: Record<string, Partial<CombatVfxPresentation>>;
   /** Legacy manifest binding. Resolved as attack.projectile. */

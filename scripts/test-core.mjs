@@ -60,11 +60,17 @@ const melee=resolvePet({...pet,effects:{attack:{cast:'/cast.png',trail:'/trail.p
 assert.equal(melee.effects.attack.projectile,undefined);
 assert.equal(melee.effects.attack.trail,'/trail.png');
 assert.equal(melee.effects.attack.impact,'/impact.png');
+for (const semantic of ['cast','trail','projectile','impact']) {
+ const visual=resolvePet({...pet,effects:{attack:{[semantic]:`/${semantic}.png`}}},registry);
+ assert.deepEqual(visual.effects.attack,{[semantic]:`/${semantic}.png`},`${semantic} must work as an independent optional binding`);
+}
 
 const catalogBuild=await build({entryPoints:['packages/asset-core/src/petCatalog.ts'],bundle:true,write:false,format:'esm',platform:'node'});
 const {speciesTemplate}=await import('data:text/javascript;base64,'+Buffer.from(catalogBuild.outputFiles[0].text).toString('base64'));
 const foxTemplate=speciesTemplate('fox');
 assert.equal(foxTemplate.rig,'fox-quadruped');
+for(const semantic of ['cast','projectile','impact']) assert.ok(foxTemplate.slots.some(slot=>slot.combatVfx===semantic),`Fox recipe: ${semantic}`);
+assert.ok(!foxTemplate.slots.some(slot=>slot.combatVfx==='trail'),'Fox ranged recipe must not require melee trail');
 for(const id of ['rear-far','rear-near','front-far','front-near']) {
  const slot=foxTemplate.slots.find(candidate=>candidate.id===id);
  assert.equal(slot.file,`${id}.png`,`${id} must use independent production artwork`);
