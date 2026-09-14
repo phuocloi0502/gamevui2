@@ -1,0 +1,115 @@
+{
+  "id": "fire-fox",
+  "name": "Fire Fox",
+  "kind": "pet",
+  "extends": "pet-base",
+  "status": "production",
+  "element": "fire",
+  "reference": "/references/fire-fox/concept-board.png",
+  "effects": {
+    "projectile": "/assets/pets/fire-fox/fire.png",
+    "color": 16751144
+  },
+  "layers": [
+    {
+      "id": "shadow",
+      "src": "/assets/pets/fire-fox/shadow.png",
+      "x": 0,
+      "y": 0,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 0,
+      "scale": 0.85
+    },
+    {
+      "id": "tail",
+      "src": "/assets/pets/fire-fox/tail.png",
+      "x": -65,
+      "y": -105,
+      "originX": 0.85,
+      "originY": 0.85,
+      "z": 1,
+      "scale": 0.75
+    },
+    {
+      "id": "flame",
+      "src": "/assets/pets/fire-fox/fire-loop.png",
+      "x": -158,
+      "y": -145,
+      "originX": 0.5,
+      "originY": 0.95,
+      "z": 2,
+      "scale": 0.95,
+      "parent": "tail",
+      "sheet": {
+        "width": 128,
+        "height": 192,
+        "count": 8,
+        "fps": 16
+      }
+    },
+    {
+      "id": "rear-far",
+      "src": "/assets/pets/fire-fox/leg.png",
+      "x": -53,
+      "y": -79,
+      "originX": 0.5,
+      "originY": 0.15,
+      "z": 3,
+      "scale": 0.72,
+      "tint": 13415840
+    },
+    {
+      "id": "front-far",
+      "src": "/assets/pets/fire-fox/leg.png",
+      "x": 59,
+      "y": -81,
+      "originX": 0.5,
+      "originY": 0.15,
+      "z": 4,
+      "scale": 0.74,
+      "tint": 13415840
+    },
+    {
+      "id": "body",
+      "src": "/assets/pets/fire-fox/body.png",
+      "x": 0,
+      "y": -117,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 5,
+      "scale": 0.68
+    },
+    {
+      "id": "rear-near",
+      "src": "/assets/pets/fire-fox/leg.png",
+      "x": -74,
+      "y": -87,
+      "originX": 0.5,
+      "originY": 0.15,
+      "z": 6,
+      "scale": 0.84
+    },
+    {
+      "id": "front-near",
+      "src": "/assets/pets/fire-fox/leg.png",
+      "x": 28,
+      "y": -90,
+      "originX": 0.5,
+      "originY": 0.15,
+      "z": 7,
+      "scale": 0.86
+    },
+    {
+      "id": "head",
+      "src": "/assets/pets/fire-fox/head.png",
+      "x": 39,
+      "y": -151,
+      "originX": 0.5,
+      "originY": 0.88,
+      "z": 8,
+      "scale": 0.78,
+      "closedSrc": "/assets/pets/fire-fox/head-closed.png"
+    }
+  ]
+}
