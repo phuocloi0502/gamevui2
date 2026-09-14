@@ -1,19 +1,23 @@
 {
-  "id": "wind-fox",
-  "name": "Wind Fox",
+  "id": "wind-fox-level-1",
+  "lineageId": "wind-fox",
+  "evolutionLevel": 1,
+  "name": "Wind Fox · Level 1",
   "kind": "pet",
+  "species": "fox",
+  "archetype": "quadruped",
   "extends": "pet-base",
   "status": "production",
   "element": "wind",
-  "reference": "/assets/pets/wind-fox/preview.png",
+  "reference": "/assets/pets/wind-fox/level-1/preview.png",
   "effects": {
-    "projectile": "/assets/pets/wind-fox/effects/elemental-effect.png",
+    "projectile": "/assets/pets/wind-fox/level-1/effects/elemental-effect.png",
     "color": 11141071
   },
   "layers": [
     {
       "id": "shadow",
-      "src": "/assets/pets/wind-fox/layers/shadow.png",
+      "src": "/assets/pets/wind-fox/level-1/layers/shadow.png",
       "x": 0,
       "y": 0,
       "originX": 0.5,
@@ -23,7 +27,7 @@
     },
     {
       "id": "tail",
-      "src": "/assets/pets/wind-fox/layers/tail.png",
+      "src": "/assets/pets/wind-fox/level-1/layers/tail.png",
       "x": -65,
       "y": -105,
       "originX": 0.85,
@@ -33,7 +37,7 @@
     },
     {
       "id": "wind",
-      "src": "/assets/pets/wind-fox/effects/elemental-effect.png",
+      "src": "/assets/pets/wind-fox/level-1/effects/elemental-effect.png",
       "parent": "tail",
       "x": -123,
       "y": -20,
@@ -44,7 +48,7 @@
     },
     {
       "id": "rear-far",
-      "src": "/assets/pets/wind-fox/layers/leg.png",
+      "src": "/assets/pets/wind-fox/level-1/layers/leg.png",
       "x": -25,
       "y": -100,
       "originX": 0.5,
@@ -55,7 +59,7 @@
     },
     {
       "id": "front-far",
-      "src": "/assets/pets/wind-fox/layers/leg.png",
+      "src": "/assets/pets/wind-fox/level-1/layers/leg.png",
       "x": 60,
       "y": -95,
       "originX": 0.5,
@@ -66,7 +70,7 @@
     },
     {
       "id": "body",
-      "src": "/assets/pets/wind-fox/layers/body.png",
+      "src": "/assets/pets/wind-fox/level-1/layers/body.png",
       "x": 0,
       "y": -125,
       "originX": 0.5,
@@ -76,7 +80,7 @@
     },
     {
       "id": "rear-near",
-      "src": "/assets/pets/wind-fox/layers/leg.png",
+      "src": "/assets/pets/wind-fox/level-1/layers/leg.png",
       "x": -55,
       "y": -95,
       "originX": 0.5,
@@ -86,7 +90,7 @@
     },
     {
       "id": "front-near",
-      "src": "/assets/pets/wind-fox/layers/leg.png",
+      "src": "/assets/pets/wind-fox/level-1/layers/leg.png",
       "x": 28,
       "y": -95,
       "originX": 0.5,
@@ -96,8 +100,8 @@
     },
     {
       "id": "head",
-      "src": "/assets/pets/wind-fox/layers/head.png",
-      "closedSrc": "/assets/pets/wind-fox/layers/head-closed.png",
+      "src": "/assets/pets/wind-fox/level-1/layers/head.png",
+      "closedSrc": "/assets/pets/wind-fox/level-1/layers/head-closed.png",
       "x": 39,
       "y": -151,
       "originX": 0.5,

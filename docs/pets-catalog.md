@@ -2,7 +2,7 @@
 
 > Status: Research / concept specification only.
 >
-> This document is intended as implementation guidance for Codex.
+> This document is intended as implementation guidance for Codex. The 50 IDs below are lineage IDs; each lineage supports three evolution asset forms.
 >
 > Do not create production PNG assets from this document alone.
 > Do not modify Git history, commit, or push unless explicitly requested.
@@ -68,7 +68,70 @@ serpent-base
   Serpent
 ```
 
+### Implemented catalog groups and upload recipes
+
+Asset Studio exposes the catalog as six rig groups. A rig group owns shared motion;
+each species inside it owns a separate upload recipe because species in the same
+motion family can still have different anatomy.
+
+| Group | Species | Rig | Template status |
+|---|---|---|---|
+| Quadruped | Fox, Wolf | `quadruped-base` | Fox validated; Wolf defaults provisional |
+| Hopper | Bunny | `hopper-base` | Provisional until Fire Bunny |
+| Tank | Turtle, Golem | `tank-base` | Provisional until Fire Turtle and Fire Golem |
+| Winged | Dragon, Owl, Hawk | `winged-base` | Provisional until flying flagships |
+| Blob | Slime | `blob-base` | Provisional until Fire Slime |
+| Serpent | Serpent | `serpent-base` | Provisional until Fire Serpent |
+
+The executable catalog and per-species layer defaults live in
+`packages/asset-core/src/petCatalog.ts`. Do not copy the Fox layer list into a
+different species merely because it shares a rig group.
+
+Creation workflow in Asset Studio:
+
+```text
+choose species + element
+  -> choose evolution level 1 / 2 / 3
+  -> upload required transparent PNG slots
+  -> keep originals in assets/inbox/<lineage-id>/level-<n>/
+  -> copy runtime files to public/assets/pets/<lineage-id>/level-<n>/
+  -> generate assets/pets/<lineage-id>/level-<n>/asset.json from species defaults
+  -> tune X / Y / scale / origin / z in the UI
+```
+
+Newly imported pets start at `production`, never `ready`. Provisional templates
+are starting coordinates only; validate one flagship before expanding all five
+elements of that species.
+
+Current evolution assignments:
+
+| Lineage | Existing form |
+|---|---:|
+| Fire Fox | Level 1 |
+| Water Fox | Level 2 |
+| Wind Fox | Level 1 |
+| Shadow Fox | Level 2 |
+
+Missing levels remain empty slots; creating one must not overwrite another level
+of the same lineage.
+
 The renderer should remain generic and consume the resolved data.
+
+---
+
+## Evolution rules
+
+Every elemental lineage has three separately authored forms:
+
+- **Level 1 — base form:** smallest and simplest silhouette, restrained materials and VFX;
+- **Level 2 — evolved form:** more developed anatomy accents and clearer elemental identity;
+- **Level 3 — final form:** strongest silhouette and VFX treatment, while remaining readable and chibi.
+
+All three levels must remain recognizably the same lineage. Evolution may add or
+enlarge species-appropriate details, but must not change the pet into another
+species. Each level owns its own PNG set, manifest and transforms. Rig and slot
+recipe are shared by default, with per-level overrides only when the artwork
+needs them.
 
 ---
 
@@ -218,7 +281,7 @@ Gameplay tendency:
 
 ---
 
-## 4. Full List of 50 IDs
+## 4. Full List of 50 Lineage IDs
 
 ```text
 fire-fox
@@ -282,13 +345,14 @@ light-hawk
 shadow-hawk
 ```
 
-ID convention:
+Lineage and evolution-stage ID convention:
 
 ```text
 <element>-<species>
+<element>-<species>-level-<1|2|3>
 ```
 
-Use lower-case kebab-case.
+Use lower-case kebab-case. A complete catalog can contain 50 lineages and up to 150 evolution forms.
 
 ---
 

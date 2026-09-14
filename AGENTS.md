@@ -5,10 +5,11 @@
 - Mục đích: sản xuất asset và frontend preview, chạy Docker tại cổng 3333.
 - Đọc `README.md` và `docs/asset-workflow.md` để biết layout thực tế.
 - Contract thực thi: `packages/asset-core/src/types.ts`; ưu tiên contract này hơn ví dụ JSON bên dưới.
-- Rig dùng chung: `assets/rigs/`; pet kế thừa rig bằng `extends` trong `assets/pets/<id>/asset.json`.
+- Rig dùng chung: `assets/rigs/`; mỗi lineage có ba cấp tiến hóa và pet kế thừa rig bằng `extends` trong `assets/pets/<lineage-id>/level-<n>/asset.json`.
+- ID cấp tiến hóa dùng `<lineage-id>-level-<n>` và manifest bắt buộc có `lineageId`, `evolutionLevel` (1, 2 hoặc 3). Hiện có: Fire Fox Level 1, Water Fox Level 2, Wind Fox Level 1 và Shadow Fox Level 2.
 - PNG production: `public/assets/`; reference Fire Fox: `public/references/fire-fox/concept-board.png`.
-- Fire Fox v1 đã có PNG alpha và 4 clip puppet dùng chung; đọc `assets/pets/fire-fox/PRODUCTION.md` trước khi chỉnh sửa. Tai còn gắn đầu; vòng lửa biến dạng từ một ảnh.
-- Người dùng đã cho phép xử lý PNG bằng code để tách nền/chuẩn hóa sau ImageGen. Giữ bản gốc tại `assets/pets/fire-fox/source/` và tái xuất bằng script.
+- Fire Fox Level 1 đã có PNG alpha và 4 clip puppet dùng chung; đọc `assets/pets/fire-fox/level-1/PRODUCTION.md` trước khi chỉnh sửa. Tai còn gắn đầu; vòng lửa biến dạng từ một ảnh.
+- Người dùng đã cho phép xử lý PNG bằng code để tách nền/chuẩn hóa sau ImageGen. Giữ bản gốc tại `assets/pets/fire-fox/level-1/source/` và tái xuất bằng script.
 
 ## Phân công ChatGPT web và Codex
 
@@ -37,9 +38,9 @@ Quy trình chuyển giao:
 ```text
 ChatGPT web tạo ảnh
         ↓ download PNG
-assets/inbox/<asset-id>/
+assets/inbox/<lineage-id>/level-<n>/
         ↓ Codex kiểm tra và xử lý
-public/assets/<kind>/<asset-id>/
+public/assets/<kind>/<lineage-id>/level-<n>/
         ↓ manifest + Phaser preview
 Asset Studio tại localhost:3333
 ```
@@ -257,15 +258,16 @@ Với Fire Fox, video reference chỉ chứng minh rõ `idle`: một vòng kho�
 ```text
 assets/
   <kind>/
-    <asset-id>/
-      master.png
-      layers/
-        <slot>.png
-      effects/
-        <effect-name>.png
-      animations/
-        <clip-name>.png
-      asset.json
+    <lineage-id>/
+      level-<n>/
+        master.png
+        layers/
+          <slot>.png
+        effects/
+          <effect-name>.png
+        animations/
+          <clip-name>.png
+        asset.json
 ```
 
 Quy ước:

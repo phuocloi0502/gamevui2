@@ -31,10 +31,10 @@ Nếu workspace của bạn có một connector hoặc agent GitHub được c�
 1. Trong ChatGPT web, mở repo GitHub đã kết nối nếu cần đọc contract; dùng prompt asset ở chế độ tạo ảnh hoặc chỉnh sửa ảnh.
 2. Yêu cầu ảnh production rõ ràng: PNG, nền trong suốt nếu có thể; không chữ, watermark, UI hoặc background.
 3. Tải ảnh xuống máy.
-4. Đặt ảnh vào `assets/inbox/<asset-id>/`. Ví dụ:
+4. Đặt ảnh vào `assets/inbox/<lineage-id>/level-<n>/`. Ví dụ:
 
 ```text
-assets/inbox/fire-fox/
+assets/inbox/fire-fox/level-1/
   master.png
   body.png
   head.png
@@ -42,7 +42,7 @@ assets/inbox/fire-fox/
   fire.png
 ```
 
-5. Nhắn cho Codex: `Xử lý asset trong assets/inbox/fire-fox và tích hợp vào preview.`
+5. Nhắn cho Codex: `Xử lý Fire Fox Level 1 trong assets/inbox/fire-fox/level-1 và tích hợp vào preview.`
 6. Codex sẽ kiểm tra mode RGBA, alpha, kích thước, crop, naming, anchors và độ khớp với manifest; sau đó copy kết quả đã chuẩn hóa sang `public/assets/`.
 7. Codex cập nhật config, renderer, animation và preview; không tạo lại artwork bằng ImageGen.
 

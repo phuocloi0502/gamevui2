@@ -9,9 +9,9 @@ const clips={
  hurt:{duration:550,loop:false,tracks:[t('body','x',[0,-10,5,-3,0]),t('head','x',[0,-12,6,-2,0]),t('head','angle',[0,-8,5,-2,0])]}
 };
 writeFileSync('assets/rigs/pet-base.json',JSON.stringify({id:'pet-base',canvas:{width:512,height:512},idle:{duration:1800,bob:2},clips},null,2)+'\n');
-const root='/assets/pets/fire-fox/';
+const root='/assets/pets/fire-fox/level-1/';
 const layer=(id,src,x,y,originX,originY,z,scale,extra={})=>({id,src:root+src+'.png',x,y,originX,originY,z,scale,...extra});
-const pet={id:'fire-fox',name:'Fire Fox',kind:'pet',extends:'pet-base',status:'production',element:'fire',reference:'/references/fire-fox/concept-board.png',effects:{projectile:root+'fire.png',color:16751144},layers:[
+const pet={id:'fire-fox-level-1',lineageId:'fire-fox',evolutionLevel:1,name:'Fire Fox · Level 1',kind:'pet',species:'fox',archetype:'quadruped',extends:'pet-base',status:'production',element:'fire',reference:'/references/fire-fox/concept-board.png',effects:{projectile:root+'fire.png',color:16751144},layers:[
  layer('shadow','shadow',0,0,.5,.5,0,.85),
  layer('tail','tail',-65,-105,.85,.85,1,.75),
  layer('flame','fire-loop',-158,-145,.5,.95,2,.95,{parent:'tail',sheet:{width:128,height:192,count:8,fps:16}}),
@@ -22,4 +22,4 @@ const pet={id:'fire-fox',name:'Fire Fox',kind:'pet',extends:'pet-base',status:'p
  layer('front-near','leg',28,-90,.5,.15,7,.86),
  layer('head','head',39,-151,.5,.88,8,.78,{closedSrc:root+'head-closed.png'})
 ]};
-writeFileSync('assets/pets/fire-fox/asset.json',JSON.stringify(pet,null,2)+'\n');
+writeFileSync('assets/pets/fire-fox/level-1/asset.json',JSON.stringify(pet,null,2)+'\n');

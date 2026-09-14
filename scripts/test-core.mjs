@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 const result=await build({entryPoints:['packages/asset-core/src/resolve.ts'],bundle:true,write:false,format:'esm',platform:'node'});
 const {resolvePet}=await import('data:text/javascript;base64,'+Buffer.from(result.outputFiles[0].text).toString('base64'));
-const pet=JSON.parse(readFileSync('assets/pets/fire-fox/asset.json'));
+const pet=JSON.parse(readFileSync('assets/pets/fire-fox/level-1/asset.json'));
 const rig=JSON.parse(readFileSync('assets/rigs/pet-base.json'));
 const registry={[rig.id]:rig};
 const resolved=resolvePet(pet,registry);
@@ -20,8 +20,8 @@ for(const clip of Object.values(rig.clips))for(const t of clip.tracks){
  assert.ok(t.values.every(Number.isFinite));
  if(clip.loop)assert.equal(t.values[0],t.values.at(-1),`${t.target}: loop seam`);
 }
-for (const file of ['fire-fox', 'water-fox', 'wind-fox', 'shadow-fox']) {
- const definition=JSON.parse(readFileSync(`assets/pets/${file}/asset.json`));
+for (const [file, level] of [['fire-fox', 1], ['water-fox', 2], ['wind-fox', 1], ['shadow-fox', 2]]) {
+ const definition=JSON.parse(readFileSync(`assets/pets/${file}/level-${level}/asset.json`));
  const candidate=resolvePet(definition,registry);
  const layerIds=new Set(candidate.layers.map(layer=>layer.id));
  for(const clip of Object.values(candidate.rig.clips))for(const track of clip.tracks){

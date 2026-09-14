@@ -1,19 +1,23 @@
 {
-  "id": "shadow-fox",
-  "name": "Shadow Fox",
+  "id": "shadow-fox-level-2",
+  "lineageId": "shadow-fox",
+  "evolutionLevel": 2,
+  "name": "Shadow Fox · Level 2",
   "kind": "pet",
+  "species": "fox",
+  "archetype": "quadruped",
   "extends": "pet-base",
   "status": "production",
   "element": "shadow",
-  "reference": "/assets/pets/shadow-fox/preview.png",
+  "reference": "/assets/pets/shadow-fox/level-2/preview.png",
   "effects": {
-    "projectile": "/assets/pets/shadow-fox/effects/elemental-effect.png",
+    "projectile": "/assets/pets/shadow-fox/level-2/effects/elemental-effect.png",
     "color": 11245823
   },
   "layers": [
     {
       "id": "shadow",
-      "src": "/assets/pets/shadow-fox/layers/shadow.png",
+      "src": "/assets/pets/shadow-fox/level-2/layers/shadow.png",
       "x": 0,
       "y": 0,
       "originX": 0.5,
@@ -23,7 +27,7 @@
     },
     {
       "id": "tail-back",
-      "src": "/assets/pets/shadow-fox/layers/tail2.png",
+      "src": "/assets/pets/shadow-fox/level-2/layers/tail2.png",
       "x": -60,
       "y": -105,
       "originX": 0.84,
@@ -33,7 +37,7 @@
     },
     {
       "id": "tail-front",
-      "src": "/assets/pets/shadow-fox/layers/tail.png",
+      "src": "/assets/pets/shadow-fox/level-2/layers/tail.png",
       "x": -55,
       "y": -102,
       "originX": 0.86,
@@ -43,7 +47,7 @@
     },
     {
       "id": "rear-far",
-      "src": "/assets/pets/shadow-fox/layers/leg.png",
+      "src": "/assets/pets/shadow-fox/level-2/layers/leg.png",
       "x": -51,
       "y": -81,
       "originX": 0.5,
@@ -54,7 +58,7 @@
     },
     {
       "id": "front-far",
-      "src": "/assets/pets/shadow-fox/layers/leg.png",
+      "src": "/assets/pets/shadow-fox/level-2/layers/leg.png",
       "x": 57,
       "y": -82,
       "originX": 0.5,
@@ -65,7 +69,7 @@
     },
     {
       "id": "body",
-      "src": "/assets/pets/shadow-fox/layers/body.png",
+      "src": "/assets/pets/shadow-fox/level-2/layers/body.png",
       "x": 0,
       "y": -119,
       "originX": 0.5,
@@ -75,7 +79,7 @@
     },
     {
       "id": "rear-near",
-      "src": "/assets/pets/shadow-fox/layers/leg.png",
+      "src": "/assets/pets/shadow-fox/level-2/layers/leg.png",
       "x": -72,
       "y": -88,
       "originX": 0.5,
@@ -85,7 +89,7 @@
     },
     {
       "id": "front-near",
-      "src": "/assets/pets/shadow-fox/layers/leg.png",
+      "src": "/assets/pets/shadow-fox/level-2/layers/leg.png",
       "x": 30,
       "y": -91,
       "originX": 0.5,
@@ -95,8 +99,8 @@
     },
     {
       "id": "head",
-      "src": "/assets/pets/shadow-fox/layers/head.png",
-      "closedSrc": "/assets/pets/shadow-fox/layers/head-closed.png",
+      "src": "/assets/pets/shadow-fox/level-2/layers/head.png",
+      "closedSrc": "/assets/pets/shadow-fox/level-2/layers/head-closed.png",
       "x": 60,
       "y": -130,
       "originX": 0.5,

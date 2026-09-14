@@ -20,7 +20,7 @@ export class PetView extends Phaser.GameObjects.Container {
   constructor(scene: Phaser.Scene, x: number, y: number, readonly pet: ReturnType<typeof resolvePet>) {
     super(scene,x,y);
     for (const layer of [...pet.layers].sort((a,b)=>a.z-b.z)) {
-      const node=scene.add.container(layer.x,layer.y).setScale(layer.scale ?? 1);
+      const node=scene.add.container(layer.x,layer.y).setScale(layer.scale ?? 1).setDepth(layer.z);
       const sprite=scene.add.sprite(0,0,layer.src).setOrigin(layer.originX,layer.originY);
       if(layer.tint) sprite.setTint(layer.tint);
       node.add(sprite);
@@ -39,6 +39,18 @@ export class PetView extends Phaser.GameObjects.Container {
     this.blendTime=0; this.state=state; this.elapsed=0; this.fired=false; this.tick(0);
   }
   setLayerVisible(id:string,visible:boolean) { this.nodes.get(id)?.setVisible(visible); }
+  setLayerOrigin(id:string, property:'originX'|'originY', value:number) {
+    const sprite = this.images.get(id);
+    if (!sprite || !Number.isFinite(value)) return;
+    if (property === 'originX') sprite.setOrigin(value, sprite.originY);
+    else sprite.setOrigin(sprite.originX, value);
+  }
+  setLayerZ(id:string, value:number) {
+    const node = this.nodes.get(id);
+    if (!node || !Number.isFinite(value)) return;
+    node.setDepth(value);
+    node.parentContainer?.sort('depth');
+  }
   setLayerTransform(id:string, property:'x'|'y'|'scale', value:number) {
     const node = this.nodes.get(id);
     const base = this.bases.get(id);

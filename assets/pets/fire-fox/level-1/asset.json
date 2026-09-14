@@ -1,19 +1,23 @@
 {
-  "id": "fire-fox",
-  "name": "Fire Fox",
+  "id": "fire-fox-level-1",
+  "lineageId": "fire-fox",
+  "evolutionLevel": 1,
+  "name": "Fire Fox · Level 1",
   "kind": "pet",
+  "species": "fox",
+  "archetype": "quadruped",
   "extends": "pet-base",
   "status": "production",
   "element": "fire",
   "reference": "/references/fire-fox/concept-board.png",
   "effects": {
-    "projectile": "/assets/pets/fire-fox/fire.png",
+    "projectile": "/assets/pets/fire-fox/level-1/fire.png",
     "color": 16751144
   },
   "layers": [
     {
       "id": "shadow",
-      "src": "/assets/pets/fire-fox/shadow.png",
+      "src": "/assets/pets/fire-fox/level-1/shadow.png",
       "x": 0,
       "y": 0,
       "originX": 0.5,
@@ -23,7 +27,7 @@
     },
     {
       "id": "tail",
-      "src": "/assets/pets/fire-fox/tail.png",
+      "src": "/assets/pets/fire-fox/level-1/tail.png",
       "x": -65,
       "y": -105,
       "originX": 0.85,
@@ -33,7 +37,7 @@
     },
     {
       "id": "flame",
-      "src": "/assets/pets/fire-fox/fire-loop.png",
+      "src": "/assets/pets/fire-fox/level-1/fire-loop.png",
       "x": -158,
       "y": -145,
       "originX": 0.5,
@@ -50,7 +54,7 @@
     },
     {
       "id": "rear-far",
-      "src": "/assets/pets/fire-fox/leg.png",
+      "src": "/assets/pets/fire-fox/level-1/leg.png",
       "x": -53,
       "y": -79,
       "originX": 0.5,
@@ -61,7 +65,7 @@
     },
     {
       "id": "front-far",
-      "src": "/assets/pets/fire-fox/leg.png",
+      "src": "/assets/pets/fire-fox/level-1/leg.png",
       "x": 59,
       "y": -81,
       "originX": 0.5,
@@ -72,7 +76,7 @@
     },
     {
       "id": "body",
-      "src": "/assets/pets/fire-fox/body.png",
+      "src": "/assets/pets/fire-fox/level-1/body.png",
       "x": 0,
       "y": -117,
       "originX": 0.5,
@@ -82,7 +86,7 @@
     },
     {
       "id": "rear-near",
-      "src": "/assets/pets/fire-fox/leg.png",
+      "src": "/assets/pets/fire-fox/level-1/leg.png",
       "x": -74,
       "y": -87,
       "originX": 0.5,
@@ -92,7 +96,7 @@
     },
     {
       "id": "front-near",
-      "src": "/assets/pets/fire-fox/leg.png",
+      "src": "/assets/pets/fire-fox/level-1/leg.png",
       "x": 28,
       "y": -90,
       "originX": 0.5,
@@ -102,14 +106,14 @@
     },
     {
       "id": "head",
-      "src": "/assets/pets/fire-fox/head.png",
+      "src": "/assets/pets/fire-fox/level-1/head.png",
       "x": 39,
       "y": -151,
       "originX": 0.5,
       "originY": 0.88,
       "z": 8,
       "scale": 0.78,
-      "closedSrc": "/assets/pets/fire-fox/head-closed.png"
+      "closedSrc": "/assets/pets/fire-fox/level-1/head-closed.png"
     }
   ],
   "preview": {

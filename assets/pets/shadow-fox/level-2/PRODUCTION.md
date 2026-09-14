@@ -1,7 +1,7 @@
-# Shadow Fox v1
+# Shadow Fox — Evolution Level 2
 
 Shadow Fox is a layered Phaser puppet integrated from the approved artwork in
-`assets/inbox/shadow-fox/`. The inbox files remain the immutable source package.
+`assets/inbox/shadow-fox/level-2/`. The inbox files remain the immutable source package.
 
 ## Two-tail anatomy
 
@@ -26,9 +26,9 @@ image animated by Phaser, not a claimed sprite sheet.
 The approved three-quarter leg revision is stored without replacing the original
 inbox component:
 
-- source revision: `assets/inbox/shadow-fox/layers/leg-angle-3q.png`;
-- original component retained: `assets/inbox/shadow-fox/layers/leg.png`;
-- runtime texture: `public/assets/pets/shadow-fox/layers/leg.png`.
+- source revision: `assets/inbox/shadow-fox/level-2/layers/leg-angle-3q.png`;
+- original component retained: `assets/inbox/shadow-fox/level-2/layers/leg.png`;
+- runtime texture: `public/assets/pets/shadow-fox/level-2/layers/leg.png`.
 
 All four puppet leg instances continue to reuse the same runtime texture and the
 existing manifest anchors. `scripts/prepare-shadow-fox.py` selects the revised

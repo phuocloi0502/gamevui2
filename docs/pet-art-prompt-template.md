@@ -9,12 +9,13 @@ Giai đoạn 1: full preview PNG → người dùng duyệt / yêu cầu sửa
 Giai đoạn 2: chỉ sau APPROVED → tạo layer PNG + đóng <pet-id>.zip
 ```
 
-Catalog có 50 ID theo dạng `<element>-<species>` với 10 species và 5 element. Cùng một species phải giữ nguyên silhouette; element chỉ thay palette, material, particle, aura, projectile/VFX và behavior nhỏ. Không tạo renderer riêng cho từng pet.
+Catalog có 50 lineage theo dạng `<element>-<species>` với 10 species và 5 element. Mỗi lineage có ba cấp tiến hóa; stage ID là `<element>-<species>-level-<1|2|3>`. Cùng một species phải giữ nguyên silhouette; element chỉ thay palette, material, particle, aura, projectile/VFX và behavior nhỏ. Không tạo renderer riêng cho từng pet.
 
 ## Thông tin Codex phải lấy từ catalog
 
 ```text
 PET_ID: <element-species, lowercase-kebab-case>
+EVOLUTION_LEVEL: <1 / 2 / 3>
 PET_NAME: <display name>
 SPECIES: <species section trong docs/pets-catalog.md>
 ELEMENT: <fire / water / wind / light / shadow>
@@ -26,6 +27,15 @@ SILHOUETTE: <species silhouette trong catalog>
 PARTS: <species-specific parts trong catalog>
 ELEMENT_BEHAVIOR: <element behavior trong catalog>
 ```
+
+Tiến hóa phải đọc rõ nhưng vẫn cùng một lineage:
+
+- Level 1: hình thể nhỏ/gọn, chi tiết và VFX tiết chế;
+- Level 2: anatomy accents phát triển hơn, element rõ hơn;
+- Level 3: silhouette và VFX mạnh nhất nhưng vẫn cute/chibi và dễ đọc.
+
+Không biến cấp tiến hóa thành species khác. Mỗi level được package thành bộ PNG
+riêng và không ghi đè artwork của level khác.
 
 Với Fox, phải giữ: low quadruped body, oversized chibi head, large triangular ears, short legs, very large curved tail; role agile elemental caster; range medium; skill `Element Tail Bolt`.
 
@@ -48,6 +58,7 @@ Tạo đúng HAI ảnh PNG tổng thể cho pet game 2D fantasy sau đây. Đây
 Không tạo thêm ảnh thứ ba, biến thể, góc nhìn khác hoặc pose khác.
 
 PET_ID: <PET_ID>
+EVOLUTION_LEVEL: <EVOLUTION_LEVEL>
 Tên: <PET_NAME>
 Species: <SPECIES>
 Element: <ELEMENT>
@@ -207,7 +218,7 @@ projectile-origin
 Sau khi người dùng tải ZIP:
 
 ```text
-assets/inbox/<PET_ID>/<PET_ID>.zip
+assets/inbox/<PET_ID>/level-<EVOLUTION_LEVEL>/<PET_ID>-level-<EVOLUTION_LEVEL>.zip
 ```
 
-Codex sẽ kiểm tra alpha/kích thước/crop/halo, chuẩn hóa PNG sang `public/assets/pets/<PET_ID>/`, tạo `assets/pets/<PET_ID>/asset.json`, chọn rig phù hợp, preview và validation. Không đổi `status` thành `ready` trước khi kiểm tra trực tiếp.
+Codex sẽ kiểm tra alpha/kích thước/crop/halo, chuẩn hóa PNG sang `public/assets/pets/<PET_ID>/level-<EVOLUTION_LEVEL>/`, tạo `assets/pets/<PET_ID>/level-<EVOLUTION_LEVEL>/asset.json`, chọn rig phù hợp, preview và validation. Không đổi `status` thành `ready` trước khi kiểm tra trực tiếp.

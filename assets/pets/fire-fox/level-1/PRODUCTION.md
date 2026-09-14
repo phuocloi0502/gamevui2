@@ -1,10 +1,10 @@
-# Fire Fox v1
+# Fire Fox — Evolution Level 1
 
 Generated with built-in ImageGen, 2026-09-14, using the user's concept board. PNG alpha extraction and normalization by code explicitly approved by user after ImageGen produced a baked checkerboard.
 
 ## Deliverables
 
-`public/assets/pets/fire-fox/`: body, head, head-closed, tail, leg, fire, shadow, fire-loop and master PNGs. Four leg instances reuse one texture, two far legs tinted. Ears belong to the head layer in v1; they are not independently rigged. Blink swaps aligned head variants.
+`public/assets/pets/fire-fox/level-1/`: body, head, head-closed, tail, leg, fire, shadow, fire-loop and master PNGs. Four leg instances reuse one texture, two far legs tinted. Ears belong to the head layer in Level 1; they are not independently rigged. Blink swaps aligned head variants.
 
 Four functional 2D puppet clips: idle breathing/tail sway/blink, walk in place with alternating legs, attack with projectile marker, and hurt recoil. Eight-frame flame loop is procedural row deformation of the painted flame. No claim of eight independently hand-painted fire frames.
 

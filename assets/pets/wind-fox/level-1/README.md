@@ -1,7 +1,8 @@
 # Wind Fox
 
 - **PET_ID:** wind-fox
-- **PET_NAME:** Wind Fox
+- **EVOLUTION_LEVEL:** 1
+- **PET_NAME:** Wind Fox · Level 1
 - **ELEMENT:** wind
 - **Rig inheritance:** `pet-base`
 

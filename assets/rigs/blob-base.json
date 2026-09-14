@@ -1,0 +1,21 @@
+{
+  "id": "blob-base", "canvas": { "width": 512, "height": 512 }, "idle": { "duration": 1400, "bob": 2 },
+  "clips": {
+    "idle": { "duration": 1400, "loop": true, "tracks": [
+      { "target": "blob", "property": "scaleX", "values": [1, 1.035, 1] },
+      { "target": "blob", "property": "scaleY", "values": [1, 0.97, 1] }
+    ] },
+    "walk": { "duration": 700, "loop": true, "tracks": [
+      { "target": "blob", "property": "y", "values": [0, 5, -10, 0] },
+      { "target": "blob", "property": "scaleX", "values": [1, 1.08, 0.94, 1] }
+    ] },
+    "attack": { "duration": 820, "loop": false, "event": { "at": 520, "name": "projectile" }, "tracks": [
+      { "target": "blob", "property": "scaleX", "values": [1, 0.82, 1.22, 1] },
+      { "target": "blob", "property": "scaleY", "values": [1, 1.18, 0.82, 1] }
+    ] },
+    "hurt": { "duration": 500, "loop": false, "tracks": [
+      { "target": "blob", "property": "x", "values": [0, -12, 6, 0] },
+      { "target": "blob", "property": "scaleX", "values": [1, 0.88, 1.06, 1] }
+    ] }
+  }
+}

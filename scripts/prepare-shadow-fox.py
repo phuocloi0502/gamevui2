@@ -4,8 +4,8 @@ from PIL import Image, ImageChops
 import json
 
 ROOT = Path(__file__).resolve().parents[1]
-INBOX = ROOT / "assets/inbox/shadow-fox"
-OUT = ROOT / "public/assets/pets/shadow-fox"
+INBOX = ROOT / "assets/inbox/shadow-fox/level-2"
+OUT = ROOT / "public/assets/pets/shadow-fox/level-2"
 OUT.mkdir(parents=True, exist_ok=True)
 
 # Every output has a small transparent gutter so filtering cannot clip soft fur.
@@ -58,7 +58,7 @@ def normalize(name: str) -> None:
 
 
 def render_master() -> None:
-    manifest = json.loads((ROOT / "assets/pets/shadow-fox/asset.json").read_text())
+    manifest = json.loads((ROOT / "assets/pets/shadow-fox/level-2/asset.json").read_text())
     canvas = Image.new("RGBA", (600, 600))
     positions: dict[str, tuple[float, float, float]] = {}
     for layer in sorted(manifest["layers"], key=lambda item: item["z"]):

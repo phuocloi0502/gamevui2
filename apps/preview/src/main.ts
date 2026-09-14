@@ -1,10 +1,11 @@
 import Phaser from 'phaser';
 import './style.css';
-import type { PetDefinition, Rig, State } from '../../../packages/asset-core/src/types';
+import type { Layer, PetDefinition, Rig, State } from '../../../packages/asset-core/src/types';
 import { resolvePet } from '../../../packages/asset-core/src/resolve';
+import { PET_ARCHETYPES, PET_ELEMENTS, archetypeFor, speciesTemplate } from '../../../packages/asset-core/src/petCatalog';
 import { PetView } from '../../../packages/pet-runtime/src/PetView';
 
-const petFiles = import.meta.glob<PetDefinition>('../../../assets/pets/*/asset.json', { eager: true, import: 'default' });
+const petFiles = import.meta.glob<PetDefinition>('../../../assets/pets/*/level-*/asset.json', { eager: true, import: 'default' });
 const rigFiles = import.meta.glob<Rig>('../../../assets/rigs/*.json', { eager: true, import: 'default' });
 const rigs = Object.fromEntries(Object.values(rigFiles).map(rig => [rig.id, rig]));
 const pets = Object.values(petFiles).map(pet => resolvePet(pet, rigs));
@@ -15,14 +16,147 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <p class="muted">Characters · Items · Environment · VFX<br>Các nhóm sẽ xuất hiện khi có asset.</p>
   <footer>ARTWORK → RIG → PREVIEW<br>Phaser 3 / TypeScript</footer></aside>
   <main><header><div><p class="label">WORKSPACE / PETS</p><h1>Pet workshop</h1><p class="muted">Một bộ khung chung. Mỗi pet một cá tính.</p></div><span class="badge">LOCAL STUDIO</span></header>
-  <section class="layout"><div class="studio-panel"><div class="toolbar"><select id="pet-select" aria-label="Chọn pet"></select><span>ART REFERENCE</span></div><div class="preview-grid"><div id="stage"></div><div id="controls-slot"></div></div><p id="caption" class="muted"></p></div>
-  <article><p class="label">ASSET INSPECTOR</p><h2 id="name"></h2><dl id="details"></dl><hr><p class="label">KẾ THỪA</p><p class="chain">Pet Base → <strong id="child"></strong></p><p class="muted">Canvas và idle lấy từ rig chung. Element, layer và thông số riêng nằm trong manifest của pet.</p><hr><p class="label">TIẾN ĐỘ</p><p id="status"></p></article></section></main>`;
+  <section class="layout"><div class="studio-panel"><div class="toolbar"><select id="pet-select" aria-label="Chọn pet"></select><div class="toolbar-actions"><button id="new-pet">+ Tạo pet từ layer</button><span>ART REFERENCE</span></div></div><section id="creator" class="creator" hidden><div class="creator-heading"><div><p class="label">PET LAYER IMPORT</p><h2>Tạo cấp tiến hóa từ bộ PNG</h2><p class="muted">Chọn species, element và level để lấy đúng rig cùng thông số khởi đầu. Ảnh gốc được giữ trong assets/inbox.</p></div><button id="close-creator" aria-label="Đóng">×</button></div><div class="creator-fields"><label>Species<select id="creator-species"></select></label><label>Element<select id="creator-element"></select></label><label>Tiến hóa<select id="creator-level"><option value="1">Level 1</option><option value="2">Level 2</option><option value="3">Level 3</option></select></label><label>Tên hiển thị<input id="creator-name" type="text"></label><label>Stage ID<input id="creator-id" type="text" readonly></label></div><p id="template-status" class="template-status"></p><div id="upload-slots" class="upload-slots"></div><div class="creator-footer"><button id="create-pet">Tạo cấp tiến hóa</button><span id="create-status"></span></div></section><div class="preview-grid"><div id="stage"></div><div id="controls-slot"></div></div><p id="caption" class="muted"></p></div>
+  <article><p class="label">ASSET INSPECTOR</p><h2 id="name"></h2><dl id="details"></dl><hr><p class="label">KẾ THỪA</p><p class="chain"><span id="rig-parent"></span> → <strong id="child"></strong></p><p class="muted">Canvas và animation lấy từ rig nhóm. Ảnh layer và thông số lắp ghép nằm trong manifest của pet.</p><hr><p class="label">TIẾN ĐỘ</p><p id="status"></p></article></section></main>`;
 const select = document.querySelector<HTMLSelectElement>('#pet-select')!;
-for (const pet of pets) select.add(new Option(pet.name, pet.id));
+for (const group of PET_ARCHETYPES) {
+  for (const level of [1, 2, 3]) {
+    const groupPets = pets.filter(pet => {
+      const species = pet.species ?? pet.lineageId.split('-').at(-1);
+      return (pet.archetype ?? speciesTemplate(species ?? '')?.archetype) === group.id && pet.evolutionLevel === level;
+    });
+    if (!groupPets.length) continue;
+    const options = document.createElement('optgroup');
+    options.label = `${group.name} · Level ${level}`;
+    for (const pet of groupPets.sort((a, b) => a.lineageId.localeCompare(b.lineageId))) options.append(new Option(pet.name, pet.id));
+    select.append(options);
+  }
+}
+
+const creator = document.querySelector<HTMLElement>('#creator')!;
+const creatorSpecies = document.querySelector<HTMLSelectElement>('#creator-species')!;
+const creatorElement = document.querySelector<HTMLSelectElement>('#creator-element')!;
+const creatorLevel = document.querySelector<HTMLSelectElement>('#creator-level')!;
+const creatorName = document.querySelector<HTMLInputElement>('#creator-name')!;
+const creatorId = document.querySelector<HTMLInputElement>('#creator-id')!;
+for (const group of PET_ARCHETYPES) {
+  const options = document.createElement('optgroup');
+  options.label = `${group.name}${group.validated ? '' : ' · chưa kiểm chứng'}`;
+  for (const speciesId of group.species) {
+    const template = speciesTemplate(speciesId)!;
+    options.append(new Option(template.name, template.id));
+  }
+  creatorSpecies.append(options);
+}
+for (const element of PET_ELEMENTS) creatorElement.add(new Option(element.name, element.id));
+
+function updateCreator() {
+  const template = speciesTemplate(creatorSpecies.value)!;
+  const element = PET_ELEMENTS.find(item => item.id === creatorElement.value)!;
+  const level = Number(creatorLevel.value);
+  const lineageId = `${element.id}-${template.id}`;
+  creatorId.value = `${lineageId}-level-${level}`;
+  creatorName.value = `${element.name} ${template.name} · Level ${level}`;
+  const group = archetypeFor(template.archetype)!;
+  document.querySelector('#template-status')!.textContent = template.validated
+    ? `${group.name} · ${template.rig} · template đã được kiểm chứng`
+    : `${group.name} · ${template.rig} · thông số khởi đầu, cần chỉnh và kiểm chứng bằng pet flagship`;
+  const slots = document.querySelector('#upload-slots')!;
+  slots.replaceChildren();
+  for (const slot of template.slots) {
+    const label = document.createElement('label');
+    label.className = 'upload-slot';
+    label.innerHTML = `<span>${slot.label}${slot.optional ? ' <small>tùy chọn</small>' : ' <b>bắt buộc</b>'}</span><code>${slot.folder}/${slot.file}</code>`;
+    const input = document.createElement('input');
+    input.type = 'file'; input.accept = 'image/png'; input.dataset.slot = slot.id; input.required = !slot.optional;
+    label.append(input); slots.append(label);
+  }
+}
+creatorSpecies.addEventListener('change', updateCreator);
+creatorElement.addEventListener('change', updateCreator);
+creatorLevel.addEventListener('change', updateCreator);
+document.querySelector('#new-pet')!.addEventListener('click', () => { creator.hidden = false; updateCreator(); creator.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+document.querySelector('#close-creator')!.addEventListener('click', () => { creator.hidden = true; });
+
+function readFile(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).replace(/^data:[^;]*;base64,/, 'data:image/png;base64,'));
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
+async function runtimeFile(file: File, size?: { width: number; height: number }) {
+  if (!size) return readFile(file);
+  const bitmap = await createImageBitmap(file);
+  const canvas = document.createElement('canvas');
+  canvas.width = size.width; canvas.height = size.height;
+  const context = canvas.getContext('2d')!;
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = 'high';
+  context.clearRect(0, 0, size.width, size.height);
+  context.drawImage(bitmap, 0, 0, size.width, size.height);
+  bitmap.close();
+  return canvas.toDataURL('image/png');
+}
+
+document.querySelector('#create-pet')!.addEventListener('click', async () => {
+  const status = document.querySelector('#create-status')!;
+  const button = document.querySelector<HTMLButtonElement>('#create-pet')!;
+  const template = speciesTemplate(creatorSpecies.value)!;
+  const element = PET_ELEMENTS.find(item => item.id === creatorElement.value)!;
+  const evolutionLevel = Number(creatorLevel.value) as 1 | 2 | 3;
+  const lineageId = `${element.id}-${template.id}`;
+  const inputs = [...document.querySelectorAll<HTMLInputElement>('#upload-slots input[type=file]')];
+  const selected = new Map(inputs.map(input => [input.dataset.slot!, input.files?.[0]]));
+  const missing = template.slots.filter(slot => !slot.optional && !selected.get(slot.id));
+  if (missing.length) { status.textContent = `Thiếu: ${missing.map(slot => slot.label).join(', ')}`; return; }
+  const invalid = [...selected.values()].filter((file): file is File => !!file).find(file => file.type !== 'image/png' && !file.name.toLowerCase().endsWith('.png'));
+  if (invalid) { status.textContent = `${invalid.name} không phải PNG`; return; }
+  button.disabled = true; status.textContent = 'Đang lưu ảnh và tạo manifest…';
+  try {
+    const layers: Layer[] = [];
+    const uploads: Array<{ file: string; folder: 'layers' | 'effects'; sourceDataUrl: string; runtimeDataUrl: string }> = [];
+    let projectile: string | undefined;
+    for (const slot of template.slots) {
+      const file = selected.get(slot.id);
+      if (!file) continue;
+      const src = `/assets/pets/${lineageId}/level-${evolutionLevel}/${slot.folder}/${slot.file}`;
+      uploads.push({ file: slot.file, folder: slot.folder, sourceDataUrl: await readFile(file), runtimeDataUrl: await runtimeFile(file, slot.runtimeSize) });
+      if (slot.closedFor) {
+        const target = layers.find(item => item.id === slot.closedFor);
+        if (target) target.closedSrc = src;
+      } else {
+        for (const instance of slot.instances ?? []) layers.push({ ...instance, src });
+      }
+      if (slot.projectile) projectile = src;
+    }
+    layers.sort((a, b) => a.z - b.z);
+    const manifest: PetDefinition = {
+      id: creatorId.value,
+      lineageId, evolutionLevel,
+      name: creatorName.value.trim() || `${element.name} ${template.name} · Level ${evolutionLevel}`,
+      kind: 'pet', species: template.id, archetype: template.archetype, extends: template.rig,
+      status: 'production', element: element.id,
+      reference: layers.find(item => item.id === 'body')?.src ?? layers[0].src,
+      layers, preview: { x: 420, y: 440, scale: 1 },
+      ...(projectile ? { effects: { projectile, color: element.color } } : {}),
+    };
+    const response = await fetch('/__asset-studio/create-pet', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: manifest.id, manifest, uploads }) });
+    if (!response.ok) throw new Error(await response.text());
+    status.textContent = 'Đã tạo pet. Đang tải lại catalog…';
+    window.location.reload();
+  } catch (error) {
+    status.textContent = error instanceof Error ? error.message : 'Không thể tạo pet';
+    button.disabled = false;
+  }
+});
+updateCreator();
 let game: Phaser.Game | undefined;
 let view: PetView | undefined;
 const controls=document.createElement('div'); controls.className='controls';
-controls.innerHTML=`<div class="clips">${['idle','walk','attack','hurt'].map(s=>`<button data-state="${s}">${s}</button>`).join('')}</div><div class="options"><button id="pause">Tạm dừng</button><button id="flip">Lật hướng</button><label>Zoom <input id="zoom" type="range" min="0.4" max="1.8" step="0.1" value="1"></label><label>Tốc độ <select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label><label>Nền <select id="background"><option value="#141820">Tối</option><option value="#eee5d7">Sáng</option><option value="#475b65">Xanh xám</option></select></label><span id="playing">idle</span></div><div id="transform-editor"></div><div id="layer-controls"></div><p id="save-status" class="save-status" aria-live="polite"></p>`;
+controls.innerHTML=`<div class="clips">${['idle','walk','attack','hurt'].map(s=>`<button data-state="${s}">${s}</button>`).join('')}</div><div class="options"><button id="pause">Tạm dừng</button><button id="flip">Lật hướng</button><label>Zoom <input id="zoom" type="range" min="0.4" max="1.8" step="0.1" value="1"></label><label>Tốc độ <select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label><label>Nền <select id="background"><option value="#141820">Tối</option><option value="#eee5d7">Sáng</option><option value="#475b65">Xanh xám</option></select></label><span id="playing">idle</span></div><div id="transform-editor"></div><p id="save-status" class="save-status" aria-live="polite"></p>`;
 document.querySelector('#controls-slot')!.append(controls);
 controls.addEventListener('click',e=>{
  const b=(e.target as HTMLElement).closest<HTMLButtonElement>('button'); if(!b||!view)return;
@@ -67,43 +201,56 @@ function numberInput(label: string, value: number, onChange: (value: number) => 
 function show(id: string) {
   const pet = pets.find(pet => pet.id === id)!;
   const manifest = manifests[id];
+  const species = pet.species ?? pet.lineageId.split('-').at(-1) ?? '';
+  const group = archetypeFor(pet.archetype ?? speciesTemplate(species)?.archetype ?? 'quadruped');
   document.querySelector('#name')!.textContent = pet.name;
   document.querySelector('#child')!.textContent = pet.name;
-  document.querySelector('#details')!.textContent = `Element: ${pet.element} · Rig: ${pet.extends} · Layers: ${pet.layers.length}`;
+  document.querySelector('#rig-parent')!.textContent = `${group?.name ?? 'Legacy'} (${pet.extends})`;
+  document.querySelector('#details')!.textContent = `Lineage: ${pet.lineageId} · Tiến hóa: Level ${pet.evolutionLevel} · Species: ${species || 'chưa khai báo'} · Element: ${pet.element} · Nhóm: ${group?.name ?? 'Legacy'} · Layers: ${pet.layers.length}`;
   document.querySelector('#status')!.textContent = pet.layers.length ? `Trạng thái: ${pet.status}` : 'Đã lưu concept. PNG layer và animation production chưa được tạo.';
   document.querySelector('#caption')!.textContent = pet.layers.length ? 'Preview layer ghép bằng renderer dùng chung.' : 'Bảng ảnh tham khảo gốc • Chưa phải pet đã tách nền hoặc rig hoàn chỉnh.';
   view=undefined; game?.destroy(true);
   document.querySelector('.toolbar span')!.textContent='LIVE RIG / PNG + MOTION';
   document.querySelector('#status')!.textContent=`PNG alpha • ${pet.layers.length} layer instances • 4 animation states • ${pet.element} effect`;
   const transform = document.querySelector('#transform-editor')!;
-  transform.innerHTML = '<p class="label">PET TRANSFORM</p>';
+  transform.innerHTML = '<p class="label">VỊ TRÍ TOÀN PET</p><p class="editor-help">X/Y đặt pet trong khung xem. Tỷ lệ thay đổi kích thước toàn bộ pet.</p>';
   const transformFields = document.createElement('div');
   transformFields.className = 'transform-fields';
   const preview = manifest.preview ?? { x: 420, y: 440, scale: 1 };
   manifest.preview = preview;
   transformFields.append(
-    numberInput('X', preview.x, value => { preview.x = value; view?.setPosition(value, preview.y); scheduleSave(pet); }),
-    numberInput('Y', preview.y, value => { preview.y = value; view?.setPosition(preview.x, value); scheduleSave(pet); }),
-    numberInput('Scale', preview.scale, value => { preview.scale = value; const direction = view ? Math.sign(view.scaleX) || 1 : 1; view?.setScale(direction * value, value); scheduleSave(pet); }),
+    numberInput('Vị trí X', preview.x, value => { preview.x = value; view?.setPosition(value, preview.y); scheduleSave(pet); }),
+    numberInput('Vị trí Y', preview.y, value => { preview.y = value; view?.setPosition(preview.x, value); scheduleSave(pet); }),
+    numberInput('Tỷ lệ', preview.scale, value => { preview.scale = value; const direction = view ? Math.sign(view.scaleX) || 1 : 1; view?.setScale(direction * value, value); scheduleSave(pet); }),
   );
   const layerEditor = document.createElement('div');
   layerEditor.className = 'layer-editor';
-  layerEditor.innerHTML = '<p class="label">LAYER TRANSFORMS</p>';
+  layerEditor.innerHTML = '<p class="label">CHỈNH TỪNG LAYER</p><p class="editor-help">Bật/tắt để kiểm tra từng phần. Neo X/Y là khớp xoay trong ảnh (0–1). Z nhỏ nằm sau, Z lớn nằm trước.</p>';
   for (const layer of pet.layers) {
     const row = document.createElement('div');
     row.className = 'layer-row';
     const title = document.createElement('span');
+    title.className = 'layer-name';
     title.textContent = layer.id;
-    row.append(title,
-      numberInput('X', layer.x, value => { layer.x = value; view?.setLayerTransform(layer.id, 'x', value); scheduleSave(pet); }),
-      numberInput('Y', layer.y, value => { layer.y = value; view?.setLayerTransform(layer.id, 'y', value); scheduleSave(pet); }),
-      numberInput('S', layer.scale ?? 1, value => { layer.scale = value; view?.setLayerTransform(layer.id, 'scale', value); scheduleSave(pet); }),
+    const visibility = document.createElement('label');
+    visibility.className = 'visibility-toggle';
+    const visible = document.createElement('input');
+    visible.type = 'checkbox'; visible.checked = true;
+    visible.addEventListener('change', () => view?.setLayerVisible(layer.id, visible.checked));
+    visibility.append(visible, ' Hiển thị');
+    const heading = document.createElement('div');
+    heading.className = 'layer-heading'; heading.append(title, visibility);
+    row.append(heading,
+      numberInput('Vị trí X', layer.x, value => { layer.x = value; view?.setLayerTransform(layer.id, 'x', value); scheduleSave(pet); }),
+      numberInput('Vị trí Y', layer.y, value => { layer.y = value; view?.setLayerTransform(layer.id, 'y', value); scheduleSave(pet); }),
+      numberInput('Tỷ lệ', layer.scale ?? 1, value => { layer.scale = value; view?.setLayerTransform(layer.id, 'scale', value); scheduleSave(pet); }),
+      numberInput('Điểm neo X', layer.originX, value => { layer.originX = value; view?.setLayerOrigin(layer.id, 'originX', value); scheduleSave(pet); }),
+      numberInput('Điểm neo Y', layer.originY, value => { layer.originY = value; view?.setLayerOrigin(layer.id, 'originY', value); scheduleSave(pet); }),
+      numberInput('Thứ tự Z', layer.z, value => { layer.z = value; view?.setLayerZ(layer.id, value); scheduleSave(pet); }),
     );
     layerEditor.append(row);
   }
   transform.append(transformFields, layerEditor);
-  const layers=document.querySelector('#layer-controls')!; layers.replaceChildren();
-  for(const layer of pet.layers){const label=document.createElement('label');const check=document.createElement('input');check.type='checkbox';check.checked=true;check.addEventListener('change',()=>view?.setLayerVisible(layer.id,check.checked));label.append(check,layer.id);layers.append(label);}
   class Preview extends Phaser.Scene {
     preload() {
       if (!pet.layers.length) this.load.image('reference', pet.reference);

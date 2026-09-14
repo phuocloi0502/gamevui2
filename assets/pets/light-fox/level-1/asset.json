@@ -1,0 +1,116 @@
+{
+  "id": "light-fox-level-1",
+  "lineageId": "light-fox",
+  "evolutionLevel": 1,
+  "name": "Light Fox · Level 1",
+  "kind": "pet",
+  "species": "fox",
+  "archetype": "quadruped",
+  "extends": "quadruped-base",
+  "status": "production",
+  "element": "light",
+  "reference": "/assets/pets/light-fox/level-1/layers/body.png",
+  "layers": [
+    {
+      "id": "shadow",
+      "x": 0,
+      "y": 0,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 0,
+      "scale": 0.85,
+      "src": "/assets/pets/light-fox/level-1/layers/shadow.png"
+    },
+    {
+      "id": "tail",
+      "x": -65,
+      "y": -105,
+      "originX": 0.85,
+      "originY": 0.85,
+      "z": 1,
+      "scale": 0.75,
+      "src": "/assets/pets/light-fox/level-1/layers/tail.png"
+    },
+    {
+      "id": "element-effect",
+      "x": -100,
+      "y": 50,
+      "originX": 0.5,
+      "originY": 0.95,
+      "z": 2,
+      "scale": 1.8,
+      "parent": "tail",
+      "src": "/assets/pets/light-fox/level-1/effects/elemental-effect.png"
+    },
+    {
+      "id": "rear-far",
+      "x": -20,
+      "y": -95,
+      "originX": 0.5,
+      "originY": 0.15,
+      "z": 3,
+      "scale": 0.7,
+      "src": "/assets/pets/light-fox/level-1/layers/leg.png"
+    },
+    {
+      "id": "front-far",
+      "x": 59,
+      "y": -81,
+      "originX": 0.5,
+      "originY": 0.15,
+      "z": 4,
+      "scale": 0.6,
+      "src": "/assets/pets/light-fox/level-1/layers/leg.png"
+    },
+    {
+      "id": "body",
+      "x": 0,
+      "y": -117,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 5,
+      "scale": 0.68,
+      "src": "/assets/pets/light-fox/level-1/layers/body.png"
+    },
+    {
+      "id": "rear-near",
+      "x": -55,
+      "y": -100,
+      "originX": 0.5,
+      "originY": 0.15,
+      "z": 6,
+      "scale": 0.84,
+      "src": "/assets/pets/light-fox/level-1/layers/leg.png"
+    },
+    {
+      "id": "front-near",
+      "x": 28,
+      "y": -90,
+      "originX": 0.5,
+      "originY": 0.15,
+      "z": 7,
+      "scale": 0.75,
+      "src": "/assets/pets/light-fox/level-1/layers/leg.png"
+    },
+    {
+      "id": "head",
+      "x": 50,
+      "y": -90,
+      "originX": 0.5,
+      "originY": 0.88,
+      "z": 8,
+      "scale": 0.58,
+      "src": "/assets/pets/light-fox/level-1/layers/head.png",
+      "closedSrc": "/assets/pets/light-fox/level-1/layers/head-closed.png"
+    }
+  ],
+  "preview": {
+    "x": 420,
+    "y": 440,
+    "scale": 1
+  },
+  "effects": {
+    "projectile": "/assets/pets/light-fox/level-1/effects/elemental-effect.png",
+    "color": 16770202
+  }
+}

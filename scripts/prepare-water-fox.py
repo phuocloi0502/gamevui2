@@ -4,9 +4,9 @@ from PIL import Image, ImageChops, ImageDraw, ImageFilter
 import json
 
 ROOT = Path(__file__).resolve().parents[1]
-INBOX = ROOT / "assets/inbox/water-fox"
+INBOX = ROOT / "assets/inbox/water-fox/level-2"
 SOURCE = INBOX / "water-fox" if (INBOX / "water-fox").is_dir() else INBOX
-OUT = ROOT / "public/assets/pets/water-fox"
+OUT = ROOT / "public/assets/pets/water-fox/level-2"
 OUT.mkdir(parents=True, exist_ok=True)
 
 # Fire Fox's final canvases and the actual non-transparent regions inside them.
@@ -52,7 +52,7 @@ def create_shadow() -> None:
 
 
 def render_master() -> None:
-    manifest = json.loads((ROOT / "assets/pets/water-fox/asset.json").read_text())
+    manifest = json.loads((ROOT / "assets/pets/water-fox/level-2/asset.json").read_text())
     canvas = Image.new("RGBA", (600, 600))
     positions: dict[str, tuple[float, float, float]] = {}
     for layer in sorted(manifest["layers"], key=lambda item: item["z"]):

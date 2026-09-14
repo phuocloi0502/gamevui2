@@ -1,0 +1,23 @@
+{
+  "id": "hopper-base", "canvas": { "width": 512, "height": 512 }, "idle": { "duration": 1700, "bob": 2 },
+  "clips": {
+    "idle": { "duration": 1700, "loop": true, "tracks": [
+      { "target": "body", "property": "scaleY", "values": [1, 1.025, 1] },
+      { "target": "front-ear", "property": "angle", "values": [-2, 2, -2] },
+      { "target": "rear-ear", "property": "angle", "values": [2, -2, 2] }
+    ] },
+    "walk": { "duration": 720, "loop": true, "tracks": [
+      { "target": "body", "property": "y", "values": [0, 7, -18, 0] },
+      { "target": "head", "property": "y", "values": [0, 5, -15, 0] },
+      { "target": "hind-leg-near", "property": "angle", "values": [0, -18, 12, 0] }
+    ] },
+    "attack": { "duration": 760, "loop": false, "event": { "at": 390, "name": "projectile" }, "tracks": [
+      { "target": "body", "property": "scaleX", "values": [1, 0.82, 1.12, 1] },
+      { "target": "head", "property": "x", "values": [0, -12, 28, 0] }
+    ] },
+    "hurt": { "duration": 520, "loop": false, "tracks": [
+      { "target": "body", "property": "x", "values": [0, -12, 5, 0] },
+      { "target": "head", "property": "angle", "values": [0, -7, 3, 0] }
+    ] }
+  }
+}

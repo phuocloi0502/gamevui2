@@ -1,13 +1,13 @@
 """Reproducible processing of ImageGen artwork; user approved code alpha extraction.
-Requires Pillow. Originals live in assets/pets/fire-fox/source, outside web bundle.
+Requires Pillow. Originals live in assets/pets/fire-fox/level-1/source, outside web bundle.
 """
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFilter
 import math, json
 
 ROOT = Path(__file__).resolve().parents[1]
-SRC = ROOT / 'assets/pets/fire-fox/source'
-OUT = ROOT / 'public/assets/pets/fire-fox'
+SRC = ROOT / 'assets/pets/fire-fox/level-1/source'
+OUT = ROOT / 'public/assets/pets/fire-fox/level-1'
 OUT.mkdir(parents=True, exist_ok=True)
 
 def extract(name):
