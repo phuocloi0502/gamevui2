@@ -18,7 +18,7 @@
       "originX": 0.5,
       "originY": 0.5,
       "z": 0,
-      "scale": 0.85,
+      "scale": 1,
       "src": "/assets/pets/light-fox/level-2/layers/shadow.png"
     },
     {
@@ -26,19 +26,19 @@
       "x": -65,
       "y": -105,
       "originX": 0.85,
-      "originY": 0.85,
+      "originY": 0.84,
       "z": 1,
-      "scale": 0.75,
+      "scale": 1,
       "src": "/assets/pets/light-fox/level-2/layers/tail.png"
     },
     {
       "id": "element-effect",
-      "x": -158,
-      "y": -145,
+      "x": -100,
+      "y": 20,
       "originX": 0.5,
       "originY": 0.95,
       "z": 2,
-      "scale": 0.95,
+      "scale": 1.6,
       "parent": "tail",
       "src": "/assets/pets/light-fox/level-2/effects/elemental-effect.png"
     },
@@ -49,7 +49,7 @@
       "originX": 0.5,
       "originY": 0.15,
       "z": 3,
-      "scale": 0.72,
+      "scale": 0.76,
       "src": "/assets/pets/light-fox/level-2/layers/leg.png"
     },
     {
@@ -69,7 +69,7 @@
       "originX": 0.5,
       "originY": 0.5,
       "z": 5,
-      "scale": 0.68,
+      "scale": 0.9,
       "src": "/assets/pets/light-fox/level-2/layers/body.png"
     },
     {
@@ -79,7 +79,7 @@
       "originX": 0.5,
       "originY": 0.15,
       "z": 6,
-      "scale": 0.84,
+      "scale": 0.9,
       "src": "/assets/pets/light-fox/level-2/layers/leg.png"
     },
     {
@@ -94,12 +94,12 @@
     },
     {
       "id": "head",
-      "x": 39,
-      "y": -151,
+      "x": 60,
+      "y": -125,
       "originX": 0.5,
       "originY": 0.88,
       "z": 8,
-      "scale": 0.78,
+      "scale": 0.73,
       "src": "/assets/pets/light-fox/level-2/layers/head.png",
       "closedSrc": "/assets/pets/light-fox/level-2/layers/head-closed.png"
     }
@@ -112,5 +112,110 @@
   "effects": {
     "projectile": "/assets/pets/light-fox/level-2/effects/elemental-effect.png",
     "color": 16770202
+  },
+  "overrides": {
+    "clips": {
+      "walk": {
+        "duration": 650,
+        "loop": false,
+        "tracks": [
+          {
+            "target": "body",
+            "property": "y",
+            "values": [
+              0,
+              -4,
+              0,
+              -4,
+              0
+            ]
+          },
+          {
+            "target": "head",
+            "property": "y",
+            "values": [
+              0,
+              -5,
+              0,
+              -5,
+              0
+            ]
+          },
+          {
+            "target": "tail",
+            "property": "angle",
+            "values": [
+              -7,
+              7,
+              -7
+            ]
+          },
+          {
+            "target": "rear-far",
+            "property": "angle",
+            "values": [
+              -18,
+              18,
+              -18
+            ]
+          },
+          {
+            "target": "front-far",
+            "property": "angle",
+            "values": [
+              18,
+              -18,
+              18
+            ]
+          },
+          {
+            "target": "rear-near",
+            "property": "angle",
+            "values": [
+              -18,
+              18,
+              -18
+            ]
+          },
+          {
+            "target": "front-near",
+            "property": "angle",
+            "values": [
+              18,
+              -18,
+              18
+            ]
+          }
+        ]
+      },
+      "hurt": {
+        "duration": 550,
+        "loop": false,
+        "tracks": [
+          {
+            "target": "body",
+            "property": "x",
+            "values": [
+              0,
+              -10,
+              5,
+              -3,
+              0
+            ]
+          },
+          {
+            "target": "head",
+            "property": "angle",
+            "values": [
+              0,
+              -8,
+              5,
+              -2,
+              0
+            ]
+          }
+        ]
+      }
+    }
   }
 }

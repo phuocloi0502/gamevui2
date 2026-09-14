@@ -36,7 +36,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <p class="muted">Characters · Items · Environment · VFX<br>Các nhóm sẽ xuất hiện khi có asset.</p>
   <footer>ARTWORK → RIG → PREVIEW<br>Phaser 3 / TypeScript</footer></aside>
   <main><header><div><p class="label">WORKSPACE / PETS</p><h1>Pet workshop</h1><p class="muted">Một bộ khung chung. Mỗi pet một cá tính.</p></div><span class="badge">LOCAL STUDIO</span></header>
-  <section class="layout"><div class="studio-panel"><div class="toolbar"><select id="pet-select" aria-label="Chọn pet"></select><div class="toolbar-actions"><button id="new-pet">+ Tạo pet từ layer</button><span>ART REFERENCE</span></div></div><section id="creator" class="creator" hidden><div class="creator-heading"><div><p class="label">PET LAYER IMPORT</p><h2>Tạo cấp tiến hóa từ bộ PNG</h2><p class="muted">Chọn species, element và level để lấy đúng rig cùng thông số khởi đầu. Ảnh gốc được giữ trong assets/inbox.</p></div><button id="close-creator" aria-label="Đóng">×</button></div><div class="creator-fields"><label>Species<select id="creator-species"></select></label><label>Element<select id="creator-element"></select></label><label>Tiến hóa<select id="creator-level"><option value="1">Level 1</option><option value="2">Level 2</option><option value="3">Level 3</option></select></label><label>Tên hiển thị<input id="creator-name" type="text"></label><label>Stage ID<input id="creator-id" type="text" readonly></label></div><p id="template-status" class="template-status"></p><div id="upload-slots" class="upload-slots"></div><div class="creator-footer"><button id="create-pet">Tạo cấp tiến hóa</button><span id="create-status"></span></div></section><div class="preview-grid"><div id="stage"></div><div id="controls-slot"></div></div><p id="caption" class="muted"></p></div>
+  <section class="layout"><div class="studio-panel"><div class="toolbar"><select id="pet-select" aria-label="Chọn pet"></select><div class="toolbar-actions"><button id="edit-pet-images">Thay ảnh pet</button><button id="new-pet">+ Tạo pet từ layer</button><span>ART REFERENCE</span></div></div><section id="creator" class="creator" hidden><div class="creator-heading"><div><p class="label">PET LAYER IMPORT</p><h2>Tạo cấp tiến hóa từ bộ PNG</h2><p class="muted">Chọn species, element và level để lấy đúng rig cùng thông số khởi đầu. Ảnh gốc được giữ trong assets/inbox.</p></div><button id="close-creator" aria-label="Đóng">×</button></div><div class="creator-fields"><label>Species<select id="creator-species"></select></label><label>Element<select id="creator-element"></select></label><label>Tiến hóa<select id="creator-level"><option value="1">Level 1</option><option value="2">Level 2</option><option value="3">Level 3</option></select></label><label>Tên hiển thị<input id="creator-name" type="text"></label><label>Stage ID<input id="creator-id" type="text" readonly></label></div><p id="template-status" class="template-status"></p><div id="upload-slots" class="upload-slots"></div><div class="creator-footer"><button id="create-pet">Tạo cấp tiến hóa</button><span id="create-status"></span></div></section><section id="image-editor" class="creator image-editor" hidden><div class="creator-heading"><div><p class="label">PET IMAGE REPLACEMENT</p><h2>Thay ảnh của pet đang chọn</h2><p class="muted">Chỉ chọn những ảnh cần đổi. Ảnh mới được chuẩn hóa về đúng kích thước runtime hiện tại; bản upload và runtime cũ đều được lưu trong assets/inbox.</p></div><button id="close-image-editor" aria-label="Đóng">×</button></div><div id="image-replacement-slots" class="upload-slots"></div><div class="creator-footer"><button id="replace-pet-images">Lưu ảnh thay thế</button><span id="replace-status" aria-live="polite"></span></div></section><div class="preview-grid"><div id="stage"></div><div id="controls-slot"></div></div><p id="caption" class="muted"></p></div>
   <article><p class="label">ASSET INSPECTOR</p><h2 id="name"></h2><dl id="details"></dl><hr><p class="label">KẾ THỪA</p><p class="chain"><span id="rig-parent"></span> → <strong id="child"></strong></p><p class="muted">Canvas và animation lấy từ rig nhóm. Ảnh layer và thông số lắp ghép nằm trong manifest của pet.</p><hr><p class="label">TIẾN ĐỘ</p><p id="status"></p></article></section></main>`;
 const select = document.querySelector<HTMLSelectElement>('#pet-select')!;
 for (const group of PET_ARCHETYPES) {
@@ -95,8 +95,16 @@ function updateCreator() {
 creatorSpecies.addEventListener('change', updateCreator);
 creatorElement.addEventListener('change', updateCreator);
 creatorLevel.addEventListener('change', updateCreator);
-document.querySelector('#new-pet')!.addEventListener('click', () => { creator.hidden = false; updateCreator(); creator.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+document.querySelector('#new-pet')!.addEventListener('click', () => { creator.hidden = false; imageEditor.hidden = true; updateCreator(); creator.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
 document.querySelector('#close-creator')!.addEventListener('click', () => { creator.hidden = true; });
+
+const imageEditor = document.querySelector<HTMLElement>('#image-editor')!;
+document.querySelector('#edit-pet-images')!.addEventListener('click', () => {
+  imageEditor.hidden = false;
+  creator.hidden = true;
+  imageEditor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+document.querySelector('#close-image-editor')!.addEventListener('click', () => { imageEditor.hidden = true; });
 
 function readFile(file: File) {
   return new Promise<string>((resolve, reject) => {
@@ -120,6 +128,82 @@ async function runtimeFile(file: File, size?: { width: number; height: number })
   bitmap.close();
   return canvas.toDataURL('image/png');
 }
+
+async function imageSize(src: string) {
+  const response = await fetch(`${src}?asset-studio-size=${Date.now()}`, { cache: 'no-store' });
+  if (!response.ok) throw new Error(`Không đọc được ảnh hiện tại: ${src}`);
+  const bitmap = await createImageBitmap(await response.blob());
+  const size = { width: bitmap.width, height: bitmap.height };
+  bitmap.close();
+  return size;
+}
+
+type ReplacementAsset = { src: string; labels: string[] };
+let replacementAssets: ReplacementAsset[] = [];
+function renderImageEditor(pet: ReturnType<typeof resolvePet>) {
+  const bySource = new Map<string, Set<string>>();
+  const add = (src: string | undefined, label: string) => {
+    if (!src) return;
+    const labels = bySource.get(src) ?? new Set<string>();
+    labels.add(label); bySource.set(src, labels);
+  };
+  for (const layer of pet.layers) {
+    add(layer.src, layer.id);
+    add(layer.closedSrc, `${layer.id} · blink`);
+  }
+  add(pet.effects?.projectile, 'projectile');
+  replacementAssets = [...bySource].map(([src, labels]) => ({ src, labels: [...labels] }));
+  const slots = document.querySelector('#image-replacement-slots')!;
+  slots.replaceChildren();
+  for (const [index, asset] of replacementAssets.entries()) {
+    const label = document.createElement('label');
+    label.className = 'upload-slot replacement-slot';
+    const fileName = asset.src.split('/').at(-1) ?? asset.src;
+    label.innerHTML = `<span>${asset.labels.join(', ')}</span><code>${fileName}</code><small>${asset.src}</small>`;
+    const input = document.createElement('input');
+    input.type = 'file'; input.accept = 'image/png'; input.dataset.replacementIndex = String(index);
+    label.append(input); slots.append(label);
+  }
+  const button = document.querySelector<HTMLButtonElement>('#edit-pet-images')!;
+  button.disabled = replacementAssets.length === 0;
+  if (!replacementAssets.length) imageEditor.hidden = true;
+  document.querySelector('#replace-status')!.textContent = '';
+}
+
+document.querySelector('#replace-pet-images')!.addEventListener('click', async () => {
+  const status = document.querySelector('#replace-status')!;
+  const button = document.querySelector<HTMLButtonElement>('#replace-pet-images')!;
+  const pet = pets.find(item => item.id === select.value);
+  if (!pet) return;
+  const inputs = [...document.querySelectorAll<HTMLInputElement>('#image-replacement-slots input[type=file]')];
+  const chosen = inputs.flatMap(input => {
+    const file = input.files?.[0];
+    const asset = replacementAssets[Number(input.dataset.replacementIndex)];
+    return file && asset ? [{ file, asset }] : [];
+  });
+  if (!chosen.length) { status.textContent = 'Hãy chọn ít nhất một ảnh PNG cần thay.'; return; }
+  const invalid = chosen.find(({ file }) => file.type !== 'image/png' && !file.name.toLowerCase().endsWith('.png'));
+  if (invalid) { status.textContent = `${invalid.file.name} không phải PNG`; return; }
+  button.disabled = true; status.textContent = 'Đang kiểm tra kích thước và lưu revision…';
+  try {
+    const uploads = [];
+    for (const { file, asset } of chosen) {
+      const size = await imageSize(asset.src);
+      uploads.push({ src: asset.src, sourceDataUrl: await readFile(file), runtimeDataUrl: await runtimeFile(file, size) });
+    }
+    const response = await fetch('/__asset-studio/replace-pet-images', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: pet.id, uploads }),
+    });
+    if (!response.ok) throw new Error(await response.text());
+    const result = await response.json() as { revision: string };
+    status.textContent = `Đã thay ${uploads.length} ảnh · revision ${result.revision}. Đang tải lại preview…`;
+    sessionStorage.setItem(selectedPetKey, pet.id);
+    window.location.reload();
+  } catch (error) {
+    status.textContent = error instanceof Error ? error.message : 'Không thể thay ảnh';
+    button.disabled = false;
+  }
+});
 
 document.querySelector('#create-pet')!.addEventListener('click', async () => {
   const status = document.querySelector('#create-status')!;
@@ -224,6 +308,7 @@ function show(id: string) {
   const manifest = manifests[id];
   const species = pet.species ?? pet.lineageId.split('-').at(-1) ?? '';
   const group = archetypeFor(pet.archetype ?? speciesTemplate(species)?.archetype ?? 'quadruped');
+  renderImageEditor(pet);
   document.querySelector('#name')!.textContent = pet.name;
   document.querySelector('#child')!.textContent = pet.name;
   document.querySelector('#rig-parent')!.textContent = `${group?.name ?? 'Legacy'} (${pet.extends})`;

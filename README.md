@@ -28,6 +28,10 @@ chọn Level 1/2/3 rồi upload các PNG trong suốt theo recipe hiển thị. 
 `assets/inbox/<lineage>/level-<n>/`, tạo runtime files + manifest và dùng rig thuộc một trong
 6 nhóm: quadruped, hopper, tank, winged, blob hoặc serpent. Sau khi tạo có thể
 chỉnh X/Y/scale/origin/z của từng layer và tự lưu vào `asset.json`.
+Pet đã có cũng có thể dùng **Thay ảnh pet** để đổi một hoặc nhiều PNG đang được manifest tham chiếu.
+Studio giữ ảnh upload mới và bản runtime trước đó theo revision trong
+`assets/inbox/<lineage>/level-<n>/replacements/`, đồng thời chuẩn hóa ảnh mới về đúng kích thước
+production hiện tại trước khi cập nhật `public/assets/`.
 
 Fire Fox Level 1 đã có PNG alpha và 4 clip: idle, walk, attack, hurt. Preview có điều khiển clip, pause, scale, flip, tốc độ, nền và visibility từng layer. Đọc `assets/pets/fire-fox/level-1/PRODUCTION.md` để biết bản gốc, prompt và giới hạn của từng clip. Chạy `node scripts/test-core.mjs` để kiểm tra kế thừa và loop.
 
