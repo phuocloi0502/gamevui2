@@ -6,7 +6,7 @@ Workflow có đúng hai giai đoạn:
 
 ```text
 Giai đoạn 1: full preview PNG → người dùng duyệt / yêu cầu sửa
-Giai đoạn 2: chỉ sau APPROVED → tạo layer PNG + đóng <pet-id>.zip
+Giai đoạn 2: chỉ sau APPROVED → tạo các ảnh PNG layer độc lập
 ```
 
 Catalog có 50 lineage theo dạng `<element>-<species>` với 10 species và 5 element. Mỗi lineage có ba cấp tiến hóa; stage ID là `<element>-<species>-level-<1|2|3>`. Cùng một species phải giữ nguyên silhouette; element chỉ thay palette, material, particle, aura, projectile/VFX và behavior nhỏ. Không tạo renderer riêng cho từng pet.
@@ -34,8 +34,7 @@ Tiến hóa phải đọc rõ nhưng vẫn cùng một lineage:
 - Level 2: anatomy accents phát triển hơn, element rõ hơn;
 - Level 3: silhouette và VFX mạnh nhất nhưng vẫn cute/chibi và dễ đọc.
 
-Không biến cấp tiến hóa thành species khác. Mỗi level được package thành bộ PNG
-riêng và không ghi đè artwork của level khác.
+Không biến cấp tiến hóa thành species khác. Mỗi level có một bộ PNG riêng và không ghi đè artwork của level khác.
 
 Với Fox, phải giữ: low quadruped body, oversized chibi head, large triangular ears, short legs, very large curved tail; role agile elemental caster; range medium; skill `Element Tail Bolt`.
 
@@ -94,81 +93,68 @@ OUTPUT:
 DỪNG SAU KHI TẠO ĐỦ HAI PNG NÀY. Không tạo layer, không tạo ZIP, không tạo animation frame và không tạo asset.json.
 ```
 
-## Giai đoạn 2 — prompt package sau khi full preview đã APPROVED
+## Giai đoạn 2 — prompt tạo ảnh layer sau khi full preview đã APPROVED
 
 Prompt này được gửi riêng sau khi người dùng đã duyệt cả hai PNG. Đính kèm lại chính xác `<PET_ID>-preview-open.png` và `<PET_ID>-preview-closed.png` đã duyệt.
 
 ```text
-ĐÂY LÀ CÔNG ĐOẠN PACKAGE SAU KHI ARTWORK ĐÃ ĐƯỢC DUYỆT.
+ĐÂY LÀ CÔNG ĐOẠN TẠO ẢNH LAYER SAU KHI ARTWORK ĐÃ ĐƯỢC DUYỆT.
 
-File reference duy nhất:
+Ảnh reference:
 - `<PET_ID>-preview-open.png` là artwork mở mắt đã APPROVED.
 - `<PET_ID>-preview-closed.png` là artwork nhắm mắt đã APPROVED.
 
-MỤC TIÊU DUY NHẤT:
-- Dùng artwork APPROVED làm nguồn hình ảnh duy nhất.
-- Tách các bộ phận thành PNG độc lập để Codex ghép trong Phaser.
-- Đóng đúng một file ZIP tên <PET_ID>.zip.
+MỤC TIÊU:
+- Dùng hai artwork APPROVED làm chuẩn nhận diện và art direction.
+- Tạo mới từng bộ phận thành ảnh PNG độc lập để Codex ghép trong Phaser.
+- Đây là tác vụ Image Generation/image editing có kiểm soát, không phải thao tác crop ảnh cơ học.
+- Không tạo ZIP, thư mục package, README, JSON hoặc code.
 
-NGHIÊM CẤM:
-- Không thiết kế lại pet.
-- Không tạo concept mới hoặc biến thể mới.
-- Không thay đổi identity, khuôn mặt, silhouette, anatomy, palette, lighting, tỷ lệ, hướng nhìn hoặc ground pose.
-- Không tạo lại full artwork khác với hai file reference đã APPROVED.
-- Không tạo animation frame, sprite sheet, GIF, video, code, manifest JSON hoặc file ngoài cấu trúc bên dưới.
-- Không tự thêm layer vì thấy “đẹp hơn”. Chỉ tạo đúng slot được yêu cầu.
-- Không tạo artwork độc lập ngoài các layer được yêu cầu.
+ĐƯỢC PHÉP TẠO MỚI VÀ RECONSTRUCT:
+- Chủ động vẽ lại từng bộ phận như một artwork layer hoàn chỉnh dựa trên thiết kế APPROVED.
+- Vẽ đầy đủ cả vùng đang thấy và vùng bị các bộ phận khác che khuất.
+- Được làm sạch biên, sửa vùng giao nhau, bổ sung lông/texture/ánh sáng hợp lý và điều chỉnh nhẹ hình học ở phần bị che để layer hoạt động độc lập.
+- Được suy luận chi tiết không nhìn thấy khi cần, miễn là tự nhiên, đúng anatomy, cùng art style và khi ghép lại vẫn tái hiện đúng pet APPROVED.
+- Không cần giữ nguyên từng pixel của preview. Ưu tiên layer sạch, hoàn chỉnh và dùng tốt cho animation hơn việc crop chính xác từng pixel.
+- Vùng nhìn thấy rõ trong preview vẫn là chuẩn chính cho identity, màu sắc, chất liệu, hình dáng và lighting.
+- `body.png`, `leg.png` và `tail.png` phải là bộ phận hoàn chỉnh, không phải mảnh crop bị thiếu.
+- `head-closed.png` dùng ảnh nhắm mắt APPROVED làm chuẩn, khớp canvas/alignment với `head.png` và chỉ khác trạng thái mắt.
+- `elemental-effect.png` được phép tái tạo sạch, đầy đủ và cân đối theo ngôn ngữ VFX trong preview.
 
-ĐƯỢC PHÉP RECONSTRUCT TỐI THIỂU:
-- Được phép vẽ bù/reconstruct tối thiểu các vùng bị che hoặc không nhìn thấy trong artwork APPROVED khi cần để tạo `body.png`, `head-closed.png`, `leg.png`, `tail.png` và `elemental-effect.png`.
-- Reconstruction chỉ được suy ra trực tiếp từ artwork APPROVED và dùng để hoàn thiện phần bị thiếu khi layer được tách ra; không được thêm ý tưởng thiết kế mới.
-- Giữ tuyệt đối identity, anatomy, silhouette, tỷ lệ, hướng nhìn, palette, material, lighting, texture language, ground pose và mức độ chi tiết của artwork APPROVED.
-- Không mở rộng reconstruction ra vùng đang nhìn thấy rõ; không sửa phần đúng chỉ để làm đẹp hơn.
-- Với `head-closed.png`, chỉ reconstruct phần mí/mắt nhắm tối thiểu; toàn bộ head, tai, lông mặt, lighting và alignment phải khớp `head.png`.
-- Với `body.png`, chỉ vẽ bù phần thân bị head/tail/chân che; không thay đổi hình dáng thân nhìn thấy trong preview.
-- Với `leg.png`, chỉ vẽ bù phần chân bị body che để có một leg hoàn chỉnh có thể reuse; giữ đúng hướng, độ dài, lông, màu và lighting của chân trong preview.
-- Với `tail.png`, chỉ vẽ bù phần đuôi bị body che nếu cần; không đổi đường cong, độ lớn hoặc silhouette đuôi.
-- Với `elemental-effect.png`, chỉ hoàn thiện effect đã có trong preview; không thêm spell, particle, aura hoặc hình dạng effect mới.
-- Nếu phải đoán một vùng lớn hoặc không thể reconstruct mà vẫn khớp artwork, dừng layer đó và báo rõ, không tự sáng tạo.
+GIỚI HẠN SÁNG TẠO:
+- Không đổi species, evolution level, identity, khuôn mặt, silhouette tổng thể, tỷ lệ, hướng nhìn, palette chính hoặc combat identity.
+- Không thêm anatomy, phụ kiện, pattern, spell hoặc dấu hiệu nhận diện mới không có cơ sở từ artwork APPROVED.
+- Không tạo full preview mới, biến thể mới, pose mới hoặc góc nhìn mới.
+- Không tạo animation frame, sprite sheet, GIF, video, code hoặc manifest JSON.
 
-NẾU KHÔNG THỂ TÁCH MỘT LAYER MÀ VẪN GIỮ ĐÚNG ARTWORK ĐÃ APPROVED:
-- Không tự sáng tạo phần thay thế.
-- Giữ layer ở trạng thái chưa hoàn thành và báo rõ layer nào không thể tách sạch.
+DANH SÁCH ẢNH PHẢI TẠO:
+- `body.png`
+- `head.png`
+- `head-closed.png`
+- `tail.png`
+- `leg.png`
+- `shadow.png`
+- `elemental-effect.png`
 
-CẤU TRÚC ZIP BẮT BUỘC:
-
-<PET_ID>/
-  README.md
-  preview.png
-  source/
-    source-artwork.png
-    source-artwork-closed.png
-  layers/
-    <slot-1>.png
-    <slot-2>.png
-    ...
-  effects/
-    <element-effect>.png
-
-QUY TẮC FILE:
-- `preview.png` phải là bản copy nguyên vẹn của `<PET_ID>-preview-open.png` đã APPROVED.
-- `source/source-artwork.png` là bản gốc mở mắt chất lượng cao dùng để tách; giữ nguyên, không ghi đè.
-- `source/source-artwork-closed.png` là bản gốc nhắm mắt chất lượng cao dùng riêng cho `head-closed.png`; giữ nguyên, không ghi đè.
-- Mỗi layer chỉ chứa đúng bộ phận của slot đó, có alpha sạch và đủ phần bị che để xoay/tween không lộ khoảng trống; phần vẽ bù chỉ ở mức tối thiểu cần thiết.
-- Không crop tai, đuôi, vũ khí, glow, smoke hoặc particle.
-- Không chứa background, checkerboard, text, watermark, UI, shadow hoặc effect ngoài slot được yêu cầu.
-- `head-closed.png` phải cùng canvas, alignment, silhouette và lighting với `head.png`; chỉ đổi mắt sang nhắm.
-- `leg.png` là một texture leg dùng lại khi species cho phép reuse.
-- Effect chỉ chứa effect, không chứa body, head, tail hoặc shadow.
+QUY TẮC ẢNH:
+- Mỗi output là một PNG riêng và chỉ chứa đúng bộ phận của slot đó.
+- Bộ phận phải hoàn chỉnh cả phần nhìn thấy và phần được reconstruct, đủ để xoay/tween không lộ khoảng trống.
+- Không crop tai, đuôi, glow, smoke hoặc particle thuộc chính slot đó.
+- Không chứa text, watermark, UI, frame, bộ phận khác, shadow hoặc effect ngoài slot.
+- `head.png` và `head-closed.png` phải cùng canvas, kích thước, alignment, silhouette và lighting.
+- `leg.png` là một texture chân hoàn chỉnh có thể reuse khi species cho phép.
+- `shadow.png` chỉ chứa ground shadow.
+- `elemental-effect.png` chỉ chứa effect, không chứa body, head, tail hoặc ground shadow.
+- Nền trong suốt thật nếu hỗ trợ; nếu không, dùng cyan phẳng tuyệt đối `#00FFFF`, không gradient và không phản chiếu cyan lên artwork.
 
 KHÔNG TẠO `asset.json`:
 - Codex sẽ tạo manifest theo `packages/asset-core/src/types.ts`.
 - Không tự đoán schema hoặc thêm field không có trong contract.
 
-SAU KHI TẠO ĐỦ FILE:
-- Kiểm tra ZIP có đúng tên, đúng thư mục, đúng số file và mọi PNG mở được.
-- Không xuất thêm ảnh rời ngoài ZIP.
-- Chỉ trả về file `<PET_ID>.zip` và một ghi chú ngắn về các file đã có.
+SAU KHI TẠO ĐỦ ẢNH:
+- Kiểm tra có đúng bảy PNG và mọi ảnh mở được.
+- Trả từng PNG riêng với đúng tên file; không đóng ZIP.
+- Không tạo thêm file ngoài danh sách.
 ```
 
 ## Slot và kích thước runtime baseline cho Fox
@@ -215,10 +201,10 @@ projectile-origin
 
 ## Handoff cho Codex
 
-Sau khi người dùng tải ZIP:
+Sau khi người dùng tải các PNG:
 
 ```text
-assets/inbox/<PET_ID>/level-<EVOLUTION_LEVEL>/<PET_ID>-level-<EVOLUTION_LEVEL>.zip
+assets/inbox/<PET_ID>/level-<EVOLUTION_LEVEL>/
 ```
 
 Codex sẽ kiểm tra alpha/kích thước/crop/halo, chuẩn hóa PNG sang `public/assets/pets/<PET_ID>/level-<EVOLUTION_LEVEL>/`, tạo `assets/pets/<PET_ID>/level-<EVOLUTION_LEVEL>/asset.json`, chọn rig phù hợp, preview và validation. Không đổi `status` thành `ready` trước khi kiểm tra trực tiếp.

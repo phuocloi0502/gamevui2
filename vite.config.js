@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import { resolve, relative } from "node:path";
-import { access, mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 
 const manifestRoot = resolve(process.cwd(), "assets/pets");
 const inboxRoot = resolve(process.cwd(), "assets/inbox");
@@ -28,6 +28,20 @@ function safeChild(root, ...parts) {
   return file;
 }
 
+async function readPetManifests() {
+  const manifests = [];
+  const lineages = await readdir(manifestRoot, { withFileTypes: true });
+  for (const lineage of lineages.filter(entry => entry.isDirectory())) {
+    const lineageFolder = safeChild(manifestRoot, lineage.name);
+    const levels = await readdir(lineageFolder, { withFileTypes: true });
+    for (const level of levels.filter(entry => entry.isDirectory() && /^level-[123]$/.test(entry.name))) {
+      const file = safeChild(lineageFolder, level.name, "asset.json");
+      if (await exists(file)) manifests.push(JSON.parse(await readFile(file, "utf8")));
+    }
+  }
+  return manifests;
+}
+
 function assetManifestApi() {
   return {
     name: "asset-manifest-api",
@@ -37,6 +51,21 @@ function assetManifestApi() {
       if (file.startsWith(manifestRoot) && file.endsWith("/asset.json")) return [];
     },
     configureServer(server) {
+      server.middlewares.use("/__asset-studio/pet-manifests", async (req, res) => {
+        if (req.method !== "GET") {
+          res.statusCode = 405;
+          res.end("Method Not Allowed");
+          return;
+        }
+        try {
+          res.setHeader("Content-Type", "application/json");
+          res.setHeader("Cache-Control", "no-store");
+          res.end(JSON.stringify(await readPetManifests()));
+        } catch (error) {
+          res.statusCode = 500;
+          res.end(error instanceof Error ? error.message : "Could not read pet manifests");
+        }
+      });
       server.middlewares.use("/__asset-studio/create-pet", async (req, res) => {
         if (req.method !== "POST") {
           res.statusCode = 405;

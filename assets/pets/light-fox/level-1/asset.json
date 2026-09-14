@@ -112,5 +112,63 @@
   "effects": {
     "projectile": "/assets/pets/light-fox/level-1/effects/elemental-effect.png",
     "color": 16770202
+  },
+  "overrides": {
+    "clips": {
+      "attack": {
+        "duration": 900,
+        "loop": false,
+        "event": {
+          "at": 400,
+          "name": "projectile"
+        },
+        "tracks": [
+          {
+            "target": "head",
+            "property": "x",
+            "values": [
+              0,
+              -3,
+              10,
+              3,
+              0
+            ]
+          },
+          {
+            "target": "body",
+            "property": "scaleX",
+            "values": [
+              1,
+              0.94,
+              1.06,
+              1,
+              1
+            ]
+          },
+          {
+            "target": "tail",
+            "property": "angle",
+            "values": [
+              0,
+              15,
+              -12,
+              0,
+              0
+            ]
+          },
+          {
+            "target": "element-effect",
+            "property": "scaleY",
+            "values": [
+              1,
+              1.3,
+              1.15,
+              1,
+              1
+            ]
+          }
+        ]
+      }
+    }
   }
 }

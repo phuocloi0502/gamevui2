@@ -1,15 +1,35 @@
 import Phaser from 'phaser';
 import './style.css';
-import type { Layer, PetDefinition, Rig, State } from '../../../packages/asset-core/src/types';
+import type { Clip, Layer, PetDefinition, Rig, State } from '../../../packages/asset-core/src/types';
 import { resolvePet } from '../../../packages/asset-core/src/resolve';
 import { PET_ARCHETYPES, PET_ELEMENTS, archetypeFor, speciesTemplate } from '../../../packages/asset-core/src/petCatalog';
 import { PetView } from '../../../packages/pet-runtime/src/PetView';
 
-const petFiles = import.meta.glob<PetDefinition>('../../../assets/pets/*/level-*/asset.json', { eager: true, import: 'default' });
+const stateLabels: Record<State, string> = { idle: 'Đứng yên', walk: 'Di chuyển', attack: 'Tấn công', hurt: 'Trúng đòn' };
+const propertyLabels: Record<string, string> = {
+  x: 'Dịch ngang · pixel', y: 'Dịch dọc · pixel', angle: 'Góc xoay · độ', scaleX: 'Co giãn ngang · hệ số', scaleY: 'Co giãn dọc · hệ số', alpha: 'Độ trong suốt · 0 đến 1',
+};
+function keyframeLabel(index: number, count: number) {
+  const percent = Math.round(index / Math.max(1, count - 1) * 100);
+  if (index === 0) return 'Đầu · 0%';
+  if (index === count - 1) return 'Cuối · 100%';
+  if (percent === 50) return 'Giữa · 50%';
+  return `${percent}%`;
+}
+
+const bundledPetFiles = import.meta.glob<PetDefinition>('../../../assets/pets/*/level-*/asset.json', { eager: true, import: 'default' });
 const rigFiles = import.meta.glob<Rig>('../../../assets/rigs/*.json', { eager: true, import: 'default' });
 const rigs = Object.fromEntries(Object.values(rigFiles).map(rig => [rig.id, rig]));
-const pets = Object.values(petFiles).map(pet => resolvePet(pet, rigs));
-const manifests = Object.fromEntries(Object.values(petFiles).map(pet => [pet.id, pet]));
+let petDefinitions = Object.values(bundledPetFiles);
+try {
+  const response = await fetch('/__asset-studio/pet-manifests', { cache: 'no-store' });
+  if (response.ok) petDefinitions = await response.json() as PetDefinition[];
+} catch {
+  // Production/static preview has no local manifest API; bundled JSON remains the fallback.
+}
+const pets = petDefinitions.map(pet => resolvePet(pet, rigs));
+const manifests = Object.fromEntries(petDefinitions.map(pet => [pet.id, pet]));
+const selectedPetKey = 'asset-studio:selected-pet';
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <aside><a class="brand" href="/">✦ <span>GameVui<small>ASSET STUDIO</small></span></a>
   <p class="label">THƯ VIỆN</p><div class="selected">Pets <span>${pets.length}</span></div>
@@ -146,6 +166,7 @@ document.querySelector('#create-pet')!.addEventListener('click', async () => {
     const response = await fetch('/__asset-studio/create-pet', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: manifest.id, manifest, uploads }) });
     if (!response.ok) throw new Error(await response.text());
     status.textContent = 'Đã tạo pet. Đang tải lại catalog…';
+    sessionStorage.setItem(selectedPetKey, manifest.id);
     window.location.reload();
   } catch (error) {
     status.textContent = error instanceof Error ? error.message : 'Không thể tạo pet';
@@ -156,7 +177,7 @@ updateCreator();
 let game: Phaser.Game | undefined;
 let view: PetView | undefined;
 const controls=document.createElement('div'); controls.className='controls';
-controls.innerHTML=`<div class="clips">${['idle','walk','attack','hurt'].map(s=>`<button data-state="${s}">${s}</button>`).join('')}</div><div class="options"><button id="pause">Tạm dừng</button><button id="flip">Lật hướng</button><label>Zoom <input id="zoom" type="range" min="0.4" max="1.8" step="0.1" value="1"></label><label>Tốc độ <select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label><label>Nền <select id="background"><option value="#141820">Tối</option><option value="#eee5d7">Sáng</option><option value="#475b65">Xanh xám</option></select></label><span id="playing">idle</span></div><div id="transform-editor"></div><p id="save-status" class="save-status" aria-live="polite"></p>`;
+controls.innerHTML=`<div class="clips">${(['idle','walk','attack','hurt'] as State[]).map(s=>`<button data-state="${s}">${stateLabels[s]}</button>`).join('')}</div><div class="options"><button id="pause">Tạm dừng</button><button id="flip">Lật hướng</button><label>Zoom <input id="zoom" type="range" min="0.4" max="1.8" step="0.1" value="1"></label><label>Tốc độ <select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label><label>Nền <select id="background"><option value="#141820">Tối</option><option value="#eee5d7">Sáng</option><option value="#475b65">Xanh xám</option></select></label><span id="playing">Đứng yên</span></div><div id="transform-editor"></div><p id="save-status" class="save-status" aria-live="polite"></p>`;
 document.querySelector('#controls-slot')!.append(controls);
 controls.addEventListener('click',e=>{
  const b=(e.target as HTMLElement).closest<HTMLButtonElement>('button'); if(!b||!view)return;
@@ -250,7 +271,74 @@ function show(id: string) {
     );
     layerEditor.append(row);
   }
-  transform.append(transformFields, layerEditor);
+  const animationEditor = document.createElement('div');
+  animationEditor.className = 'animation-editor';
+  animationEditor.innerHTML = '<p class="label">CHỈNH 4 CHUYỂN ĐỘNG</p><p class="editor-help">Mỗi ô là một thời điểm trong animation: Đầu → Giữa → Cuối. X/Y là pixel lệch khỏi vị trí gốc, góc tính bằng độ, scale 1 là kích thước gốc. Chỉnh từng ô sẽ cập nhật preview và chỉ lưu cho pet này.</p>';
+  const commitClip = (state: State, next: Clip) => {
+    manifest.overrides ??= {};
+    manifest.overrides.clips ??= {};
+    manifest.overrides.clips[state] = next;
+    if (pet.rig.clips) pet.rig.clips[state] = next;
+    if (view?.state === state) view.play(state);
+    scheduleSave(pet);
+  };
+  for (const state of ['idle', 'walk', 'attack', 'hurt'] as State[]) {
+    const clip = pet.rig.clips?.[state];
+    if (!clip) continue;
+    const details = document.createElement('details');
+    details.className = 'clip-editor';
+    const summary = document.createElement('summary');
+    summary.innerHTML = `<span><b>${stateLabels[state]}</b><small>${state}</small></span><span>${clip.tracks.length} track · ${clip.duration} ms</span>`;
+    details.append(summary);
+    const settings = document.createElement('div');
+    settings.className = 'clip-settings';
+    settings.append(numberInput('Thời lượng (ms)', clip.duration, value => {
+      if (value <= 0) return;
+      commitClip(state, { ...pet.rig.clips![state], duration: value });
+    }));
+    const loopLabel = document.createElement('label');
+    const loop = document.createElement('input');
+    loop.type = 'checkbox'; loop.checked = clip.loop;
+    loop.addEventListener('change', () => commitClip(state, { ...pet.rig.clips![state], loop: loop.checked }));
+    loopLabel.append(loop, ' Lặp liên tục'); settings.append(loopLabel);
+    if (clip.event) settings.append(numberInput('Thời điểm phát effect (ms)', clip.event.at, value => {
+      commitClip(state, { ...pet.rig.clips![state], event: { ...pet.rig.clips![state].event!, at: Math.max(0, value) } });
+    }));
+    const play = document.createElement('button');
+    play.dataset.state = state; play.textContent = 'Chạy thử'; settings.append(play);
+    details.append(settings);
+    clip.tracks.forEach((track, trackIndex) => {
+      const row = document.createElement('div');
+      row.className = 'track-row';
+      const text = document.createElement('span');
+      text.innerHTML = `<b>${track.target}</b><small>${propertyLabels[track.property] ?? track.property}</small>`;
+      const keyframes = document.createElement('div');
+      keyframes.className = 'keyframe-fields';
+      track.values.forEach((value, valueIndex) => {
+        const field = document.createElement('label');
+        const caption = document.createElement('span');
+        caption.textContent = keyframeLabel(valueIndex, track.values.length);
+        const input = document.createElement('input');
+        input.type = 'number'; input.step = track.property === 'angle' || track.property === 'x' || track.property === 'y' ? '1' : '0.01'; input.value = String(value);
+        input.setAttribute('aria-label', `${track.target} ${track.property} tại ${caption.textContent}`);
+        input.addEventListener('input', () => {
+          const nextValue = Number(input.value);
+          if (!Number.isFinite(nextValue)) return;
+          const current = pet.rig.clips![state];
+          const tracks = current.tracks.map((item, index) => {
+            if (index !== trackIndex) return { ...item, values: [...item.values] };
+            const values = [...item.values]; values[valueIndex] = nextValue;
+            return { ...item, values };
+          });
+          commitClip(state, { ...current, tracks });
+        });
+        field.append(caption, input); keyframes.append(field);
+      });
+      row.append(text, keyframes); details.append(row);
+    });
+    animationEditor.append(details);
+  }
+  transform.append(transformFields, layerEditor, animationEditor);
   class Preview extends Phaser.Scene {
     preload() {
       if (!pet.layers.length) this.load.image('reference', pet.reference);
@@ -272,7 +360,7 @@ function show(id: string) {
           const projectile=this.add.image(view.x+100*view.scaleX,view.y-160*view.scaleY,pet.effects.projectile).setScale(.55*view.scaleY).setAngle(direction*90);
           this.tweens.add({targets:projectile,x:projectile.x+direction*230,alpha:0,duration:600,onComplete:()=>projectile.destroy()});
         });
-        this.events.on('update',()=>{if(view)document.querySelector('#playing')!.textContent=view.state;});
+        this.events.on('update',()=>{if(view)document.querySelector('#playing')!.textContent=stateLabels[view.state];});
       }
       else {
         const ref = this.add.image(400, 275, 'reference');
@@ -283,5 +371,13 @@ function show(id: string) {
   game = new Phaser.Game({ type: Phaser.AUTO, parent: 'stage', backgroundColor: '#141820',
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH, width: 800, height: 550 }, scene: Preview });
 }
-select.addEventListener('change', () => show(select.value));
-if (pets.length) show(pets[0].id);
+select.addEventListener('change', () => {
+  sessionStorage.setItem(selectedPetKey, select.value);
+  show(select.value);
+});
+if (pets.length) {
+  const remembered = sessionStorage.getItem(selectedPetKey);
+  const initial = pets.find(pet => pet.id === remembered) ?? pets[0];
+  select.value = initial.id;
+  show(initial.id);
+}
