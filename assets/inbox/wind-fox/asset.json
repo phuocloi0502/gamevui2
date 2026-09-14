@@ -1,19 +1,19 @@
 {
-  "id": "fire-fox",
-  "name": "Fire Fox",
+  "id": "wind-fox",
+  "name": "Wind Fox",
   "kind": "pet",
   "extends": "pet-base",
   "status": "production",
-  "element": "fire",
-  "reference": "/references/fire-fox/concept-board.png",
+  "element": "wind",
+  "reference": "/assets/pets/wind-fox/preview.png",
   "effects": {
-    "projectile": "/assets/pets/fire-fox/fire.png",
-    "color": 16751144
+    "projectile": "/assets/pets/wind-fox/effects/elemental-effect.png",
+    "color": 11141071
   },
   "layers": [
     {
       "id": "shadow",
-      "src": "/assets/pets/fire-fox/shadow.png",
+      "src": "/assets/pets/wind-fox/layers/shadow.png",
       "x": 0,
       "y": 0,
       "originX": 0.5,
@@ -23,98 +23,87 @@
     },
     {
       "id": "tail",
-      "src": "/assets/pets/fire-fox/tail.png",
+      "src": "/assets/pets/wind-fox/layers/tail.png",
       "x": -65,
       "y": -105,
       "originX": 0.85,
       "originY": 0.85,
       "z": 1,
-      "scale": 0.75
+      "scale": 0.82
     },
     {
-      "id": "flame",
-      "src": "/assets/pets/fire-fox/fire-loop.png",
-      "x": -158,
-      "y": -145,
+      "id": "wind",
+      "src": "/assets/pets/wind-fox/effects/elemental-effect.png",
+      "parent": "tail",
+      "x": -123,
+      "y": -20,
       "originX": 0.5,
       "originY": 0.95,
       "z": 2,
-      "scale": 0.95,
-      "parent": "tail",
-      "sheet": {
-        "width": 128,
-        "height": 192,
-        "count": 8,
-        "fps": 16
-      }
+      "scale": 0.95
     },
     {
       "id": "rear-far",
-      "src": "/assets/pets/fire-fox/leg.png",
+      "src": "/assets/pets/wind-fox/layers/leg.png",
       "x": -53,
       "y": -79,
       "originX": 0.5,
       "originY": 0.15,
       "z": 3,
-      "scale": 0.72,
-      "tint": 13415840
+      "scale": 0.82,
+      "tint": 14151651
     },
     {
       "id": "front-far",
-      "src": "/assets/pets/fire-fox/leg.png",
+      "src": "/assets/pets/wind-fox/layers/leg.png",
       "x": 59,
       "y": -81,
       "originX": 0.5,
       "originY": 0.15,
       "z": 4,
-      "scale": 0.74,
-      "tint": 13415840
+      "scale": 0.84,
+      "tint": 14151651
     },
     {
       "id": "body",
-      "src": "/assets/pets/fire-fox/body.png",
+      "src": "/assets/pets/wind-fox/layers/body.png",
       "x": 0,
-      "y": -117,
+      "y": -125,
       "originX": 0.5,
       "originY": 0.5,
       "z": 5,
-      "scale": 0.67
+      "scale": 0.82
     },
     {
       "id": "rear-near",
-      "src": "/assets/pets/fire-fox/leg.png",
+      "src": "/assets/pets/wind-fox/layers/leg.png",
       "x": -74,
       "y": -87,
       "originX": 0.5,
       "originY": 0.15,
       "z": 6,
-      "scale": 0.84
+      "scale": 0.94
     },
     {
       "id": "front-near",
-      "src": "/assets/pets/fire-fox/leg.png",
+      "src": "/assets/pets/wind-fox/layers/leg.png",
       "x": 28,
       "y": -90,
       "originX": 0.5,
       "originY": 0.15,
       "z": 7,
-      "scale": 0.861
+      "scale": 0.96
     },
     {
       "id": "head",
-      "src": "/assets/pets/fire-fox/head.png",
+      "src": "/assets/pets/wind-fox/layers/head.png",
+      "closedSrc": "/assets/pets/wind-fox/layers/head-closed.png",
       "x": 39,
       "y": -151,
       "originX": 0.5,
       "originY": 0.88,
       "z": 8,
-      "scale": 0.78,
-      "closedSrc": "/assets/pets/fire-fox/head-closed.png"
+      "scale": 0.78
     }
-  ],
-  "preview": {
-    "x": 420,
-    "y": 440,
-    "scale": 1
-  }
+  ]
 }

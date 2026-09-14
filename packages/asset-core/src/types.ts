@@ -29,6 +29,7 @@ export interface PetDefinition {
   status: 'planned' | 'production' | 'ready';
   element: string;
   reference: string;
+  preview?: { x: number; y: number; scale: number };
   layers: Layer[];
   effects?: { projectile: string; color: number };
   overrides?: { idle?: Partial<Rig['idle']>; clips?: Partial<Record<State, Clip>> };

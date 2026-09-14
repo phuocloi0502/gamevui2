@@ -39,6 +39,18 @@ export class PetView extends Phaser.GameObjects.Container {
     this.blendTime=0; this.state=state; this.elapsed=0; this.fired=false; this.tick(0);
   }
   setLayerVisible(id:string,visible:boolean) { this.nodes.get(id)?.setVisible(visible); }
+  setLayerTransform(id:string, property:'x'|'y'|'scale', value:number) {
+    const node = this.nodes.get(id);
+    const base = this.bases.get(id);
+    if (!node || !base || !Number.isFinite(value)) return;
+    if (property === 'scale') {
+      node.setScale(value);
+      this.bases.set(id, { ...base, scale: value });
+    } else {
+      node[property] = value;
+      this.bases.set(id, { ...base, [property]: value });
+    }
+  }
   private tick(delta:number) {
     if(this.paused) return;
     this.elapsed+=Math.min(delta,60)*this.speed; this.lifetime+=Math.min(delta,60)*this.speed;
