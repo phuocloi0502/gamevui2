@@ -2,13 +2,38 @@ import Phaser from 'phaser';
 import './style.css';
 import type { Clip, Layer, PetDefinition, Rig, State } from '../../../packages/asset-core/src/types';
 import { resolvePet } from '../../../packages/asset-core/src/resolve';
-import { PET_ARCHETYPES, PET_ELEMENTS, archetypeFor, speciesTemplate } from '../../../packages/asset-core/src/petCatalog';
+import { PET_ARCHETYPES, PET_ELEMENTS, archetypeFor, slotsForEvolution, speciesTemplate } from '../../../packages/asset-core/src/petCatalog';
 import { PetView } from '../../../packages/pet-runtime/src/PetView';
 
 const stateLabels: Record<State, string> = { idle: 'Đứng yên', walk: 'Di chuyển', attack: 'Tấn công', hurt: 'Trúng đòn' };
 const propertyLabels: Record<string, string> = {
   x: 'Dịch ngang · pixel', y: 'Dịch dọc · pixel', angle: 'Góc xoay · độ', scaleX: 'Co giãn ngang · hệ số', scaleY: 'Co giãn dọc · hệ số', alpha: 'Độ trong suốt · 0 đến 1',
 };
+const layerLabels: Record<string, string> = {
+  shadow: 'Bóng dưới chân',
+  'effect-back': 'Hiệu ứng phía sau',
+  tail: 'Đuôi',
+  'tail-left-outer': 'Đuôi trái ngoài',
+  'tail-left-inner': 'Đuôi trái trong',
+  'tail-center': 'Đuôi giữa',
+  'tail-right-inner': 'Đuôi phải trong',
+  'tail-right-outer': 'Đuôi phải ngoài',
+  'tail-back': 'Đuôi phía sau',
+  'tail-front': 'Đuôi phía trước',
+  'rear-far': 'Chân sau · phía đuôi · xa người xem',
+  'rear-near': 'Chân sau · phía đuôi · gần người xem',
+  body: 'Thân',
+  'front-far': 'Chân trước · phía đầu · xa người xem',
+  'front-near': 'Chân trước · phía đầu · gần người xem',
+  head: 'Đầu',
+  'effect-front': 'Hiệu ứng phía trước',
+  'element-effect': 'Hiệu ứng nguyên tố',
+  flame: 'Ngọn lửa',
+  water: 'Hiệu ứng nước',
+  wind: 'Hiệu ứng gió',
+  particles: 'Hạt hiệu ứng',
+};
+const layerLabel = (id: string) => layerLabels[id] ?? id;
 function keyframeLabel(index: number, count: number) {
   const percent = Math.round(index / Math.max(1, count - 1) * 100);
   if (index === 0) return 'Đầu · 0%';
@@ -73,7 +98,8 @@ for (const element of PET_ELEMENTS) creatorElement.add(new Option(element.name, 
 function updateCreator() {
   const template = speciesTemplate(creatorSpecies.value)!;
   const element = PET_ELEMENTS.find(item => item.id === creatorElement.value)!;
-  const level = Number(creatorLevel.value);
+  const level = Number(creatorLevel.value) as 1 | 2 | 3;
+  const templateSlots = slotsForEvolution(template, level);
   const lineageId = `${element.id}-${template.id}`;
   creatorId.value = `${lineageId}-level-${level}`;
   creatorName.value = `${element.name} ${template.name} · Level ${level}`;
@@ -83,7 +109,7 @@ function updateCreator() {
     : `${group.name} · ${template.rig} · thông số khởi đầu, cần chỉnh và kiểm chứng bằng pet flagship`;
   const slots = document.querySelector('#upload-slots')!;
   slots.replaceChildren();
-  for (const slot of template.slots) {
+  for (const slot of templateSlots) {
     const label = document.createElement('label');
     label.className = 'upload-slot';
     label.innerHTML = `<span>${slot.label}${slot.optional ? ' <small>tùy chọn</small>' : ' <b>bắt buộc</b>'}</span><code>${slot.folder}/${slot.file}</code>`;
@@ -211,10 +237,11 @@ document.querySelector('#create-pet')!.addEventListener('click', async () => {
   const template = speciesTemplate(creatorSpecies.value)!;
   const element = PET_ELEMENTS.find(item => item.id === creatorElement.value)!;
   const evolutionLevel = Number(creatorLevel.value) as 1 | 2 | 3;
+  const templateSlots = slotsForEvolution(template, evolutionLevel);
   const lineageId = `${element.id}-${template.id}`;
   const inputs = [...document.querySelectorAll<HTMLInputElement>('#upload-slots input[type=file]')];
   const selected = new Map(inputs.map(input => [input.dataset.slot!, input.files?.[0]]));
-  const missing = template.slots.filter(slot => !slot.optional && !selected.get(slot.id));
+  const missing = templateSlots.filter(slot => !slot.optional && !selected.get(slot.id));
   if (missing.length) { status.textContent = `Thiếu: ${missing.map(slot => slot.label).join(', ')}`; return; }
   const invalid = [...selected.values()].filter((file): file is File => !!file).find(file => file.type !== 'image/png' && !file.name.toLowerCase().endsWith('.png'));
   if (invalid) { status.textContent = `${invalid.name} không phải PNG`; return; }
@@ -223,7 +250,7 @@ document.querySelector('#create-pet')!.addEventListener('click', async () => {
     const layers: Layer[] = [];
     const uploads: Array<{ file: string; folder: 'layers' | 'effects'; sourceDataUrl: string; runtimeDataUrl: string }> = [];
     let projectile: string | undefined;
-    for (const slot of template.slots) {
+    for (const slot of templateSlots) {
       const file = selected.get(slot.id);
       if (!file) continue;
       const src = `/assets/pets/${lineageId}/level-${evolutionLevel}/${slot.folder}/${slot.file}`;
@@ -337,7 +364,7 @@ function show(id: string) {
     row.className = 'layer-row';
     const title = document.createElement('span');
     title.className = 'layer-name';
-    title.textContent = layer.id;
+    title.textContent = `${layerLabel(layer.id)} (${layer.id})`;
     const visibility = document.createElement('label');
     visibility.className = 'visibility-toggle';
     const visible = document.createElement('input');

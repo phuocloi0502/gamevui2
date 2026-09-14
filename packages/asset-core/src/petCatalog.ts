@@ -1,4 +1,4 @@
-import type { Layer } from './types';
+import type { EvolutionLevel, Layer } from './types';
 
 export type PetArchetypeId = 'quadruped' | 'hopper' | 'tank' | 'winged' | 'blob' | 'serpent';
 export type PetSpeciesId = 'fox' | 'wolf' | 'bunny' | 'turtle' | 'golem' | 'dragon' | 'owl' | 'hawk' | 'slime' | 'serpent';
@@ -23,6 +23,7 @@ export interface SpeciesTemplate {
   rig: string;
   validated: boolean;
   slots: UploadSlot[];
+  evolutionSlots?: Partial<Record<EvolutionLevel, { replace: string[]; slots: UploadSlot[] }>>;
 }
 
 const layer = (id: string, x: number, y: number, originX: number, originY: number, z: number, scale = 1, parent?: string) =>
@@ -31,6 +32,8 @@ const upload = (id: string, label: string, instances: Array<Omit<Layer, 'src' | 
   ({ id, label, file: `${id}.png`, folder: 'layers', instances, optional, ...(runtimeSize ? { runtimeSize } : {}) });
 const effect = (id: string, label: string, instance: Omit<Layer, 'src' | 'closedSrc'>, projectile = false, runtimeSize?: { width: number; height: number }): UploadSlot =>
   ({ id, label, file: `${id}.png`, folder: 'effects', instances: [instance], optional: true, projectile, ...(runtimeSize ? { runtimeSize } : {}) });
+const projectile = (runtimeSize?: { width: number; height: number }): UploadSlot =>
+  ({ id: 'projectile', label: 'Projectile tấn công', file: 'projectile.png', folder: 'effects', optional: true, projectile: true, ...(runtimeSize ? { runtimeSize } : {}) });
 const closed = (target: string, runtimeSize?: { width: number; height: number }): UploadSlot =>
   ({ id: `${target}-closed`, label: 'Đầu / mắt nhắm (blink)', file: `${target}-closed.png`, folder: 'layers', optional: true, closedFor: target, ...(runtimeSize ? { runtimeSize } : {}) });
 const shadow = (runtimeSize?: { width: number; height: number }) => upload('shadow', 'Bóng dưới chân', [layer('shadow', 0, 0, .5, .5, 0, .85)], true, runtimeSize);
@@ -59,16 +62,30 @@ export const SPECIES_TEMPLATES: SpeciesTemplate[] = [
       shadow({ width: 320, height: 64 }),
       effect('effect-back', 'Effect phía sau', layer('effect-back', 0, -120, .5, .5, 1), false),
       upload('tail', 'Đuôi', [layer('tail', -65, -105, .85, .85, 2, .75)], false, { width: 228, height: 220 }),
-      upload('rear-far', 'Chân sau · xa', [layer('rear-far', -53, -79, .5, .15, 3, .72)], false, { width: 70, height: 123 }),
-      upload('rear-near', 'Chân sau · gần', [layer('rear-near', -74, -87, .5, .15, 4, .84)], false, { width: 70, height: 123 }),
+      upload('rear-far', 'Chân sau · phía đuôi · xa người xem', [layer('rear-far', -53, -79, .5, .15, 3, .72)], false, { width: 70, height: 123 }),
+      upload('rear-near', 'Chân sau · phía đuôi · gần người xem', [layer('rear-near', -74, -87, .5, .15, 4, .84)], false, { width: 70, height: 123 }),
       upload('body', 'Thân', [layer('body', 0, -117, .5, .5, 5, .68)], false, { width: 308, height: 225 }),
-      upload('front-far', 'Chân trước · xa', [layer('front-far', 59, -81, .5, .15, 6, .74)], false, { width: 70, height: 123 }),
-      upload('front-near', 'Chân trước · gần', [layer('front-near', 28, -90, .5, .15, 7, .86)], false, { width: 70, height: 123 }),
+      upload('front-far', 'Chân trước · phía đầu · xa người xem', [layer('front-far', 59, -81, .5, .15, 6, .74)], false, { width: 70, height: 123 }),
+      upload('front-near', 'Chân trước · phía đầu · gần người xem', [layer('front-near', 28, -90, .5, .15, 7, .86)], false, { width: 70, height: 123 }),
       upload('head', 'Đầu mở mắt', [layer('head', 39, -151, .5, .88, 8, .78)], false, { width: 302, height: 318 }),
       closed('head', { width: 302, height: 318 }),
-      effect('effect-front', 'Effect phía trước / projectile', layer('effect-front', 90, -145, .5, .5, 9), true),
+      effect('effect-front', 'Effect visual phía trước', layer('effect-front', 90, -145, .5, .5, 9)),
       effect('particles', 'Particles', layer('particles', 0, -135, .5, .5, 10), false),
+      projectile(),
     ],
+    evolutionSlots: {
+      3: {
+        replace: ['tail'],
+        slots: [
+          upload('tail', 'Đuôi đơn (chọn đuôi đơn hoặc multi-tail)', [layer('tail', -65, -105, .85, .85, 2, .75)], true, { width: 228, height: 220 }),
+          upload('tail-left-outer', 'Đuôi trái ngoài', [layer('tail-left-outer', -102, -104, .88, .86, 2, .75)], true),
+          upload('tail-left-inner', 'Đuôi trái trong', [layer('tail-left-inner', -84, -106, .87, .86, 2.1, .75)], true),
+          upload('tail-center', 'Đuôi giữa', [layer('tail-center', -65, -108, .85, .86, 2.2, .75)], true),
+          upload('tail-right-inner', 'Đuôi phải trong', [layer('tail-right-inner', -46, -106, .83, .86, 2.3, .75)], true),
+          upload('tail-right-outer', 'Đuôi phải ngoài', [layer('tail-right-outer', -28, -104, .82, .86, 2.4, .75)], true),
+        ],
+      },
+    },
   },
   {
     id: 'wolf', name: 'Wolf', archetype: 'quadruped', rig: 'quadruped-base', validated: false,
@@ -127,3 +144,12 @@ export const SPECIES_TEMPLATES: SpeciesTemplate[] = [
 
 export const speciesTemplate = (id: string) => SPECIES_TEMPLATES.find(item => item.id === id);
 export const archetypeFor = (id: string) => PET_ARCHETYPES.find(item => item.id === id);
+export function slotsForEvolution(template: SpeciesTemplate, level: EvolutionLevel): UploadSlot[] {
+  const override = template.evolutionSlots?.[level];
+  if (!override) return template.slots;
+  const replace = new Set(override.replace);
+  const firstReplacement = template.slots.findIndex(slot => replace.has(slot.id));
+  const slots = template.slots.filter(slot => !replace.has(slot.id));
+  slots.splice(firstReplacement < 0 ? slots.length : firstReplacement, 0, ...override.slots);
+  return slots;
+}

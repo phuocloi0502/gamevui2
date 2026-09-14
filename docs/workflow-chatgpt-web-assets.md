@@ -28,6 +28,14 @@ Nếu workspace của bạn có một connector hoặc agent GitHub được c�
 
 ## Các bước chuẩn
 
+Workflow chuẩn hiện tại:
+
+```text
+production layers → manifest/rig → Phaser preview/master → approval
+```
+
+Không dùng `master/full artwork → tách/crop layer` cho pet production mới. Preview/master chỉ là kết quả ghép để duyệt.
+
 1. Trong ChatGPT web, mở repo GitHub đã kết nối nếu cần đọc contract; dùng prompt asset ở chế độ tạo ảnh hoặc chỉnh sửa ảnh.
 2. Chốt specification và yêu cầu từng production layer độc lập: PNG, nền trong suốt nếu có thể; không chữ, watermark, UI hoặc background. Mỗi anatomy layer phải vẽ đủ vùng sẽ bị che.
 3. Tải ảnh xuống máy.
@@ -44,7 +52,10 @@ assets/inbox/<lineage-id>/level-<n>/
     front-near.png
     tail.png
   effects/
+    effect-back.png
     effect-front.png
+    particles.png
+    projectile.png
 ```
 
 5. Nhắn cho Codex: `Xử lý Fire Fox Level 1 trong assets/inbox/fire-fox/level-1 và tích hợp vào preview.`
@@ -81,12 +92,14 @@ Xuất lại PNG cùng kích thước để có thể overlay trực tiếp tron
 
 ## Gói bàn giao cho Codex
 
-Một asset tốt bắt đầu bằng các layer độc lập. Với Fox mới, package mặc định là:
+Một asset tốt bắt đầu bằng các layer độc lập. Contract dưới đây phải khớp `packages/asset-core/src/petCatalog.ts`.
+
+### Fox Level 1/2
 
 ```text
 layers/shadow.png          # optional
 effects/effect-back.png    # optional
-layers/tail.png
+layers/tail.png            # bắt buộc
 layers/rear-far.png
 layers/rear-near.png
 layers/body.png
@@ -96,9 +109,24 @@ layers/head.png
 layers/head-closed.png     # optional, dùng closedSrc
 effects/effect-front.png   # optional
 effects/particles.png      # optional
+effects/projectile.png     # optional, attack asset riêng
 ```
 
-Bốn chân Fox là bốn artwork production khác nhau, không dùng `leg.png` chung. Evolution đặc biệt có thể thay `tail.png` bằng nhiều file `tail-<name>.png`; renderer render theo ID string và z-order trong manifest. Không tạo layer optional rỗng. `master.png`/`preview.png` là output kiểm chứng từ renderer, không nằm trong gói source do ChatGPT web tạo.
+### Fox Level 3
+
+Level 3 giữ các slot trên, nhưng slot `tail.png` trở thành optional và có thể được thay bằng bất kỳ tập con cần thiết của:
+
+```text
+layers/tail-left-outer.png
+layers/tail-left-inner.png
+layers/tail-center.png
+layers/tail-right-inner.png
+layers/tail-right-outer.png
+```
+
+Dùng `tail.png` hoặc các multi-tail slot phù hợp với thiết kế; không upload cả hai kiểu nếu không chủ ý render đồng thời. Mỗi tail có layer ID, `z`, transform và pivot riêng. Animation override target trực tiếp ID string của tail; renderer không biết hoặc hard-code số lượng tail.
+
+Bốn chân Fox là bốn artwork production khác nhau, không dùng `leg.png` chung. `effect-front` chỉ là visual layer trước pet. `projectile.png` là attack asset riêng, optional, được lưu vào `effects.projectile` trong manifest và không tự lấy từ `effect-front`. Không tạo layer optional rỗng. `master.png`/`preview.png` là output kiểm chứng từ renderer, không nằm trong gói source do ChatGPT web tạo.
 
 Nếu ChatGPT web không tạo được alpha thật và xuất nền caro, vẫn tải file vào inbox. Codex được phép dùng code để chroma-key nền phẳng, crop, padding, kiểm tra alpha và tạo output mới; giữ file gốc để có thể xử lý lại.
 

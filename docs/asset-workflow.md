@@ -60,13 +60,15 @@ Fox bình thường dùng thứ tự sau; các layer ghi optional có thể bỏ
 | 9 | `effect-front` | optional |
 | 10 | `particles` | optional |
 
+`projectile.png` là attack asset optional riêng trong `effects.projectile`, không phải layer render thường xuyên và không được suy ra từ `effect-front`.
+
 `rear-far`, `rear-near`, `front-far`, `front-near` phải trỏ tới bốn PNG production khác nhau. Không dùng một `leg.png` chung cho bốn instance trong contract Fox mới.
 
 `closedSrc` là biến thể nhắm mắt của chính layer `head`; ảnh mở/nhắm phải có cùng canvas, alignment, silhouette và pivot. Không cần tạo layer mắt riêng nếu chỉ cần blink.
 
 ### Evolution nhiều đuôi
 
-Evolution đặc biệt có thể thay `tail` bằng số lượng layer tùy ý, ví dụ `tail-left-outer`, `tail-left-inner`, `tail-center`, `tail-right-inner`, `tail-right-outer`. Mỗi layer có `id`, `src`, transform, pivot và `z` riêng như mọi layer khác.
+Level 1/2 dùng `tail` bình thường. Ở Level 3, Asset Studio cho phép chọn `tail` đơn hoặc khai báo các layer optional `tail-left-outer`, `tail-left-inner`, `tail-center`, `tail-right-inner`, `tail-right-outer`. Mỗi layer có `id`, `src`, transform, pivot và `z` riêng như mọi layer khác.
 
 Renderer không biết khái niệm “9 tails”. Clip override của pet target trực tiếp các ID string thực tế. Nếu không có layer `tail`, track `tail` mặc định trong rig được bỏ qua; manifest chỉ cần override/thêm các track cho tail ID cần chuyển động. Không thêm enum hoặc nhánh renderer cho từng số lượng đuôi.
 

@@ -64,8 +64,9 @@ layers/front-far.png
 layers/front-near.png
 layers/head.png
 layers/head-closed.png     # optional blink variant qua closedSrc
-effects/effect-front.png   # optional; có thể dùng làm projectile
+effects/effect-front.png   # optional; chỉ là visual layer trước pet
 effects/particles.png      # optional
+effects/projectile.png     # optional; attack asset riêng
 ```
 
 Bốn chân là bốn artwork khác nhau. Tuyệt đối không tạo một `leg.png` để reuse cho cả bốn chân trong Fox production mới. Mỗi chân phải có đúng phối cảnh xa/gần và trước/sau của nó, đồng thời có phần trên hoàn chỉnh để giấu dưới body.
@@ -96,6 +97,8 @@ particles
 ```
 
 Optional layer không có trong thiết kế thì bỏ hẳn, không tạo PNG rỗng.
+
+Không dùng `effect-front.png` làm projectile. Projectile chỉ tồn tại khi có file `projectile.png` riêng và được manifest khai báo qua `effects.projectile`.
 
 ### Multi-tail / evolution đặc biệt
 
