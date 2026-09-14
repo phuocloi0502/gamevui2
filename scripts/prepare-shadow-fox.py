@@ -20,6 +20,12 @@ TARGETS = {
     "elemental-effect": ("effects", (101, 163), (5, 0, 95, 163)),
 }
 
+# Preserve the initially supplied component files. New approved revisions can be
+# selected here without overwriting the immutable inbox originals.
+SOURCE_NAMES = {
+    "leg": "leg-angle-3q",
+}
+
 HEAD_SOURCE_NAMES = {"head", "head-closed"}
 head_boxes = [
     Image.open(INBOX / "layers" / f"{name}.png").convert("RGBA").getchannel("A").getbbox()
@@ -35,7 +41,8 @@ HEAD_SHARED_BBOX = (
 
 def normalize(name: str) -> None:
     folder, canvas_size, target_box = TARGETS[name]
-    image = Image.open(INBOX / folder / f"{name}.png").convert("RGBA")
+    source_name = SOURCE_NAMES.get(name, name)
+    image = Image.open(INBOX / folder / f"{source_name}.png").convert("RGBA")
     bbox = HEAD_SHARED_BBOX if name in HEAD_SOURCE_NAMES else image.getchannel("A").getbbox()
     if not bbox:
         raise ValueError(f"{name}: no visible alpha content")

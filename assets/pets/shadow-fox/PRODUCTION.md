@@ -20,3 +20,16 @@ Run `python3 scripts/prepare-shadow-fox.py` to rebuild normalized PNGs and the
 600×600 rest-pose master. Blink swaps the supplied open and closed head images.
 The elemental effect is used as the attack projectile; it is a single painted
 image animated by Phaser, not a claimed sprite sheet.
+
+## Revised leg perspective
+
+The approved three-quarter leg revision is stored without replacing the original
+inbox component:
+
+- source revision: `assets/inbox/shadow-fox/layers/leg-angle-3q.png`;
+- original component retained: `assets/inbox/shadow-fox/layers/leg.png`;
+- runtime texture: `public/assets/pets/shadow-fox/layers/leg.png`.
+
+All four puppet leg instances continue to reuse the same runtime texture and the
+existing manifest anchors. `scripts/prepare-shadow-fox.py` selects the revised
+source through `SOURCE_NAMES` when rebuilding production assets.

@@ -71,7 +71,7 @@
       "originX": 0.5,
       "originY": 0.5,
       "z": 5,
-      "scale": 0.7
+      "scale": 0.85
     },
     {
       "id": "rear-near",
@@ -97,8 +97,8 @@
       "id": "head",
       "src": "/assets/pets/shadow-fox/layers/head.png",
       "closedSrc": "/assets/pets/shadow-fox/layers/head-closed.png",
-      "x": 41,
-      "y": -153,
+      "x": 60,
+      "y": -130,
       "originX": 0.5,
       "originY": 0.88,
       "z": 8,
@@ -111,55 +111,324 @@
         "duration": 2200,
         "loop": true,
         "tracks": [
-          { "target": "body", "property": "scaleY", "values": [1, 1.022, 1] },
-          { "target": "head", "property": "y", "values": [0, -2, 0] },
-          { "target": "head", "property": "angle", "values": [0, -1.2, 0] },
-          { "target": "tail-back", "property": "angle", "values": [-2.5, 3.5, -2.5] },
-          { "target": "tail-back", "property": "scaleY", "values": [1, 1.018, 1] },
-          { "target": "tail-front", "property": "angle", "values": [2.5, -3, 2.5] },
-          { "target": "tail-front", "property": "y", "values": [0, -2, 0] }
+          {
+            "target": "body",
+            "property": "scaleY",
+            "values": [
+              1,
+              1.022,
+              1
+            ]
+          },
+          {
+            "target": "head",
+            "property": "y",
+            "values": [
+              0,
+              -2,
+              0
+            ]
+          },
+          {
+            "target": "head",
+            "property": "angle",
+            "values": [
+              0,
+              -1.2,
+              0
+            ]
+          },
+          {
+            "target": "tail-back",
+            "property": "angle",
+            "values": [
+              -2.5,
+              3.5,
+              -2.5
+            ]
+          },
+          {
+            "target": "tail-back",
+            "property": "scaleY",
+            "values": [
+              1,
+              1.018,
+              1
+            ]
+          },
+          {
+            "target": "tail-front",
+            "property": "angle",
+            "values": [
+              2.5,
+              -3,
+              2.5
+            ]
+          },
+          {
+            "target": "tail-front",
+            "property": "y",
+            "values": [
+              0,
+              -2,
+              0
+            ]
+          }
         ]
       },
       "walk": {
         "duration": 720,
         "loop": true,
         "tracks": [
-          { "target": "body", "property": "y", "values": [0, -4, 0, -4, 0] },
-          { "target": "head", "property": "y", "values": [0, -5, 0, -5, 0] },
-          { "target": "tail-back", "property": "angle", "values": [-5, 5, -5] },
-          { "target": "tail-front", "property": "angle", "values": [4, -6, 4] },
-          { "target": "rear-far", "property": "angle", "values": [-16, 16, -16] },
-          { "target": "front-far", "property": "angle", "values": [16, -16, 16] },
-          { "target": "rear-near", "property": "angle", "values": [-16, 16, -16] },
-          { "target": "front-near", "property": "angle", "values": [16, -16, 16] },
-          { "target": "rear-far", "property": "y", "values": [-6, 0, -6] },
-          { "target": "front-far", "property": "y", "values": [0, -6, 0] },
-          { "target": "rear-near", "property": "y", "values": [-6, 0, -6] },
-          { "target": "front-near", "property": "y", "values": [0, -6, 0] }
+          {
+            "target": "body",
+            "property": "y",
+            "values": [
+              0,
+              -4,
+              0,
+              -4,
+              0
+            ]
+          },
+          {
+            "target": "head",
+            "property": "y",
+            "values": [
+              0,
+              -5,
+              0,
+              -5,
+              0
+            ]
+          },
+          {
+            "target": "tail-back",
+            "property": "angle",
+            "values": [
+              -5,
+              5,
+              -5
+            ]
+          },
+          {
+            "target": "tail-front",
+            "property": "angle",
+            "values": [
+              4,
+              -6,
+              4
+            ]
+          },
+          {
+            "target": "rear-far",
+            "property": "angle",
+            "values": [
+              -16,
+              16,
+              -16
+            ]
+          },
+          {
+            "target": "front-far",
+            "property": "angle",
+            "values": [
+              16,
+              -16,
+              16
+            ]
+          },
+          {
+            "target": "rear-near",
+            "property": "angle",
+            "values": [
+              -16,
+              16,
+              -16
+            ]
+          },
+          {
+            "target": "front-near",
+            "property": "angle",
+            "values": [
+              16,
+              -16,
+              16
+            ]
+          },
+          {
+            "target": "rear-far",
+            "property": "y",
+            "values": [
+              -6,
+              0,
+              -6
+            ]
+          },
+          {
+            "target": "front-far",
+            "property": "y",
+            "values": [
+              0,
+              -6,
+              0
+            ]
+          },
+          {
+            "target": "rear-near",
+            "property": "y",
+            "values": [
+              -6,
+              0,
+              -6
+            ]
+          },
+          {
+            "target": "front-near",
+            "property": "y",
+            "values": [
+              0,
+              -6,
+              0
+            ]
+          }
         ]
       },
       "attack": {
         "duration": 1050,
         "loop": false,
-        "event": { "at": 470, "name": "projectile" },
+        "event": {
+          "at": 470,
+          "name": "projectile"
+        },
         "tracks": [
-          { "target": "head", "property": "x", "values": [0, -9, 14, 3, 0] },
-          { "target": "head", "property": "angle", "values": [0, -7, 6, 1, 0] },
-          { "target": "body", "property": "scaleX", "values": [1, 0.95, 1.05, 1, 1] },
-          { "target": "tail-back", "property": "angle", "values": [0, 11, -8, 0, 0] },
-          { "target": "tail-back", "property": "scaleY", "values": [1, 1.04, 1.01, 1, 1] },
-          { "target": "tail-front", "property": "angle", "values": [0, -9, 12, 0, 0] }
+          {
+            "target": "head",
+            "property": "x",
+            "values": [
+              0,
+              -9,
+              14,
+              3,
+              0
+            ]
+          },
+          {
+            "target": "head",
+            "property": "angle",
+            "values": [
+              0,
+              -7,
+              6,
+              1,
+              0
+            ]
+          },
+          {
+            "target": "body",
+            "property": "scaleX",
+            "values": [
+              1,
+              0.95,
+              1.05,
+              1,
+              1
+            ]
+          },
+          {
+            "target": "tail-back",
+            "property": "angle",
+            "values": [
+              0,
+              11,
+              -8,
+              0,
+              0
+            ]
+          },
+          {
+            "target": "tail-back",
+            "property": "scaleY",
+            "values": [
+              1,
+              1.04,
+              1.01,
+              1,
+              1
+            ]
+          },
+          {
+            "target": "tail-front",
+            "property": "angle",
+            "values": [
+              0,
+              -9,
+              12,
+              0,
+              0
+            ]
+          }
         ]
       },
       "hurt": {
         "duration": 600,
         "loop": false,
         "tracks": [
-          { "target": "body", "property": "x", "values": [0, -10, 5, -3, 0] },
-          { "target": "head", "property": "x", "values": [0, -12, 6, -2, 0] },
-          { "target": "head", "property": "angle", "values": [0, -8, 5, -2, 0] },
-          { "target": "tail-back", "property": "angle", "values": [0, -7, 4, 0, 0] },
-          { "target": "tail-front", "property": "angle", "values": [0, 8, -5, 0, 0] }
+          {
+            "target": "body",
+            "property": "x",
+            "values": [
+              0,
+              -10,
+              5,
+              -3,
+              0
+            ]
+          },
+          {
+            "target": "head",
+            "property": "x",
+            "values": [
+              0,
+              -12,
+              6,
+              -2,
+              0
+            ]
+          },
+          {
+            "target": "head",
+            "property": "angle",
+            "values": [
+              0,
+              -8,
+              5,
+              -2,
+              0
+            ]
+          },
+          {
+            "target": "tail-back",
+            "property": "angle",
+            "values": [
+              0,
+              -7,
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "target": "tail-front",
+            "property": "angle",
+            "values": [
+              0,
+              8,
+              -5,
+              0,
+              0
+            ]
+          }
         ]
       }
     }
