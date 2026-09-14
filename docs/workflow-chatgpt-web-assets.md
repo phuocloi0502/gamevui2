@@ -57,7 +57,9 @@ assets/inbox/<lineage-id>/level-<n>/
     effect-back.png
     effect-front.png
     particles.png
+    attack-cast.png
     projectile.png
+    impact.png
 ```
 
 5. Nhắn cho Codex: `Xử lý Fire Fox Level 1 trong assets/inbox/fire-fox/level-1 và tích hợp vào preview.`
@@ -111,7 +113,9 @@ layers/head.png
 layers/head-closed.png     # optional, dùng closedSrc
 effects/effect-front.png   # optional
 effects/particles.png      # optional
-effects/projectile.png     # optional, attack asset riêng
+effects/attack-cast.png    # optional, Combat VFX tại pet khi chuẩn bị đánh
+effects/projectile.png     # optional, chỉ với skill ranged có đạn
+effects/impact.png         # optional, Combat VFX độc lập tại mục tiêu
 ```
 
 ### Fox Level 3
@@ -128,7 +132,7 @@ layers/tail-right-outer.png
 
 Dùng `tail.png` hoặc các multi-tail slot phù hợp với thiết kế; không upload cả hai kiểu nếu không chủ ý render đồng thời. Mỗi tail có layer ID, `z`, transform và pivot riêng. Animation override target trực tiếp ID string của tail; renderer không biết hoặc hard-code số lượng tail.
 
-Bốn chân Fox là bốn artwork production khác nhau, không dùng `leg.png` chung. `effect-front` chỉ là visual layer trước pet. `projectile.png` là attack asset riêng, optional, được lưu vào `effects.projectile` trong manifest và không tự lấy từ `effect-front`. Không tạo layer optional rỗng. `master.png`/`preview.png` là output kiểm chứng từ renderer, không nằm trong gói source do ChatGPT web tạo.
+Bốn chân Fox là bốn artwork production khác nhau, không dùng `leg.png` chung. `effect-front` chỉ là visual layer trước pet. Combat VFX là các asset riêng theo đúng evolution stage, optional, được bind trong `effects.attack`; `projectile` và `impact` độc lập và không tự lấy từ `effect-front`. Không tạo layer optional rỗng. `master.png`/`preview.png` là output kiểm chứng từ renderer, không nằm trong gói source do ChatGPT web tạo.
 
 Nếu ChatGPT web không tạo được alpha thật và xuất nền caro, vẫn tải file vào inbox. Codex được phép dùng code để chroma-key nền phẳng, crop, padding, kiểm tra alpha và tạo output mới; giữ file gốc để có thể xử lý lại.
 

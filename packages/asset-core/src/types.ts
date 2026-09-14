@@ -22,6 +22,19 @@ export interface Rig {
   idle: { duration: number; bob: number };
   clips?: Record<State, Clip>;
 }
+export interface CombatAttackVfx {
+  cast?: string;
+  trail?: string;
+  projectile?: string;
+  impact?: string;
+  [semantic: string]: string | undefined;
+}
+export interface PetEffects {
+  color?: number;
+  attack?: CombatAttackVfx;
+  /** Legacy manifest binding. Resolved as attack.projectile. */
+  projectile?: string;
+}
 export interface PetDefinition {
   id: string;
   lineageId: string;
@@ -36,6 +49,6 @@ export interface PetDefinition {
   reference: string;
   preview?: { x: number; y: number; scale: number };
   layers: Layer[];
-  effects?: { projectile: string; color: number };
+  effects?: PetEffects;
   overrides?: { idle?: Partial<Rig['idle']>; clips?: Partial<Record<State, Clip>> };
 }

@@ -11,7 +11,7 @@
       { "target": "head", "property": "y", "values": [0, 5, -15, 0] },
       { "target": "hind-leg-near", "property": "angle", "values": [0, -18, 12, 0] }
     ] },
-    "attack": { "duration": 760, "loop": false, "event": { "at": 390, "name": "projectile" }, "tracks": [
+    "attack": { "duration": 760, "loop": false, "event": { "at": 390, "name": "attack-release" }, "tracks": [
       { "target": "body", "property": "scaleX", "values": [1, 0.82, 1.12, 1] },
       { "target": "head", "property": "x", "values": [0, -12, 28, 0] }
     ] },

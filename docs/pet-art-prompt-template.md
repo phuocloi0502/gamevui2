@@ -66,7 +66,9 @@ layers/head.png
 layers/head-closed.png     # optional blink variant qua closedSrc
 effects/effect-front.png   # optional; chỉ là visual layer trước pet
 effects/particles.png      # optional
-effects/projectile.png     # optional; attack asset riêng
+effects/attack-cast.png    # optional; Combat VFX lúc chuẩn bị đánh
+effects/projectile.png     # optional; chỉ khi species recipe là ranged projectile
+effects/impact.png         # optional; Combat VFX độc lập tại mục tiêu
 ```
 
 Bốn chân là bốn artwork khác nhau. Tuyệt đối không tạo một `leg.png` để reuse cho cả bốn chân trong Fox production mới. Mỗi chân phải có đúng phối cảnh xa/gần và trước/sau của nó, đồng thời có phần trên hoàn chỉnh để giấu dưới body.
@@ -98,7 +100,7 @@ particles
 
 Optional layer không có trong thiết kế thì bỏ hẳn, không tạo PNG rỗng.
 
-Không dùng `effect-front.png` làm projectile. Projectile chỉ tồn tại khi có file `projectile.png` riêng và được manifest khai báo qua `effects.projectile`.
+Không dùng `effect-front.png` làm projectile. Combat VFX phải theo đúng species recipe và bind riêng qua `effects.attack`; projectile chỉ tồn tại với skill ranged có file `projectile.png`, còn `impact.png` là asset độc lập.
 
 ### Multi-tail / evolution đặc biệt
 

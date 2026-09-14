@@ -11,7 +11,7 @@ export interface UploadSlot {
   folder: 'layers' | 'effects';
   optional?: boolean;
   closedFor?: string;
-  projectile?: boolean;
+  combatVfx?: string;
   runtimeSize?: { width: number; height: number };
   instances?: Array<Omit<Layer, 'src' | 'closedSrc'>>;
 }
@@ -30,10 +30,10 @@ const layer = (id: string, x: number, y: number, originX: number, originY: numbe
   ({ id, x, y, originX, originY, z, scale, ...(parent ? { parent } : {}) });
 const upload = (id: string, label: string, instances: Array<Omit<Layer, 'src' | 'closedSrc'>>, optional = false, runtimeSize?: { width: number; height: number }): UploadSlot =>
   ({ id, label, file: `${id}.png`, folder: 'layers', instances, optional, ...(runtimeSize ? { runtimeSize } : {}) });
-const effect = (id: string, label: string, instance: Omit<Layer, 'src' | 'closedSrc'>, projectile = false, runtimeSize?: { width: number; height: number }): UploadSlot =>
-  ({ id, label, file: `${id}.png`, folder: 'effects', instances: [instance], optional: true, projectile, ...(runtimeSize ? { runtimeSize } : {}) });
-const projectile = (runtimeSize?: { width: number; height: number }): UploadSlot =>
-  ({ id: 'projectile', label: 'Projectile tấn công', file: 'projectile.png', folder: 'effects', optional: true, projectile: true, ...(runtimeSize ? { runtimeSize } : {}) });
+const effect = (id: string, label: string, instance: Omit<Layer, 'src' | 'closedSrc'>, runtimeSize?: { width: number; height: number }): UploadSlot =>
+  ({ id, label, file: `${id}.png`, folder: 'effects', instances: [instance], optional: true, ...(runtimeSize ? { runtimeSize } : {}) });
+const combat = (id: string, label: string, semantic = id, runtimeSize?: { width: number; height: number }): UploadSlot =>
+  ({ id, label, file: `${id}.png`, folder: 'effects', optional: true, combatVfx: semantic, ...(runtimeSize ? { runtimeSize } : {}) });
 const closed = (target: string, runtimeSize?: { width: number; height: number }): UploadSlot =>
   ({ id: `${target}-closed`, label: 'Đầu / mắt nhắm (blink)', file: `${target}-closed.png`, folder: 'layers', optional: true, closedFor: target, ...(runtimeSize ? { runtimeSize } : {}) });
 const shadow = (runtimeSize?: { width: number; height: number }) => upload('shadow', 'Bóng dưới chân', [layer('shadow', 0, 0, .5, .5, 0, .85)], true, runtimeSize);
@@ -60,7 +60,7 @@ export const SPECIES_TEMPLATES: SpeciesTemplate[] = [
     id: 'fox', name: 'Fox', archetype: 'quadruped', rig: 'fox-quadruped', validated: true,
     slots: [
       shadow({ width: 320, height: 64 }),
-      effect('effect-back', 'Effect phía sau', layer('effect-back', 0, -120, .5, .5, 1), false),
+      effect('effect-back', 'Effect phía sau', layer('effect-back', 0, -120, .5, .5, 1)),
       upload('tail', 'Đuôi', [layer('tail', -65, -105, .85, .85, 2, .75)], false, { width: 228, height: 220 }),
       upload('rear-far', 'Chân sau · phía đuôi · xa người xem', [layer('rear-far', -53, -79, .5, .15, 3, .72)], false, { width: 70, height: 123 }),
       upload('rear-near', 'Chân sau · phía đuôi · gần người xem', [layer('rear-near', -74, -87, .5, .15, 4, .84)], false, { width: 70, height: 123 }),
@@ -70,8 +70,10 @@ export const SPECIES_TEMPLATES: SpeciesTemplate[] = [
       upload('head', 'Đầu mở mắt', [layer('head', 39, -151, .5, .88, 8, .78)], false, { width: 302, height: 318 }),
       closed('head', { width: 302, height: 318 }),
       effect('effect-front', 'Effect visual phía trước', layer('effect-front', 90, -145, .5, .5, 9)),
-      effect('particles', 'Particles', layer('particles', 0, -135, .5, .5, 10), false),
-      projectile(),
+      effect('particles', 'Particles', layer('particles', 0, -135, .5, .5, 10)),
+      combat('attack-cast', 'Combat VFX · tích năng ở đuôi', 'cast'),
+      combat('projectile', 'Combat VFX · đạn bay'),
+      combat('impact', 'Combat VFX · va chạm'),
     ],
     evolutionSlots: {
       3: {
@@ -99,7 +101,9 @@ export const SPECIES_TEMPLATES: SpeciesTemplate[] = [
       upload('front-near', 'Chân trước · phía đầu · gần người xem', [layer('front-near', 35, -92, .5, .15, 7, .9)]),
       upload('head', 'Đầu', [layer('head', 55, -154, .5, .82, 8, .76)]), closed('head'),
       upload('jaw', 'Hàm dưới', [layer('jaw', 72, -132, .45, .2, 9, .76, 'head')], true),
-      effect('fang-effect', 'Effect nanh', layer('fang-effect', 95, -145, .5, .5, 10, .8), true),
+      combat('attack-cast', 'Combat VFX · tích năng ở nanh', 'cast'),
+      combat('attack-trail', 'Combat VFX · vệt lao/cắn', 'trail'),
+      combat('impact', 'Combat VFX · va chạm cắn'),
     ],
   },
   {
@@ -112,36 +116,37 @@ export const SPECIES_TEMPLATES: SpeciesTemplate[] = [
       upload('head', 'Đầu', [layer('head', 30, -145, .5, .78, 6, .82)]), closed('head'),
       upload('front-ear', 'Tai trước', [layer('front-ear', 38, -212, .5, .9, 8, .82)]),
       upload('tail', 'Đuôi nhỏ', [layer('tail', -72, -105, .7, .7, 9, .65)]),
-      effect('element-trail', 'Vệt lao nguyên tố', layer('element-trail', -90, -95, .7, .5, 10, .9), true),
+      combat('attack-trail', 'Combat VFX · vệt lao', 'trail'),
+      combat('impact', 'Combat VFX · va chạm ram'),
     ],
   },
   {
     id: 'turtle', name: 'Turtle', archetype: 'tank', rig: 'tank-base', validated: false,
-    slots: [shadow(), upload('rear-feet', 'Hai chân sau', [layer('rear-feet', -35, -58, .5, .2, 1, .8)]), upload('body', 'Thân dưới', [layer('body', 0, -75, .5, .5, 2, .8)]), upload('shell', 'Mai', [layer('shell', -10, -105, .5, .6, 3, .85)]), upload('front-feet', 'Hai chân trước', [layer('front-feet', 42, -58, .5, .2, 4, .8)]), upload('head', 'Đầu', [layer('head', 78, -92, .3, .65, 5, .72)]), closed('head'), upload('shell-runes', 'Rune trên mai', [layer('shell-runes', -10, -110, .5, .6, 6, .85, 'shell')], true), effect('element-aura', 'Aura / lồng nguyên tố', layer('element-aura', 0, -85, .5, .5, 7, 1), true)],
+    slots: [shadow(), upload('rear-feet', 'Hai chân sau', [layer('rear-feet', -35, -58, .5, .2, 1, .8)]), upload('body', 'Thân dưới', [layer('body', 0, -75, .5, .5, 2, .8)]), upload('shell', 'Mai', [layer('shell', -10, -105, .5, .6, 3, .85)]), upload('front-feet', 'Hai chân trước', [layer('front-feet', 42, -58, .5, .2, 4, .8)]), upload('head', 'Đầu', [layer('head', 78, -92, .3, .65, 5, .72)]), closed('head'), upload('shell-runes', 'Rune trên mai', [layer('shell-runes', -10, -110, .5, .6, 6, .85, 'shell')], true), combat('attack-cast', 'Combat VFX · tích năng trên mai', 'cast'), combat('cage', 'Combat VFX · lồng nguyên tố'), combat('impact', 'Combat VFX · khóa mục tiêu')],
   },
   {
     id: 'golem', name: 'Golem', archetype: 'tank', rig: 'tank-base', validated: false,
-    slots: [shadow(), upload('rear-arm', 'Tay sau', [layer('rear-arm', -62, -130, .55, .18, 1, .85)]), upload('rear-leg', 'Chân sau', [layer('rear-leg', -35, -70, .5, .2, 2, .85)]), upload('torso', 'Thân', [layer('torso', 0, -125, .5, .5, 3, .85)]), upload('core', 'Lõi', [layer('core', 0, -130, .5, .5, 4, .75, 'torso')]), upload('front-leg', 'Chân trước', [layer('front-leg', 35, -70, .5, .2, 5, .9)]), upload('front-arm', 'Tay trước', [layer('front-arm', 62, -130, .45, .18, 6, .9)]), upload('head', 'Đầu', [layer('head', 0, -185, .5, .8, 7, .72)]), effect('rock-fragments', 'Đá bay', layer('rock-fragments', 0, -145, .5, .5, 8, 1)), effect('ground-effect', 'Effect chấn động', layer('ground-effect', 0, -10, .5, .5, 9, 1), true)],
+    slots: [shadow(), upload('rear-arm', 'Tay sau', [layer('rear-arm', -62, -130, .55, .18, 1, .85)]), upload('rear-leg', 'Chân sau', [layer('rear-leg', -35, -70, .5, .2, 2, .85)]), upload('torso', 'Thân', [layer('torso', 0, -125, .5, .5, 3, .85)]), upload('core', 'Lõi', [layer('core', 0, -130, .5, .5, 4, .75, 'torso')]), upload('front-leg', 'Chân trước', [layer('front-leg', 35, -70, .5, .2, 5, .9)]), upload('front-arm', 'Tay trước', [layer('front-arm', 62, -130, .45, .18, 6, .9)]), upload('head', 'Đầu', [layer('head', 0, -185, .5, .8, 7, .72)]), effect('rock-fragments', 'Đá bay', layer('rock-fragments', 0, -145, .5, .5, 8, 1)), combat('attack-cast', 'Combat VFX · tích năng ở lõi', 'cast'), combat('ground-wave', 'Combat VFX · sóng chấn động'), combat('impact', 'Combat VFX · va chạm mặt đất')],
   },
   {
     id: 'dragon', name: 'Dragon', archetype: 'winged', rig: 'winged-base', validated: false,
-    slots: [shadow(), upload('back-wing', 'Cánh sau', [layer('back-wing', -45, -145, .65, .65, 1, .8)]), upload('tail', 'Đuôi', [layer('tail', -75, -105, .82, .7, 2, .8)]), upload('body', 'Thân', [layer('body', 0, -120, .5, .5, 3, .78)]), upload('legs', 'Chân', [layer('legs', 12, -72, .5, .2, 4, .8)]), upload('front-wing', 'Cánh trước', [layer('front-wing', 25, -145, .35, .65, 5, .85)]), upload('head', 'Đầu', [layer('head', 55, -165, .5, .82, 6, .8)]), closed('head'), upload('horns', 'Sừng', [layer('horns', 52, -205, .5, .85, 7, .8, 'head')], true), effect('mouth-effect', 'Effect miệng / cast', layer('mouth-effect', 105, -160, .5, .5, 8, .8), true), effect('element-aura', 'Aura nguyên tố', layer('element-aura', 0, -125, .5, .5, 9, 1))],
+    slots: [shadow(), upload('back-wing', 'Cánh sau', [layer('back-wing', -45, -145, .65, .65, 1, .8)]), upload('tail', 'Đuôi', [layer('tail', -75, -105, .82, .7, 2, .8)]), upload('body', 'Thân', [layer('body', 0, -120, .5, .5, 3, .78)]), upload('legs', 'Chân', [layer('legs', 12, -72, .5, .2, 4, .8)]), upload('front-wing', 'Cánh trước', [layer('front-wing', 25, -145, .35, .65, 5, .85)]), upload('head', 'Đầu', [layer('head', 55, -165, .5, .82, 6, .8)]), closed('head'), upload('horns', 'Sừng', [layer('horns', 52, -205, .5, .85, 7, .8, 'head')], true), effect('element-aura', 'Aura nguyên tố', layer('element-aura', 0, -125, .5, .5, 9, 1)), combat('attack-cast', 'Combat VFX · tích năng ở miệng', 'cast'), combat('meteor', 'Combat VFX · thiên thạch'), combat('impact', 'Combat VFX · thiên thạch va chạm')],
   },
   {
     id: 'owl', name: 'Owl', archetype: 'winged', rig: 'winged-base', validated: false,
-    slots: [shadow(), upload('back-wing', 'Cánh sau', [layer('back-wing', -55, -125, .75, .5, 1, .82)]), upload('tail-feathers', 'Lông đuôi', [layer('tail-feathers', 0, -72, .5, .25, 2, .78)]), upload('body', 'Thân', [layer('body', 0, -125, .5, .5, 3, .82)]), upload('talons', 'Móng', [layer('talons', 0, -62, .5, .2, 4, .72)]), upload('front-wing', 'Cánh trước', [layer('front-wing', 55, -125, .25, .5, 5, .85)]), upload('head', 'Đầu / face disc', [layer('head', 0, -175, .5, .75, 6, .85)]), closed('head'), upload('forehead-rune', 'Rune trán', [layer('forehead-rune', 0, -190, .5, .5, 7, .85, 'head')], true), effect('orb-effect', 'Orb nguyên tố', layer('orb-effect', 65, -155, .5, .5, 8, .8), true)],
+    slots: [shadow(), upload('back-wing', 'Cánh sau', [layer('back-wing', -55, -125, .75, .5, 1, .82)]), upload('tail-feathers', 'Lông đuôi', [layer('tail-feathers', 0, -72, .5, .25, 2, .78)]), upload('body', 'Thân', [layer('body', 0, -125, .5, .5, 3, .82)]), upload('talons', 'Móng', [layer('talons', 0, -62, .5, .2, 4, .72)]), upload('front-wing', 'Cánh trước', [layer('front-wing', 55, -125, .25, .5, 5, .85)]), upload('head', 'Đầu / face disc', [layer('head', 0, -175, .5, .75, 6, .85)]), closed('head'), upload('forehead-rune', 'Rune trán', [layer('forehead-rune', 0, -190, .5, .5, 7, .85, 'head')], true), combat('attack-cast', 'Combat VFX · tích năng orb', 'cast'), combat('projectile', 'Combat VFX · orb bay'), combat('impact', 'Combat VFX · orb va chạm')],
   },
   {
     id: 'hawk', name: 'Hawk', archetype: 'winged', rig: 'winged-base', validated: false,
-    slots: [shadow(), upload('rear-wing', 'Cánh sau', [layer('rear-wing', -65, -130, .75, .5, 1, .82)]), upload('tail-fan', 'Đuôi quạt', [layer('tail-fan', -25, -75, .5, .2, 2, .8)]), upload('body', 'Thân', [layer('body', 0, -120, .5, .5, 3, .8)]), upload('talons', 'Móng', [layer('talons', 15, -68, .5, .2, 4, .72)]), upload('front-wing', 'Cánh trước', [layer('front-wing', 55, -130, .25, .5, 5, .86)]), upload('head', 'Đầu', [layer('head', 48, -165, .5, .75, 6, .76)]), closed('head'), upload('crest', 'Mào', [layer('crest', 42, -198, .5, .8, 7, .78, 'head')], true), effect('wing-trail', 'Vệt cánh', layer('wing-trail', -75, -125, .5, .5, 8, .9)), effect('vortex', 'Lốc nguyên tố', layer('vortex', 70, -55, .5, .5, 9, 1), true)],
+    slots: [shadow(), upload('rear-wing', 'Cánh sau', [layer('rear-wing', -65, -130, .75, .5, 1, .82)]), upload('tail-fan', 'Đuôi quạt', [layer('tail-fan', -25, -75, .5, .2, 2, .8)]), upload('body', 'Thân', [layer('body', 0, -120, .5, .5, 3, .8)]), upload('talons', 'Móng', [layer('talons', 15, -68, .5, .2, 4, .72)]), upload('front-wing', 'Cánh trước', [layer('front-wing', 55, -130, .25, .5, 5, .86)]), upload('head', 'Đầu', [layer('head', 48, -165, .5, .75, 6, .76)]), closed('head'), upload('crest', 'Mào', [layer('crest', 42, -198, .5, .8, 7, .78, 'head')], true), combat('attack-trail', 'Combat VFX · vệt bổ nhào', 'trail'), combat('vortex', 'Combat VFX · lốc xoáy'), combat('impact', 'Combat VFX · va chạm lốc')],
   },
   {
     id: 'slime', name: 'Slime', archetype: 'blob', rig: 'blob-base', validated: false,
-    slots: [shadow(), upload('blob', 'Khối slime', [layer('blob', 0, -90, .5, .7, 1, .9)]), upload('inner-core', 'Lõi trong', [layer('inner-core', 0, -100, .5, .5, 2, .75, 'blob')], true), upload('face', 'Khuôn mặt', [layer('face', 12, -105, .5, .5, 3, .85, 'blob')]), upload('front-gloss', 'Highlight phía trước', [layer('front-gloss', -15, -125, .5, .5, 4, .85, 'blob')], true), effect('top-effect', 'Effect trên đỉnh', layer('top-effect', 0, -175, .5, .8, 5, .8), true)],
+    slots: [shadow(), upload('blob', 'Khối slime', [layer('blob', 0, -90, .5, .7, 1, .9)]), upload('inner-core', 'Lõi trong', [layer('inner-core', 0, -100, .5, .5, 2, .75, 'blob')], true), upload('face', 'Khuôn mặt', [layer('face', 12, -105, .5, .5, 3, .85, 'blob')]), upload('front-gloss', 'Highlight phía trước', [layer('front-gloss', -15, -125, .5, .5, 4, .85, 'blob')], true), effect('top-effect', 'Effect trên đỉnh', layer('top-effect', 0, -175, .5, .8, 5, .8)), combat('attack-cast', 'Combat VFX · nén năng lượng', 'cast'), combat('pulse', 'Combat VFX · vòng xung kích'), combat('impact', 'Combat VFX · xung kích trúng đích')],
   },
   {
     id: 'serpent', name: 'Serpent', archetype: 'serpent', rig: 'serpent-base', validated: false,
-    slots: [shadow(), upload('tail', 'Đuôi', [layer('tail', -65, -60, .8, .5, 1, .8)]), upload('body-lower', 'Thân dưới / cuộn', [layer('body-lower', 0, -75, .5, .5, 2, .85)]), upload('body-upper', 'Thân trên / cổ', [layer('body-upper', 15, -135, .5, .8, 3, .82)]), upload('head', 'Đầu', [layer('head', 35, -190, .5, .8, 4, .8)]), closed('head'), upload('jaw', 'Hàm', [layer('jaw', 58, -170, .45, .2, 5, .8, 'head')], true), upload('crest', 'Mào', [layer('crest', 30, -215, .5, .85, 6, .8, 'head')], true), effect('mouth-effect', 'Effect miệng / tia', layer('mouth-effect', 92, -185, .5, .5, 7, .85), true)],
+    slots: [shadow(), upload('tail', 'Đuôi', [layer('tail', -65, -60, .8, .5, 1, .8)]), upload('body-lower', 'Thân dưới / cuộn', [layer('body-lower', 0, -75, .5, .5, 2, .85)]), upload('body-upper', 'Thân trên / cổ', [layer('body-upper', 15, -135, .5, .8, 3, .82)]), upload('head', 'Đầu', [layer('head', 35, -190, .5, .8, 4, .8)]), closed('head'), upload('jaw', 'Hàm', [layer('jaw', 58, -170, .45, .2, 5, .8, 'head')], true), upload('crest', 'Mào', [layer('crest', 30, -215, .5, .85, 6, .8, 'head')], true), combat('attack-cast', 'Combat VFX · tích năng ở miệng', 'cast'), combat('beam', 'Combat VFX · tia xuyên'), combat('impact', 'Combat VFX · tia va chạm')],
   },
 ];
 

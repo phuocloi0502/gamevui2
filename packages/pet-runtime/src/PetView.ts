@@ -36,7 +36,7 @@ export class PetView extends Phaser.GameObjects.Container {
   play(state:State) {
     this.blendFrom.clear();
     for(const [id,n] of this.nodes) this.blendFrom.set(id,[n.x,n.y,n.angle,n.scaleX,n.scaleY,n.alpha]);
-    this.blendTime=0; this.state=state; this.elapsed=0; this.fired=false; this.tick(0);
+    this.blendTime=0; this.state=state; this.elapsed=0; this.fired=false; this.tick(0); this.emit('state-start',state);
   }
   setLayerVisible(id:string,visible:boolean) { this.nodes.get(id)?.setVisible(visible); }
   setLayerOrigin(id:string, property:'originX'|'originY', value:number) {

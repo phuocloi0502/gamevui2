@@ -173,7 +173,9 @@ particles
 
 Tên slot mô tả vai trò render, không bắt buộc tên anatomy cụ thể.
 
-Fox sản xuất mới mặc định dùng `shadow`, `effect-back`, `tail`, `rear-far`, `rear-near`, `body`, `front-far`, `front-near`, `head` với `closedSrc`, `effect-front`, `particles`; các layer effect/particles/shadow/blink là optional. `projectile.png` là attack asset optional riêng qua `effects.projectile`, không dùng `effect-front` làm projectile. Bốn chân là bốn artwork riêng, không dùng một `leg.png` chung. Level 1/2 dùng `tail` bình thường; Level 3 có thể chọn `tail` đơn hoặc các ID string optional như `tail-left-outer` và `tail-center`. Manifest và clip target trực tiếp các ID đó, renderer không được hard-code số lượng đuôi.
+Fox sản xuất mới mặc định dùng `shadow`, `effect-back`, `tail`, `rear-far`, `rear-near`, `body`, `front-far`, `front-near`, `head` với `closedSrc`, `effect-front`, `particles`; các layer effect/particles/shadow/blink là optional. Bốn chân là bốn artwork riêng, không dùng một `leg.png` chung. Level 1/2 dùng `tail` bình thường; Level 3 có thể chọn `tail` đơn hoặc các ID string optional như `tail-left-outer` và `tail-center`. Manifest và clip target trực tiếp các ID đó, renderer không được hard-code số lượng đuôi.
+
+Pet visual VFX (`effect-back`, `effect-front`, `particles`) là layer luôn gắn với model. Combat VFX là binding optional, riêng theo từng evolution stage trong `effects.attack`: `cast`, `trail`, `projectile`, `impact` và semantic special do recipe quy định. Không dùng `effect-front` làm projectile, không bắt species melee có projectile và không gộp impact vào projectile. `effects.projectile` chỉ là field legacy được resolver đọc thành `effects.attack.projectile`; không dùng field legacy cho manifest mới.
 
 Pivot chân đặt gần khớp nối với body, tail tại gốc đuôi và head gần cổ.
 

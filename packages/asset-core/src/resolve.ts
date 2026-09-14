@@ -1,4 +1,15 @@
-import type { PetDefinition, Rig } from './types';
+import type { CombatAttackVfx, PetDefinition, PetEffects, Rig } from './types';
+
+export function resolvePetEffects(effects?: PetEffects): PetEffects | undefined {
+  if (!effects) return undefined;
+  const attack: CombatAttackVfx = { ...effects.attack };
+  if (!attack.projectile && effects.projectile) attack.projectile = effects.projectile;
+  return {
+    ...(effects.color !== undefined ? { color: effects.color } : {}),
+    ...(Object.keys(attack).length ? { attack } : {}),
+  };
+}
+
 export function resolvePet(pet: PetDefinition, rigs: Record<string, Rig>) {
   const rig = rigs[pet.extends];
   if (!rig) throw new Error(`Unknown rig: ${pet.extends}`);
@@ -13,5 +24,5 @@ export function resolvePet(pet: PetDefinition, rigs: Record<string, Rig>) {
     if(clip.duration<=0)throw new Error('Clip duration must be positive');
     for(const track of clip.tracks)if(track.values.length<2||track.values.some(v=>!Number.isFinite(v)))throw new Error('Invalid track');
   }
-  return { ...pet, rig: { ...rig, clips, idle: { ...rig.idle, ...pet.overrides?.idle } } };
+  return { ...pet, effects: resolvePetEffects(pet.effects), rig: { ...rig, clips, idle: { ...rig.idle, ...pet.overrides?.idle } } };
 }

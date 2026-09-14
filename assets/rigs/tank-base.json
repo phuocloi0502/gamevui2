@@ -11,7 +11,7 @@
       { "target": "torso", "property": "y", "values": [0, -3, 0, -3, 0] },
       { "target": "shell", "property": "angle", "values": [-1.5, 1.5, -1.5] }
     ] },
-    "attack": { "duration": 1100, "loop": false, "event": { "at": 620, "name": "projectile" }, "tracks": [
+    "attack": { "duration": 1100, "loop": false, "event": { "at": 620, "name": "attack-release" }, "tracks": [
       { "target": "body", "property": "scaleY", "values": [1, 0.92, 1.08, 1] },
       { "target": "torso", "property": "y", "values": [0, -8, 12, 0] },
       { "target": "front-arm", "property": "angle", "values": [0, -18, 28, 0] }

@@ -44,7 +44,7 @@
       "loop": false,
       "event": {
         "at": 400,
-        "name": "projectile"
+        "name": "attack-release"
       },
       "tracks": [
         { "target": "head", "property": "x", "values": [0, -3, 10, 3, 0] },

@@ -9,7 +9,7 @@
       { "target": "blob", "property": "y", "values": [0, 5, -10, 0] },
       { "target": "blob", "property": "scaleX", "values": [1, 1.08, 0.94, 1] }
     ] },
-    "attack": { "duration": 820, "loop": false, "event": { "at": 520, "name": "projectile" }, "tracks": [
+    "attack": { "duration": 820, "loop": false, "event": { "at": 520, "name": "attack-release" }, "tracks": [
       { "target": "blob", "property": "scaleX", "values": [1, 0.82, 1.22, 1] },
       { "target": "blob", "property": "scaleY", "values": [1, 1.18, 0.82, 1] }
     ] },

@@ -34,6 +34,19 @@ const layerLabels: Record<string, string> = {
   particles: 'Hạt hiệu ứng',
 };
 const layerLabel = (id: string) => layerLabels[id] ?? id;
+const combatVfxLabels: Record<string, string> = {
+  cast: 'Combat VFX · tích năng',
+  trail: 'Combat VFX · vệt tấn công',
+  projectile: 'Combat VFX · đạn bay',
+  impact: 'Combat VFX · va chạm',
+  meteor: 'Combat VFX · thiên thạch',
+  vortex: 'Combat VFX · lốc xoáy',
+  'ground-wave': 'Combat VFX · sóng chấn động',
+  cage: 'Combat VFX · lồng khống chế',
+  pulse: 'Combat VFX · vòng xung kích',
+  beam: 'Combat VFX · tia xuyên',
+};
+const combatVfxLabel = (semantic: string) => combatVfxLabels[semantic] ?? `Combat VFX · ${semantic}`;
 function keyframeLabel(index: number, count: number) {
   const percent = Math.round(index / Math.max(1, count - 1) * 100);
   if (index === 0) return 'Đầu · 0%';
@@ -177,7 +190,7 @@ function renderImageEditor(pet: ReturnType<typeof resolvePet>) {
     add(layer.src, layer.id);
     add(layer.closedSrc, `${layer.id} · blink`);
   }
-  add(pet.effects?.projectile, 'projectile');
+  for (const [semantic, src] of Object.entries(pet.effects?.attack ?? {})) add(src, combatVfxLabel(semantic));
   replacementAssets = [...bySource].map(([src, labels]) => ({ src, labels: [...labels] }));
   const slots = document.querySelector('#image-replacement-slots')!;
   slots.replaceChildren();
@@ -249,7 +262,7 @@ document.querySelector('#create-pet')!.addEventListener('click', async () => {
   try {
     const layers: Layer[] = [];
     const uploads: Array<{ file: string; folder: 'layers' | 'effects'; sourceDataUrl: string; runtimeDataUrl: string }> = [];
-    let projectile: string | undefined;
+    const attack: Record<string, string> = {};
     for (const slot of templateSlots) {
       const file = selected.get(slot.id);
       if (!file) continue;
@@ -261,7 +274,7 @@ document.querySelector('#create-pet')!.addEventListener('click', async () => {
       } else {
         for (const instance of slot.instances ?? []) layers.push({ ...instance, src });
       }
-      if (slot.projectile) projectile = src;
+      if (slot.combatVfx) attack[slot.combatVfx] = src;
     }
     layers.sort((a, b) => a.z - b.z);
     const manifest: PetDefinition = {
@@ -272,7 +285,7 @@ document.querySelector('#create-pet')!.addEventListener('click', async () => {
       status: 'production', element: element.id,
       reference: layers.find(item => item.id === 'body')?.src ?? layers[0].src,
       layers, preview: { x: 420, y: 440, scale: 1 },
-      ...(projectile ? { effects: { projectile, color: element.color } } : {}),
+      ...(Object.keys(attack).length ? { effects: { color: element.color, attack } } : {}),
     };
     const response = await fetch('/__asset-studio/create-pet', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: manifest.id, manifest, uploads }) });
     if (!response.ok) throw new Error(await response.text());
@@ -459,18 +472,48 @@ function show(id: string) {
         else this.load.image(layer.src, layer.src);
         if(layer.closedSrc)this.load.image(layer.closedSrc,layer.closedSrc);
       }
-      if(pet.effects)this.load.image(pet.effects.projectile,pet.effects.projectile);
+      for (const src of Object.values(pet.effects?.attack ?? {})) if (src) this.load.image(src, src);
     }
     create() {
       if (pet.layers.length) {
         this.add.line(400,447,-290,0,290,0,0x5a6476,.25);
         view=new PetView(this, preview.x, preview.y, pet);
         view.setScale(preview.scale);
+        const attack = pet.effects?.attack;
+        const addVfx = (src: string, x: number, y: number, scale = .55) =>
+          this.add.image(x, y, src).setScale(scale * Math.abs(view?.scaleY ?? 1));
+        const spawnImpact = (x: number, y: number) => {
+          if (!attack?.impact) return;
+          const impact = addVfx(attack.impact, x, y, .65).setAlpha(.95);
+          this.tweens.add({ targets: impact, scaleX: impact.scaleX * 1.2, scaleY: impact.scaleY * 1.2, alpha: 0, duration: 420, onComplete: () => impact.destroy() });
+        };
+        view.on('state-start',(state: State)=>{
+          if(state !== 'attack' || !attack?.cast || !view)return;
+          const direction=Math.sign(view.scaleX) || 1;
+          const cast=addVfx(attack.cast,view.x+direction*75*Math.abs(view.scaleX),view.y-135*Math.abs(view.scaleY),.5).setAlpha(.9);
+          this.tweens.add({targets:cast,scaleX:cast.scaleX*1.15,scaleY:cast.scaleY*1.15,alpha:0,duration:450,onComplete:()=>cast.destroy()});
+        });
         view.on('marker',()=>{
-          if(!pet.effects||!view)return;
-          const direction=Math.sign(view.scaleX);
-          const projectile=this.add.image(view.x+100*view.scaleX,view.y-160*view.scaleY,pet.effects.projectile).setScale(.55*view.scaleY).setAngle(direction*90);
-          this.tweens.add({targets:projectile,x:projectile.x+direction*230,alpha:0,duration:600,onComplete:()=>projectile.destroy()});
+          if(!attack||!view)return;
+          const direction=Math.sign(view.scaleX) || 1;
+          const scale=Math.abs(view.scaleY);
+          const startX=view.x+direction*100*Math.abs(view.scaleX), startY=view.y-150*scale;
+          const targetX=startX+direction*230, targetY=view.y-95*scale;
+          if(attack.projectile){
+            const projectile=addVfx(attack.projectile,startX,startY).setAngle(direction*90);
+            this.tweens.add({targets:projectile,x:targetX,y:targetY,alpha:.2,duration:600,onComplete:()=>{projectile.destroy();spawnImpact(targetX,targetY);}});
+            return;
+          }
+          if(attack.trail){
+            const trail=addVfx(attack.trail,startX,startY,.7).setAngle(direction < 0 ? 180 : 0);
+            this.tweens.add({targets:trail,x:targetX,y:targetY,alpha:0,duration:360,onComplete:()=>{trail.destroy();spawnImpact(targetX,targetY);}});
+            return;
+          }
+          const special=Object.entries(attack).find(([semantic, src])=>!!src && !['cast','trail','projectile','impact'].includes(semantic));
+          if(special?.[1]){
+            const effect=addVfx(special[1],targetX,targetY,.7).setAlpha(.95);
+            this.tweens.add({targets:effect,scaleX:effect.scaleX*1.12,scaleY:effect.scaleY*1.12,alpha:0,duration:520,onComplete:()=>{effect.destroy();spawnImpact(targetX,targetY);}});
+          } else spawnImpact(targetX,targetY);
         });
         this.events.on('update',()=>{if(view)document.querySelector('#playing')!.textContent=stateLabels[view.state];});
       }

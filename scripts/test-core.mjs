@@ -12,6 +12,7 @@ const registry=Object.fromEntries(readdirSync('assets/rigs').filter(file=>file.e
 const resolved=resolvePet(pet,registry);
 assert.equal(resolved.rig.clips.walk.loop,true);
 assert.equal(resolved.rig.clips.attack.event.name,'projectile');
+assert.equal(resolved.effects.attack.projectile,pet.effects.projectile,'legacy projectile must resolve to attack.projectile');
 assert.throws(()=>resolvePet({...pet,extends:'missing'},registry),/Unknown rig/);
 assert.throws(()=>resolvePet({...pet,layers:[pet.layers[0],pet.layers[0]]},registry),/Duplicate/);
 assert.throws(()=>resolvePet({...pet,layers:[{...pet.layers[0],parent:'missing'}]},registry),/Parent/);
@@ -36,6 +37,10 @@ for (const [file, level] of [['fire-fox', 1], ['water-fox', 2], ['wind-fox', 1],
 }
 const foxRig=registry['fox-quadruped'];
 assert.ok(foxRig,'fox-quadruped rig is registered');
+assert.equal(foxRig.clips.attack.event.name,'attack-release','new rig marker must describe timing, not projectile transport');
+for(const rigId of ['quadruped-base','hopper-base','tank-base','winged-base','blob-base','serpent-base']) {
+ assert.equal(registry[rigId].clips.attack.event.name,'attack-release',`${rigId}: generic attack marker`);
+}
 const foxTargets=new Set(Object.values(foxRig.clips).flatMap(clip=>clip.tracks.map(track=>track.target)));
 for(const target of ['body','head','tail','rear-far','rear-near','front-far','front-near']) assert.ok(foxTargets.has(target),`fox rig target: ${target}`);
 
@@ -48,6 +53,14 @@ const syntheticMultiTail={...pet,id:'test-fox-level-3',lineageId:'test-fox',evol
 const resolvedMultiTail=resolvePet(syntheticMultiTail,registry);
 assert.deepEqual(resolvedMultiTail.rig.clips.idle.tracks.map(track=>track.target),multiTailIds);
 
+const ranged=resolvePet({...pet,effects:{color:123,attack:{cast:'/cast.png',projectile:'/projectile.png',impact:'/impact.png'}}},registry);
+assert.equal(ranged.effects.attack.projectile,'/projectile.png');
+assert.equal(ranged.effects.attack.impact,'/impact.png');
+const melee=resolvePet({...pet,effects:{attack:{cast:'/cast.png',trail:'/trail.png',impact:'/impact.png'}}},registry);
+assert.equal(melee.effects.attack.projectile,undefined);
+assert.equal(melee.effects.attack.trail,'/trail.png');
+assert.equal(melee.effects.attack.impact,'/impact.png');
+
 const catalogBuild=await build({entryPoints:['packages/asset-core/src/petCatalog.ts'],bundle:true,write:false,format:'esm',platform:'node'});
 const {speciesTemplate}=await import('data:text/javascript;base64,'+Buffer.from(catalogBuild.outputFiles[0].text).toString('base64'));
 const foxTemplate=speciesTemplate('fox');
@@ -57,4 +70,8 @@ for(const id of ['rear-far','rear-near','front-far','front-near']) {
  assert.equal(slot.file,`${id}.png`,`${id} must use independent production artwork`);
 }
 assert.ok(!foxTemplate.slots.some(slot=>slot.file==='leg.png'),'new Fox template must not reuse leg.png');
-console.log('PASS: inheritance, overrides, rig targets, dynamic multi-tail IDs, independent Fox legs, optional anatomy, loop seams');
+const wolfTemplate=speciesTemplate('wolf');
+assert.ok(wolfTemplate.slots.some(slot=>slot.combatVfx==='trail'),'Wolf recipe must expose melee trail');
+assert.ok(wolfTemplate.slots.some(slot=>slot.combatVfx==='impact'),'Wolf recipe must expose independent impact');
+assert.ok(!wolfTemplate.slots.some(slot=>slot.combatVfx==='projectile'),'Wolf melee recipe must not require projectile');
+console.log('PASS: inheritance, legacy effects, generic ranged/melee Combat VFX, rig targets, dynamic multi-tail IDs, independent Fox legs, optional anatomy, loop seams');

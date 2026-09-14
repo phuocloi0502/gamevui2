@@ -157,6 +157,7 @@ function assetManifestApi() {
           const referencedSources = new Set([
             ...manifest.layers.flatMap((layer) => [layer.src, layer.closedSrc].filter(Boolean)),
             manifest.effects?.projectile,
+            ...Object.values(manifest.effects?.attack ?? {}),
           ].filter(Boolean));
           const seen = new Set();
           const decoded = [];
