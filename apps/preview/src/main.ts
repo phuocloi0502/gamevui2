@@ -21,7 +21,7 @@ for (const pet of pets) select.add(new Option(pet.name, pet.id));
 let game: Phaser.Game | undefined;
 let view: PetView | undefined;
 const controls=document.createElement('div'); controls.className='controls';
-controls.innerHTML=`<div class="clips">${['idle','walk','attack','hurt','sleep'].map(s=>`<button data-state="${s}">${s}</button>`).join('')}</div><div class="options"><button id="pause">Tạm dừng</button><button id="flip">Lật hướng</button><label>Zoom <input id="zoom" type="range" min="0.4" max="1.2" step="0.1" value="1"></label><label>Tốc độ <select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label><label>Nền <select id="background"><option value="#141820">Tối</option><option value="#eee5d7">Sáng</option><option value="#475b65">Xanh xám</option></select></label><span id="playing">idle</span></div><div id="layer-controls"></div>`;
+controls.innerHTML=`<div class="clips">${['idle','walk','attack','hurt'].map(s=>`<button data-state="${s}">${s}</button>`).join('')}</div><div class="options"><button id="pause">Tạm dừng</button><button id="flip">Lật hướng</button><label>Zoom <input id="zoom" type="range" min="0.4" max="1.2" step="0.1" value="1"></label><label>Tốc độ <select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label><label>Nền <select id="background"><option value="#141820">Tối</option><option value="#eee5d7">Sáng</option><option value="#475b65">Xanh xám</option></select></label><span id="playing">idle</span></div><div id="layer-controls"></div>`;
 document.querySelector('#stage')!.after(controls);
 controls.addEventListener('click',e=>{
  const b=(e.target as HTMLElement).closest<HTMLButtonElement>('button'); if(!b||!view)return;
@@ -41,7 +41,7 @@ function show(id: string) {
   document.querySelector('#caption')!.textContent = pet.layers.length ? 'Preview layer ghép bằng renderer dùng chung.' : 'Bảng ảnh tham khảo gốc • Chưa phải pet đã tách nền hoặc rig hoàn chỉnh.';
   view=undefined; game?.destroy(true);
   document.querySelector('.toolbar span')!.textContent='LIVE RIG / PNG + MOTION';
-  document.querySelector('#status')!.textContent='PNG alpha • 9 layer instances • 5 animation states • Fire loop 8 frames';
+  document.querySelector('#status')!.textContent=`PNG alpha • ${pet.layers.length} layer instances • 4 animation states • ${pet.element} effect`;
   const layers=document.querySelector('#layer-controls')!; layers.replaceChildren();
   for(const layer of pet.layers){const label=document.createElement('label');const check=document.createElement('input');check.type='checkbox';check.checked=true;check.addEventListener('change',()=>view?.setLayerVisible(layer.id,check.checked));label.append(check,layer.id);layers.append(label);}
   class Preview extends Phaser.Scene {

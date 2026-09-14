@@ -6,7 +6,7 @@ Generated with built-in ImageGen, 2026-09-14, using the user's concept board. PN
 
 `public/assets/pets/fire-fox/`: body, head, head-closed, tail, leg, fire, shadow, fire-loop and master PNGs. Four leg instances reuse one texture, two far legs tinted. Ears belong to the head layer in v1; they are not independently rigged. Blink swaps aligned head variants.
 
-Five functional 2D puppet clips: idle breathing/tail sway/blink, walk in place with alternating legs, attack with projectile marker, hurt recoil, sleep crouch with closed eyes. Sleep is a crouching pose, not a separately drawn curled-up fox. Eight-frame flame loop is procedural row deformation of the painted flame. No claim of eight independently hand-painted fire frames.
+Four functional 2D puppet clips: idle breathing/tail sway/blink, walk in place with alternating legs, attack with projectile marker, and hurt recoil. Eight-frame flame loop is procedural row deformation of the painted flame. No claim of eight independently hand-painted fire frames.
 
 The fox inherits the common `pet-base` clips. Its anatomy, layer coordinates, texture references and projectile effect live in its own asset.json. Alternate pets can override clips without editing PetView.
 

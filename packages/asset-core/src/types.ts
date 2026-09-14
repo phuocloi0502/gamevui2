@@ -12,7 +12,7 @@ export interface Layer {
   closedSrc?: string;
   sheet?: { width: number; height: number; count: number; fps: number };
 }
-export type State = 'idle' | 'walk' | 'attack' | 'hurt' | 'sleep';
+export type State = 'idle' | 'walk' | 'attack' | 'hurt';
 export interface Track { target: string; property: 'x'|'y'|'angle'|'scaleX'|'scaleY'|'alpha'; values: number[] }
 export interface Clip { duration: number; loop: boolean; tracks: Track[]; event?: { at: number; name: string } }
 export interface Rig {

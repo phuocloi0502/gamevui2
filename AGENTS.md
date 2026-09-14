@@ -7,7 +7,7 @@
 - Contract thực thi: `packages/asset-core/src/types.ts`; ưu tiên contract này hơn ví dụ JSON bên dưới.
 - Rig dùng chung: `assets/rigs/`; pet kế thừa rig bằng `extends` trong `assets/pets/<id>/asset.json`.
 - PNG production: `public/assets/`; reference Fire Fox: `public/references/fire-fox/concept-board.png`.
-- Fire Fox v1 đã có PNG alpha và 5 clip puppet dùng chung; đọc `assets/pets/fire-fox/PRODUCTION.md` trước khi chỉnh sửa. Tai còn gắn đầu; sleep là tư thế hạ thấp; vòng lửa biến dạng từ một ảnh.
+- Fire Fox v1 đã có PNG alpha và 4 clip puppet dùng chung; đọc `assets/pets/fire-fox/PRODUCTION.md` trước khi chỉnh sửa. Tai còn gắn đầu; vòng lửa biến dạng từ một ảnh.
 - Người dùng đã cho phép xử lý PNG bằng code để tách nền/chuẩn hóa sau ImageGen. Giữ bản gốc tại `assets/pets/fire-fox/source/` và tái xuất bằng script.
 
 ## Phân công ChatGPT web và Codex
@@ -20,6 +20,17 @@
 - Nếu ChatGPT web đọc được repo qua GitHub, đó chỉ là nguồn tham khảo cho prompt và contract. Không giả định ChatGPT web có thể commit/push PNG; kết nối GitHub chuẩn là read-only.
 - Không dùng ảnh placeholder để giả vờ là production asset.
 - Giữ file gốc người dùng đưa vào `assets/inbox/` hoặc `assets/<kind>/<id>/source/`; không ghi đè file gốc.
+
+### Giới hạn công việc Codex để tiết kiệm quota
+
+Với mỗi lượt tích hợp asset, Codex mặc định chỉ làm các việc sau:
+
+- kiểm tra kích thước và alpha tự động;
+- sửa manifest và code cần thiết;
+- chạy test/build đúng một lần sau khi hoàn tất các thay đổi;
+- mở preview đúng một lần ở cuối để nghiệm thu.
+
+Không lặp lại build, test, screenshot hoặc kiểm tra preview sau từng thay đổi nhỏ. Gom các chỉnh sửa trong cùng yêu cầu thành một lượt xử lý. Chỉ thực hiện thêm vòng kiểm tra khi lần cuối phát hiện lỗi thực sự hoặc người dùng yêu cầu rõ ràng.
 
 Quy trình chuyển giao:
 
@@ -194,8 +205,7 @@ Config là nguồn dữ liệu để renderer dựng model. Một cấu trúc kh
     "idle": "pet_idle_soft",
     "walk": "pet_walk_quadruped",
     "attack": "fire_fox_attack",
-    "hurt": "pet_hurt_soft",
-    "sleep": "pet_sleep_curl"
+    "hurt": "pet_hurt_soft"
   },
   "capabilities": ["blink", "tail_sway", "fire_effect"]
 }
@@ -226,7 +236,6 @@ Các state cơ bản tùy loại model:
 - `attack` hoặc `cast`: khi có hành động chiến đấu;
 - `hurt`: phản hồi trúng đòn;
 - `defeat`/`death`: với enemy hoặc character;
-- `sleep`: pet hoặc sinh vật cần trạng thái nghỉ;
 - `spawn`/`despawn`: summon, VFX hoặc vật thể sinh ra tạm thời;
 - `interact`: props/NPC khi có tương tác.
 
@@ -239,7 +248,7 @@ Animation controller cần hỗ trợ:
 - event marker để đồng bộ damage, projectile, sound và particle;
 - random phase/variation nhỏ để nhiều model không chuyển động đồng bộ máy móc.
 
-Với Fire Fox, video reference chỉ chứng minh rõ `idle`: một vòng khoảng 1 giây, chuyển động tổng thể nhẹ, effect lửa ở đuôi thay đổi độc lập. Blink, walk, attack, hurt và sleep cần được thiết kế bổ sung, không suy diễn là đã có trong video.
+Với Fire Fox, video reference chỉ chứng minh rõ `idle`: một vòng khoảng 1 giây, chuyển động tổng thể nhẹ, effect lửa ở đuôi thay đổi độc lập. Blink, walk, attack và hurt cần được thiết kế bổ sung, không suy diễn là đã có trong video.
 
 ## Quy ước file
 
