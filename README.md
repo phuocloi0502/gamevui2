@@ -2,6 +2,10 @@
 
 Repo sản xuất asset 2D và frontend preview; stack Phaser 3 + TypeScript + Vite.
 
+Artwork được tạo ở ChatGPT web. Codex chỉ xử lý PNG đã nhận, code và preview. Đặt ảnh mới vào `assets/inbox/<asset-id>/`, sau đó yêu cầu Codex tích hợp. Xem `docs/workflow-chatgpt-web-assets.md`.
+
+Nếu ChatGPT web được kết nối GitHub, nó có thể đọc contract và asset đã commit để làm reference. PNG mới vẫn đi qua `assets/inbox/` trước khi Codex chuẩn hóa và đưa vào app.
+
 ```text
 apps/preview/src/          UI và scene xem asset
 packages/asset-core/src/  Contract và resolve kế thừa dữ liệu

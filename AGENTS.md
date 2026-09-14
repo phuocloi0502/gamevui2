@@ -10,6 +10,31 @@
 - Fire Fox v1 đã có PNG alpha và 5 clip puppet dùng chung; đọc `assets/pets/fire-fox/PRODUCTION.md` trước khi chỉnh sửa. Tai còn gắn đầu; sleep là tư thế hạ thấp; vòng lửa biến dạng từ một ảnh.
 - Người dùng đã cho phép xử lý PNG bằng code để tách nền/chuẩn hóa sau ImageGen. Giữ bản gốc tại `assets/pets/fire-fox/source/` và tái xuất bằng script.
 
+## Phân công ChatGPT web và Codex
+
+Đây là quy ước bắt buộc của dự án:
+
+- ChatGPT web chịu trách nhiệm tạo hoặc chỉnh sửa artwork raster bằng Image Generation.
+- Codex chịu trách nhiệm code, cấu trúc asset, tách nền/chuẩn hóa PNG bằng code, manifest, Phaser renderer, animation, preview, validation và Docker.
+- Codex không tự gọi ImageGen cho dự án này. Khi thiếu artwork, hãy viết prompt production-ready và hướng dẫn đặt file vào `assets/inbox/`, rồi tiếp tục xử lý các phần code có thể làm độc lập.
+- Nếu ChatGPT web đọc được repo qua GitHub, đó chỉ là nguồn tham khảo cho prompt và contract. Không giả định ChatGPT web có thể commit/push PNG; kết nối GitHub chuẩn là read-only.
+- Không dùng ảnh placeholder để giả vờ là production asset.
+- Giữ file gốc người dùng đưa vào `assets/inbox/` hoặc `assets/<kind>/<id>/source/`; không ghi đè file gốc.
+
+Quy trình chuyển giao:
+
+```text
+ChatGPT web tạo ảnh
+        ↓ download PNG
+assets/inbox/<asset-id>/
+        ↓ Codex kiểm tra và xử lý
+public/assets/<kind>/<asset-id>/
+        ↓ manifest + Phaser preview
+Asset Studio tại localhost:3333
+```
+
+Chi tiết nằm trong `docs/workflow-chatgpt-web-assets.md`. Khi người dùng nói “tạo asset”, trước hết xác định họ đang muốn prompt cho ChatGPT web hay muốn Codex xử lý/integrate một file đã có.
+
 ## Mục đích
 
 File này là bộ nhớ làm việc lâu dài cho Codex khi tạo hoặc tích hợp asset cho dự án game này.
