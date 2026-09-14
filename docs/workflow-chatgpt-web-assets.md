@@ -1,5 +1,7 @@
 # Workflow tạo ảnh bằng ChatGPT web, code bằng Codex
 
+Khi yêu cầu là tạo trọn bộ artwork cho một pet mới, ChatGPT Web phải đọc `docs/chatgpt-pet-layer-factory.md` trước; file đó là hướng dẫn production chi tiết, còn tài liệu này mô tả luồng bàn giao giữa ChatGPT Web và Codex.
+
 ## Quy tắc
 
 ChatGPT web là nơi tạo và chỉnh sửa ảnh. Codex không dùng quota tạo ảnh cho repo này; Codex chỉ làm phần kỹ thuật sau khi PNG đã có trong workspace.

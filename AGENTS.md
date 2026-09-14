@@ -4,6 +4,7 @@
 
 - Mục đích: sản xuất asset và frontend preview, chạy Docker tại cổng 3333.
 - Đọc `README.md` và `docs/asset-workflow.md` để biết layout thực tế.
+- Nếu yêu cầu là tạo artwork cho một pet mới bằng ChatGPT Web, đọc `docs/chatgpt-pet-layer-factory.md` và `docs/pets-catalog.md` trước khi tạo ảnh.
 - Contract thực thi: `packages/asset-core/src/types.ts`; ưu tiên contract này hơn ví dụ JSON bên dưới.
 - Rig dùng chung: `assets/rigs/`; mỗi lineage có ba cấp tiến hóa và pet kế thừa rig bằng `extends` trong `assets/pets/<lineage-id>/level-<n>/asset.json`.
 - `fox-quadruped` là rig mặc định cho Fox sản xuất mới; Fire Fox Level 1 và các pet legacy giữ rig/manifest hiện tại, không migrate ngầm.

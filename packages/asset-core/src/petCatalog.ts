@@ -91,9 +91,12 @@ export const SPECIES_TEMPLATES: SpeciesTemplate[] = [
     id: 'wolf', name: 'Wolf', archetype: 'quadruped', rig: 'quadruped-base', validated: false,
     slots: [
       shadow(), upload('tail', 'Đuôi', [layer('tail', -72, -108, .82, .82, 1, .8)]),
-      upload('leg', 'Một chân dùng lại 4 lần', [layer('rear-far', -55, -82, .5, .15, 2, .8), layer('front-far', 62, -84, .5, .15, 3, .8), layer('rear-near', -72, -90, .5, .15, 6, .9), layer('front-near', 35, -92, .5, .15, 7, .9)]),
+      upload('rear-far', 'Chân sau · phía đuôi · xa người xem', [layer('rear-far', -55, -82, .5, .15, 2, .8)]),
+      upload('front-far', 'Chân trước · phía đầu · xa người xem', [layer('front-far', 62, -84, .5, .15, 3, .8)]),
       upload('body', 'Thân dài', [layer('body', 0, -122, .5, .5, 4, .75)]),
       upload('mane', 'Bờm', [layer('mane', 25, -140, .5, .6, 5, .8)], true),
+      upload('rear-near', 'Chân sau · phía đuôi · gần người xem', [layer('rear-near', -72, -90, .5, .15, 6, .9)]),
+      upload('front-near', 'Chân trước · phía đầu · gần người xem', [layer('front-near', 35, -92, .5, .15, 7, .9)]),
       upload('head', 'Đầu', [layer('head', 55, -154, .5, .82, 8, .76)]), closed('head'),
       upload('jaw', 'Hàm dưới', [layer('jaw', 72, -132, .45, .2, 9, .76, 'head')], true),
       effect('fang-effect', 'Effect nanh', layer('fang-effect', 95, -145, .5, .5, 10, .8), true),

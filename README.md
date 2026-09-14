@@ -4,6 +4,8 @@ Repo sản xuất asset 2D và frontend preview; stack Phaser 3 + TypeScript + V
 
 Artwork được tạo ở ChatGPT web. Codex chỉ xử lý PNG đã nhận, code và preview. Đặt ảnh mới vào `assets/inbox/<lineage-id>/level-<n>/`, sau đó yêu cầu Codex tích hợp. Xem `docs/workflow-chatgpt-web-assets.md`.
 
+Nếu yêu cầu là tạo artwork cho một pet mới bằng ChatGPT Web, đọc `docs/chatgpt-pet-layer-factory.md` và Pet Catalog `docs/pets-catalog.md` trước khi tạo ảnh. Một câu ngắn như “Tạo pet Sói hệ Lửa Level 1 theo repo” phải đủ để bắt đầu toàn bộ package production layers.
+
 Nếu ChatGPT web được kết nối GitHub, nó có thể đọc contract và asset đã commit để làm reference. PNG mới vẫn đi qua `assets/inbox/` trước khi Codex chuẩn hóa và đưa vào app.
 
 ```text
