@@ -1,8 +1,9 @@
 import Phaser from 'phaser';
 import './style.css';
-import type { Clip, Layer, PetDefinition, Rig, State } from '../../../packages/asset-core/src/types';
-import { resolvePet } from '../../../packages/asset-core/src/resolve';
+import type { Clip, CombatVfxAnchor, CombatVfxEase, CombatVfxPresentation, CombatVfxTrigger, Layer, PetDefinition, Rig, State } from '../../../packages/asset-core/src/types';
+import { combatVfxPresentation, resolvePet } from '../../../packages/asset-core/src/resolve';
 import { PET_ARCHETYPES, PET_ELEMENTS, archetypeFor, slotsForEvolution, speciesTemplate } from '../../../packages/asset-core/src/petCatalog';
+import type { UploadSlot } from '../../../packages/asset-core/src/petCatalog';
 import { PetView } from '../../../packages/pet-runtime/src/PetView';
 
 const stateLabels: Record<State, string> = { idle: 'Đứng yên', walk: 'Di chuyển', attack: 'Tấn công', hurt: 'Trúng đòn' };
@@ -47,6 +48,11 @@ const combatVfxLabels: Record<string, string> = {
   beam: 'Combat VFX · tia xuyên',
 };
 const combatVfxLabel = (semantic: string) => combatVfxLabels[semantic] ?? `Combat VFX · ${semantic}`;
+const combatTriggerLabels: Record<CombatVfxTrigger, string> = {
+  'attack-start': 'Bắt đầu tấn công',
+  'attack-release': 'Thời điểm tung đòn',
+  'after-primary': 'Sau hiệu ứng chính',
+};
 function keyframeLabel(index: number, count: number) {
   const percent = Math.round(index / Math.max(1, count - 1) * 100);
   if (index === 0) return 'Đầu · 0%';
@@ -74,7 +80,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <p class="muted">Characters · Items · Environment · VFX<br>Các nhóm sẽ xuất hiện khi có asset.</p>
   <footer>LAYERS → RIG → PREVIEW<br>Phaser 3 / TypeScript</footer></aside>
   <main><header><div><p class="label">WORKSPACE / PETS</p><h1>Pet workshop</h1><p class="muted">Một bộ khung chung. Mỗi pet một cá tính.</p></div><span class="badge">LOCAL STUDIO</span></header>
-  <section class="layout"><div class="studio-panel"><div class="toolbar"><select id="pet-select" aria-label="Chọn pet"></select><div class="toolbar-actions"><button id="edit-pet-images">Thay ảnh pet</button><button id="new-pet">+ Tạo pet từ layer</button><span>ART REFERENCE</span></div></div><section id="creator" class="creator" hidden><div class="creator-heading"><div><p class="label">PET LAYER IMPORT</p><h2>Tạo cấp tiến hóa từ bộ PNG</h2><p class="muted">Chọn species, element và level để lấy đúng rig cùng thông số khởi đầu. Ảnh gốc được giữ trong assets/inbox.</p></div><button id="close-creator" aria-label="Đóng">×</button></div><div class="creator-fields"><label>Species<select id="creator-species"></select></label><label>Element<select id="creator-element"></select></label><label>Tiến hóa<select id="creator-level"><option value="1">Level 1</option><option value="2">Level 2</option><option value="3">Level 3</option></select></label><label>Tên hiển thị<input id="creator-name" type="text"></label><label>Stage ID<input id="creator-id" type="text" readonly></label></div><p id="template-status" class="template-status"></p><div id="upload-slots" class="upload-slots"></div><div class="creator-footer"><button id="create-pet">Tạo cấp tiến hóa</button><span id="create-status"></span></div></section><section id="image-editor" class="creator image-editor" hidden><div class="creator-heading"><div><p class="label">PET IMAGE REPLACEMENT</p><h2>Thay ảnh của pet đang chọn</h2><p class="muted">Chỉ chọn những ảnh cần đổi. Ảnh mới được chuẩn hóa về đúng kích thước runtime hiện tại; bản upload và runtime cũ đều được lưu trong assets/inbox.</p></div><button id="close-image-editor" aria-label="Đóng">×</button></div><div id="image-replacement-slots" class="upload-slots"></div><div class="creator-footer"><button id="replace-pet-images">Lưu ảnh thay thế</button><span id="replace-status" aria-live="polite"></span></div></section><div class="preview-grid"><div id="stage"></div><div id="controls-slot"></div></div><p id="caption" class="muted"></p></div>
+  <section class="layout"><div class="studio-panel"><div class="toolbar"><select id="pet-select" aria-label="Chọn pet"></select><div class="toolbar-actions"><button id="edit-pet-images">Quản lý ảnh pet</button><button id="new-pet">+ Tạo pet từ layer</button><span>ART REFERENCE</span></div></div><section id="creator" class="creator" hidden><div class="creator-heading"><div><p class="label">PET LAYER IMPORT</p><h2>Tạo cấp tiến hóa từ bộ PNG</h2><p class="muted">Chọn species, element và level để lấy đúng rig cùng thông số khởi đầu. Ảnh gốc được giữ trong assets/inbox.</p></div><button id="close-creator" aria-label="Đóng">×</button></div><div class="creator-fields"><label>Species<select id="creator-species"></select></label><label>Element<select id="creator-element"></select></label><label>Tiến hóa<select id="creator-level"><option value="1">Level 1</option><option value="2">Level 2</option><option value="3">Level 3</option></select></label><label>Tên hiển thị<input id="creator-name" type="text"></label><label>Stage ID<input id="creator-id" type="text" readonly></label></div><p id="template-status" class="template-status"></p><div id="upload-slots" class="upload-slots"></div><div class="creator-footer"><button id="create-pet">Tạo cấp tiến hóa</button><span id="create-status"></span></div></section><section id="image-editor" class="creator image-editor" hidden><div class="creator-heading"><div><p class="label">QUẢN LÝ PNG</p><h2>Ảnh của pet đang chọn</h2><p class="muted">Thay ảnh hiện có hoặc bổ sung optional layer/VFX còn thiếu theo đúng recipe. Source upload và runtime cũ được giữ trong assets/inbox.</p></div><button id="close-image-editor" aria-label="Đóng">×</button></div><h3>Thay ảnh hiện có</h3><div id="image-replacement-slots" class="upload-slots"></div><div class="creator-footer"><button id="replace-pet-images">Lưu ảnh thay thế</button><span id="replace-status" aria-live="polite"></span></div><div id="image-addition" class="image-addition"><h3>Thêm asset còn thiếu</h3><p class="editor-help">Chỉ hiện các slot được executable recipe hỗ trợ nhưng pet chưa khai báo.</p><div id="image-addition-slots" class="upload-slots"></div><div class="creator-footer"><button id="add-pet-images">Thêm vào pet</button><span id="add-status" aria-live="polite"></span></div></div></section><div class="preview-grid"><div id="stage"></div><div id="controls-slot"></div></div><p id="caption" class="muted"></p></div>
   <article><p class="label">ASSET INSPECTOR</p><h2 id="name"></h2><dl id="details"></dl><hr><p class="label">KẾ THỪA</p><p class="chain"><span id="rig-parent"></span> → <strong id="child"></strong></p><p class="muted">Canvas và animation lấy từ rig nhóm. Ảnh layer và thông số lắp ghép nằm trong manifest của pet.</p><hr><p class="label">TIẾN ĐỘ</p><p id="status"></p></article></section></main>`;
 const select = document.querySelector<HTMLSelectElement>('#pet-select')!;
 for (const group of PET_ARCHETYPES) {
@@ -179,6 +185,7 @@ async function imageSize(src: string) {
 
 type ReplacementAsset = { src: string; labels: string[] };
 let replacementAssets: ReplacementAsset[] = [];
+let additionSlots: UploadSlot[] = [];
 function renderImageEditor(pet: ReturnType<typeof resolvePet>) {
   const bySource = new Map<string, Set<string>>();
   const add = (src: string | undefined, label: string) => {
@@ -204,9 +211,27 @@ function renderImageEditor(pet: ReturnType<typeof resolvePet>) {
     label.append(input); slots.append(label);
   }
   const button = document.querySelector<HTMLButtonElement>('#edit-pet-images')!;
-  button.disabled = replacementAssets.length === 0;
-  if (!replacementAssets.length) imageEditor.hidden = true;
+  const template = speciesTemplate(pet.species ?? pet.lineageId.split('-').at(-1) ?? '');
+  const layerIds = new Set(pet.layers.map(layer => layer.id));
+  additionSlots = template ? slotsForEvolution(template, pet.evolutionLevel).filter(slot => {
+    if (slot.closedFor) return !pet.layers.find(layer => layer.id === slot.closedFor)?.closedSrc;
+    if (slot.combatVfx) return !pet.effects?.attack?.[slot.combatVfx];
+    return !!slot.instances?.length && slot.instances.every(instance => !layerIds.has(instance.id));
+  }) : [];
+  const additionRoot = document.querySelector<HTMLElement>('#image-addition')!;
+  const additionList = document.querySelector('#image-addition-slots')!;
+  additionList.replaceChildren();
+  for (const slot of additionSlots) {
+    const label = document.createElement('label'); label.className = 'upload-slot';
+    label.innerHTML = `<span>${slot.label} <small>${slot.optional ? 'tùy chọn' : 'bắt buộc còn thiếu'}</small></span><code>${slot.folder}/${slot.file}</code>`;
+    const input = document.createElement('input'); input.type = 'file'; input.accept = 'image/png'; input.dataset.additionSlot = slot.id;
+    label.append(input); additionList.append(label);
+  }
+  additionRoot.hidden = additionSlots.length === 0;
+  button.disabled = replacementAssets.length === 0 && additionSlots.length === 0;
+  if (button.disabled) imageEditor.hidden = true;
   document.querySelector('#replace-status')!.textContent = '';
+  document.querySelector('#add-status')!.textContent = '';
 }
 
 document.querySelector('#replace-pet-images')!.addEventListener('click', async () => {
@@ -244,6 +269,53 @@ document.querySelector('#replace-pet-images')!.addEventListener('click', async (
   }
 });
 
+document.querySelector('#add-pet-images')!.addEventListener('click', async () => {
+  const status = document.querySelector('#add-status')!;
+  const button = document.querySelector<HTMLButtonElement>('#add-pet-images')!;
+  const current = manifests[select.value];
+  if (!current) return;
+  const inputs = [...document.querySelectorAll<HTMLInputElement>('#image-addition-slots input[type=file]')];
+  const chosen = inputs.flatMap(input => {
+    const file = input.files?.[0];
+    const slot = additionSlots.find(candidate => candidate.id === input.dataset.additionSlot);
+    return file && slot ? [{ file, slot }] : [];
+  });
+  if (!chosen.length) { status.textContent = 'Hãy chọn ít nhất một PNG cần thêm.'; return; }
+  const invalid = chosen.find(({ file }) => file.type !== 'image/png' && !file.name.toLowerCase().endsWith('.png'));
+  if (invalid) { status.textContent = `${invalid.file.name} không phải PNG`; return; }
+  button.disabled = true; status.textContent = 'Đang thêm asset và cập nhật manifest…';
+  try {
+    const manifest = structuredClone(current) as PetDefinition;
+    const uploads: Array<{ file: string; folder: 'layers' | 'effects'; sourceDataUrl: string; runtimeDataUrl: string }> = [];
+    for (const { file, slot } of chosen) {
+      const src = `/assets/pets/${manifest.lineageId}/level-${manifest.evolutionLevel}/${slot.folder}/${slot.file}`;
+      uploads.push({ file: slot.file, folder: slot.folder, sourceDataUrl: await readFile(file), runtimeDataUrl: await runtimeFile(file, slot.runtimeSize) });
+      if (slot.closedFor) {
+        const target = manifest.layers.find(layer => layer.id === slot.closedFor);
+        if (target) target.closedSrc = src;
+      } else if (slot.combatVfx) {
+        manifest.effects ??= {};
+        manifest.effects.attack ??= {};
+        manifest.effects.attack[slot.combatVfx] = src;
+        manifest.effects.attackPresentation ??= {};
+        manifest.effects.attackPresentation[slot.combatVfx] = combatVfxPresentation(slot.combatVfx);
+      } else {
+        for (const instance of slot.instances ?? []) manifest.layers.push({ ...instance, src });
+      }
+    }
+    manifest.layers.sort((a, b) => a.z - b.z);
+    const response = await fetch('/__asset-studio/add-pet-images', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: manifest.id, manifest, uploads }),
+    });
+    if (!response.ok) throw new Error(await response.text());
+    status.textContent = `Đã thêm ${uploads.length} asset. Đang tải lại Studio…`;
+    sessionStorage.setItem(selectedPetKey, manifest.id); window.location.reload();
+  } catch (error) {
+    status.textContent = error instanceof Error ? error.message : 'Không thể thêm asset';
+    button.disabled = false;
+  }
+});
+
 document.querySelector('#create-pet')!.addEventListener('click', async () => {
   const status = document.querySelector('#create-status')!;
   const button = document.querySelector<HTMLButtonElement>('#create-pet')!;
@@ -263,6 +335,7 @@ document.querySelector('#create-pet')!.addEventListener('click', async () => {
     const layers: Layer[] = [];
     const uploads: Array<{ file: string; folder: 'layers' | 'effects'; sourceDataUrl: string; runtimeDataUrl: string }> = [];
     const attack: Record<string, string> = {};
+    const attackPresentation: Record<string, CombatVfxPresentation> = {};
     for (const slot of templateSlots) {
       const file = selected.get(slot.id);
       if (!file) continue;
@@ -274,7 +347,10 @@ document.querySelector('#create-pet')!.addEventListener('click', async () => {
       } else {
         for (const instance of slot.instances ?? []) layers.push({ ...instance, src });
       }
-      if (slot.combatVfx) attack[slot.combatVfx] = src;
+      if (slot.combatVfx) {
+        attack[slot.combatVfx] = src;
+        attackPresentation[slot.combatVfx] = combatVfxPresentation(slot.combatVfx);
+      }
     }
     layers.sort((a, b) => a.z - b.z);
     const manifest: PetDefinition = {
@@ -285,7 +361,7 @@ document.querySelector('#create-pet')!.addEventListener('click', async () => {
       status: 'production', element: element.id,
       reference: layers.find(item => item.id === 'body')?.src ?? layers[0].src,
       layers, preview: { x: 420, y: 440, scale: 1 },
-      ...(Object.keys(attack).length ? { effects: { color: element.color, attack } } : {}),
+      ...(Object.keys(attack).length ? { effects: { color: element.color, attack, attackPresentation } } : {}),
     };
     const response = await fetch('/__asset-studio/create-pet', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: manifest.id, manifest, uploads }) });
     if (!response.ok) throw new Error(await response.text());
@@ -343,6 +419,33 @@ function numberInput(label: string, value: number, onChange: (value: number) => 
   });
   return wrapper;
 }
+function selectInput<T extends string>(label: string, value: T, options: Array<{ value: T; label: string }>, onChange: (value: T) => void) {
+  const wrapper = document.createElement('label');
+  wrapper.className = 'select-field';
+  const caption = document.createElement('span'); caption.textContent = label;
+  const select = document.createElement('select');
+  for (const option of options) select.add(new Option(option.label, option.value, false, option.value === value));
+  select.addEventListener('change', () => onChange(select.value as T));
+  wrapper.append(caption, select);
+  return wrapper;
+}
+function checkboxInput(label: string, value: boolean, onChange: (value: boolean) => void) {
+  const wrapper = document.createElement('label');
+  wrapper.className = 'checkbox-field';
+  const input = document.createElement('input'); input.type = 'checkbox'; input.checked = value;
+  input.addEventListener('change', () => onChange(input.checked));
+  wrapper.append(input, ` ${label}`);
+  return wrapper;
+}
+function tintInput(value: number | undefined, onChange: (value: number | undefined) => void) {
+  const wrapper = document.createElement('label'); wrapper.className = 'tint-field';
+  const enabled = document.createElement('input'); enabled.type = 'checkbox'; enabled.checked = value !== undefined;
+  const color = document.createElement('input'); color.type = 'color'; color.value = `#${(value ?? 0xffffff).toString(16).padStart(6, '0').slice(-6)}`; color.disabled = !enabled.checked;
+  enabled.addEventListener('change', () => { color.disabled = !enabled.checked; onChange(enabled.checked ? Number.parseInt(color.value.slice(1), 16) : undefined); });
+  color.addEventListener('input', () => onChange(Number.parseInt(color.value.slice(1), 16)));
+  wrapper.append(enabled, document.createTextNode(' Màu phủ'), color);
+  return wrapper;
+}
 function show(id: string) {
   const pet = pets.find(pet => pet.id === id)!;
   const manifest = manifests[id];
@@ -381,8 +484,8 @@ function show(id: string) {
     const visibility = document.createElement('label');
     visibility.className = 'visibility-toggle';
     const visible = document.createElement('input');
-    visible.type = 'checkbox'; visible.checked = true;
-    visible.addEventListener('change', () => view?.setLayerVisible(layer.id, visible.checked));
+    visible.type = 'checkbox'; visible.checked = layer.visible !== false;
+    visible.addEventListener('change', () => { layer.visible = visible.checked; view?.setLayerVisible(layer.id, visible.checked); scheduleSave(pet); });
     visibility.append(visible, ' Hiển thị');
     const heading = document.createElement('div');
     heading.className = 'layer-heading'; heading.append(title, visibility);
@@ -390,11 +493,90 @@ function show(id: string) {
       numberInput('Vị trí X', layer.x, value => { layer.x = value; view?.setLayerTransform(layer.id, 'x', value); scheduleSave(pet); }),
       numberInput('Vị trí Y', layer.y, value => { layer.y = value; view?.setLayerTransform(layer.id, 'y', value); scheduleSave(pet); }),
       numberInput('Tỷ lệ', layer.scale ?? 1, value => { layer.scale = value; view?.setLayerTransform(layer.id, 'scale', value); scheduleSave(pet); }),
+      numberInput('Góc xoay', layer.angle ?? 0, value => { layer.angle = value; view?.setLayerTransform(layer.id, 'angle', value); scheduleSave(pet); }),
+      numberInput('Độ trong suốt', layer.alpha ?? 1, value => { layer.alpha = value; view?.setLayerTransform(layer.id, 'alpha', value); scheduleSave(pet); }),
       numberInput('Điểm neo X', layer.originX, value => { layer.originX = value; view?.setLayerOrigin(layer.id, 'originX', value); scheduleSave(pet); }),
       numberInput('Điểm neo Y', layer.originY, value => { layer.originY = value; view?.setLayerOrigin(layer.id, 'originY', value); scheduleSave(pet); }),
       numberInput('Thứ tự Z', layer.z, value => { layer.z = value; view?.setLayerZ(layer.id, value); scheduleSave(pet); }),
+      tintInput(layer.tint, value => { layer.tint = value; view?.setLayerTint(layer.id, value); scheduleSave(pet); }),
     );
     layerEditor.append(row);
+  }
+  const combatEditor = document.createElement('div');
+  combatEditor.className = 'combat-editor';
+  combatEditor.innerHTML = '<p class="label">CHỈNH COMBAT VFX</p><p class="editor-help">Mọi thông số được lưu theo pet và level trong asset.json. Điểm đầu/cuối dùng neo Pet hoặc Mục tiêu; X tự lật theo hướng pet khi bật “Lật theo hướng”.</p>';
+  const combatEntries = Object.entries(pet.effects?.attack ?? {}).filter((entry): entry is [string, string] => typeof entry[1] === 'string');
+  if (!combatEntries.length) combatEditor.append(Object.assign(document.createElement('p'), { className: 'editor-empty', textContent: 'Pet này chưa khai báo Combat VFX.' }));
+  for (const [semantic] of combatEntries) {
+    let config = combatVfxPresentation(semantic, pet.effects?.attackPresentation?.[semantic]);
+    const details = document.createElement('details');
+    details.className = 'vfx-editor';
+    const summary = document.createElement('summary');
+    const triggerSummary = document.createElement('span'); triggerSummary.textContent = combatTriggerLabels[config.trigger];
+    summary.innerHTML = `<span><b>${combatVfxLabel(semantic)}</b><small>${semantic}</small></span>`;
+    summary.append(triggerSummary); details.append(summary);
+    const commit = (next: CombatVfxPresentation) => {
+      config = next;
+      triggerSummary.textContent = combatTriggerLabels[next.trigger];
+      manifest.effects ??= {};
+      manifest.effects.attackPresentation ??= {};
+      manifest.effects.attackPresentation[semantic] = { ...next };
+      pet.effects ??= {};
+      pet.effects.attackPresentation ??= {};
+      pet.effects.attackPresentation[semantic] = { ...next };
+      scheduleSave(pet);
+    };
+    const settings = document.createElement('div'); settings.className = 'vfx-settings';
+    const triggerOptions: Array<{ value: CombatVfxTrigger; label: string }> = [
+      { value: 'attack-start', label: combatTriggerLabels['attack-start'] },
+      { value: 'attack-release', label: combatTriggerLabels['attack-release'] },
+      { value: 'after-primary', label: combatTriggerLabels['after-primary'] },
+    ];
+    const anchorOptions: Array<{ value: CombatVfxAnchor; label: string }> = [
+      { value: 'pet', label: 'Pet' }, { value: 'target', label: 'Mục tiêu' },
+    ];
+    const easeOptions: Array<{ value: CombatVfxEase; label: string }> = [
+      { value: 'Linear', label: 'Đều' },
+      { value: 'Sine.easeInOut', label: 'Mềm đầu và cuối' },
+      { value: 'Quad.easeOut', label: 'Nhanh rồi chậm' },
+      { value: 'Back.easeOut', label: 'Vượt nhẹ rồi về' },
+    ];
+    settings.append(
+      checkboxInput('Bật hiệu ứng', config.enabled, value => commit({ ...config, enabled: value })),
+      selectInput('Kích hoạt', config.trigger, triggerOptions, value => commit({ ...config, trigger: value })),
+      numberInput('Trễ (ms)', config.delay, value => commit({ ...config, delay: Math.max(0, value) })),
+      numberInput('Thời lượng (ms)', config.duration, value => commit({ ...config, duration: Math.max(0, value) })),
+      numberInput('Thứ tự Z', config.depth, value => commit({ ...config, depth: value })),
+      selectInput('Nội suy', config.ease, easeOptions, value => commit({ ...config, ease: value })),
+      checkboxInput('Lật theo hướng pet', config.mirror, value => commit({ ...config, mirror: value })),
+    );
+    const start = document.createElement('fieldset'); start.innerHTML = '<legend>Khung đầu</legend>';
+    start.append(
+      selectInput('Neo', config.startAnchor, anchorOptions, value => commit({ ...config, startAnchor: value })),
+      numberInput('Vị trí X', config.startX, value => commit({ ...config, startX: value })),
+      numberInput('Vị trí Y', config.startY, value => commit({ ...config, startY: value })),
+      numberInput('Tỷ lệ', config.startScale, value => commit({ ...config, startScale: value })),
+      numberInput('Góc xoay', config.startAngle, value => commit({ ...config, startAngle: value })),
+      numberInput('Độ trong suốt', config.startAlpha, value => commit({ ...config, startAlpha: value })),
+    );
+    const end = document.createElement('fieldset'); end.innerHTML = '<legend>Khung cuối</legend>';
+    end.append(
+      selectInput('Neo', config.endAnchor, anchorOptions, value => commit({ ...config, endAnchor: value })),
+      numberInput('Vị trí X', config.endX, value => commit({ ...config, endX: value })),
+      numberInput('Vị trí Y', config.endY, value => commit({ ...config, endY: value })),
+      numberInput('Tỷ lệ', config.endScale, value => commit({ ...config, endScale: value })),
+      numberInput('Góc xoay', config.endAngle, value => commit({ ...config, endAngle: value })),
+      numberInput('Độ trong suốt', config.endAlpha, value => commit({ ...config, endAlpha: value })),
+    );
+    const common = document.createElement('fieldset'); common.innerHTML = '<legend>Điểm neo ảnh</legend>';
+    common.append(
+      numberInput('Điểm neo X', config.originX, value => commit({ ...config, originX: value })),
+      numberInput('Điểm neo Y', config.originY, value => commit({ ...config, originY: value })),
+    );
+    const play = document.createElement('button'); play.type = 'button'; play.textContent = 'Chạy thử toàn bộ đòn';
+    play.addEventListener('click', () => view?.play('attack'));
+    details.append(settings, start, end, common, play);
+    combatEditor.append(details);
   }
   const animationEditor = document.createElement('div');
   animationEditor.className = 'animation-editor';
@@ -431,12 +613,52 @@ function show(id: string) {
     }));
     const play = document.createElement('button');
     play.dataset.state = state; play.textContent = 'Chạy thử'; settings.append(play);
+    if (pet.layers.length) {
+      const addTrack = document.createElement('button');
+      addTrack.type = 'button'; addTrack.textContent = '+ Thêm chuyển động layer';
+      addTrack.addEventListener('click', () => {
+        const current = pet.rig.clips![state];
+        commitClip(state, { ...current, tracks: [...current.tracks, { target: pet.layers[0].id, property: 'angle', values: [0, 0, 0] }] });
+        show(pet.id);
+      });
+      settings.append(addTrack);
+    }
     details.append(settings);
     clip.tracks.forEach((track, trackIndex) => {
       const row = document.createElement('div');
       row.className = 'track-row';
-      const text = document.createElement('span');
-      text.innerHTML = `<b>${track.target}</b><small>${propertyLabels[track.property] ?? track.property}</small>`;
+      const meta = document.createElement('div');
+      meta.className = 'track-meta';
+      const targetOptions = pet.layers.map(layer => ({ value: layer.id, label: `${layerLabel(layer.id)} (${layer.id})` }));
+      if (!targetOptions.some(option => option.value === track.target)) targetOptions.unshift({ value: track.target, label: `${track.target} · chưa có layer` });
+      const propertyOptions: Array<{ value: Clip['tracks'][number]['property']; label: string }> = [
+        'x', 'y', 'angle', 'scaleX', 'scaleY', 'alpha',
+      ].map(value => ({ value: value as Clip['tracks'][number]['property'], label: propertyLabels[value] ?? value }));
+      meta.append(
+        selectInput('Layer đích', track.target, targetOptions, value => {
+          const current = pet.rig.clips![state];
+          const tracks = current.tracks.map((item, index) => index === trackIndex ? { ...item, target: value } : item);
+          commitClip(state, { ...current, tracks }); show(pet.id);
+        }),
+        selectInput('Thuộc tính', track.property, propertyOptions, value => {
+          const current = pet.rig.clips![state];
+          const tracks = current.tracks.map((item, index) => index === trackIndex ? { ...item, property: value } : item);
+          commitClip(state, { ...current, tracks }); show(pet.id);
+        }),
+      );
+      const actions = document.createElement('div'); actions.className = 'track-actions';
+      const duplicate = document.createElement('button'); duplicate.type = 'button'; duplicate.textContent = 'Nhân bản';
+      duplicate.addEventListener('click', () => {
+        const current = pet.rig.clips![state];
+        const tracks = [...current.tracks]; tracks.splice(trackIndex + 1, 0, { ...current.tracks[trackIndex], values: [...current.tracks[trackIndex].values] });
+        commitClip(state, { ...current, tracks }); show(pet.id);
+      });
+      const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = 'Xóa track';
+      remove.addEventListener('click', () => {
+        const current = pet.rig.clips![state];
+        commitClip(state, { ...current, tracks: current.tracks.filter((_, index) => index !== trackIndex) }); show(pet.id);
+      });
+      actions.append(duplicate, remove); meta.append(actions);
       const keyframes = document.createElement('div');
       keyframes.className = 'keyframe-fields';
       track.values.forEach((value, valueIndex) => {
@@ -459,11 +681,11 @@ function show(id: string) {
         });
         field.append(caption, input); keyframes.append(field);
       });
-      row.append(text, keyframes); details.append(row);
+      row.append(meta, keyframes); details.append(row);
     });
     animationEditor.append(details);
   }
-  transform.append(transformFields, layerEditor, animationEditor);
+  transform.append(transformFields, layerEditor, combatEditor, animationEditor);
   class Preview extends Phaser.Scene {
     preload() {
       if (!pet.layers.length) this.load.image('reference', pet.reference);
@@ -480,42 +702,64 @@ function show(id: string) {
         view=new PetView(this, preview.x, preview.y, pet);
         view.setScale(preview.scale);
         const attack = pet.effects?.attack;
-        const addVfx = (src: string, x: number, y: number, scale = .55) =>
-          this.add.image(x, y, src).setScale(scale * Math.abs(view?.scaleY ?? 1));
-        const spawnImpact = (x: number, y: number) => {
-          if (!attack?.impact) return;
-          const impact = addVfx(attack.impact, x, y, .65).setAlpha(.95);
-          this.tweens.add({ targets: impact, scaleX: impact.scaleX * 1.2, scaleY: impact.scaleY * 1.2, alpha: 0, duration: 420, onComplete: () => impact.destroy() });
+        const combatEntries = Object.entries(attack ?? {}).filter((entry): entry is [string, string] => typeof entry[1] === 'string');
+        const point = (anchor: CombatVfxAnchor, x: number, y: number, mirror: boolean) => {
+          if (!view) return { x, y };
+          const direction = Math.sign(view.scaleX) || 1;
+          const scaleX = Math.abs(view.scaleX), scaleY = Math.abs(view.scaleY);
+          const baseX = anchor === 'pet' ? view.x : view.x + direction * 330 * scaleX;
+          const baseY = anchor === 'pet' ? view.y : view.y - 95 * scaleY;
+          return { x: baseX + x * scaleX * (mirror ? direction : 1), y: baseY + y * scaleY };
         };
+        const targetGuide = this.add.container().setDepth(100).setVisible(combatEntries.length > 0);
+        targetGuide.add([
+          this.add.circle(0, 0, 17, 0x91b8c7, .08).setStrokeStyle(1, 0x91b8c7, .45),
+          this.add.text(0, 24, 'MỤC TIÊU', { color: '#91a9b5', fontFamily: 'sans-serif', fontSize: '8px' }).setOrigin(.5, 0),
+        ]);
+        const spawnCombatVfx = (semantic: string, src: string) => {
+          const config = combatVfxPresentation(semantic, pet.effects?.attackPresentation?.[semantic]);
+          if (!config.enabled) return 0;
+          this.time.delayedCall(Math.max(0, config.delay), () => {
+            if (!view) return;
+            const direction = config.mirror ? Math.sign(view.scaleX) || 1 : 1;
+            const start = point(config.startAnchor, config.startX, config.startY, config.mirror);
+            const end = point(config.endAnchor, config.endX, config.endY, config.mirror);
+            const rootScale = Math.abs(view.scaleY);
+            const image = this.add.image(start.x, start.y, src)
+              .setOrigin(config.originX, config.originY)
+              .setScale(config.startScale * rootScale)
+              .setAngle(config.startAngle * direction)
+              .setAlpha(config.startAlpha)
+              .setDepth(config.depth);
+            this.tweens.add({
+              targets: image, x: end.x, y: end.y,
+              scaleX: config.endScale * rootScale, scaleY: config.endScale * rootScale,
+              angle: config.endAngle * direction, alpha: config.endAlpha,
+              duration: Math.max(0, config.duration),
+              ease: config.ease,
+              onComplete: () => image.destroy(),
+            });
+          });
+          return Math.max(0, config.delay) + Math.max(0, config.duration);
+        };
+        const playTrigger = (trigger: CombatVfxTrigger) => combatEntries
+          .filter(([semantic]) => {
+            const config = combatVfxPresentation(semantic, pet.effects?.attackPresentation?.[semantic]);
+            return config.enabled && config.trigger === trigger;
+          })
+          .map(([semantic, src]) => spawnCombatVfx(semantic, src));
         view.on('state-start',(state: State)=>{
-          if(state !== 'attack' || !attack?.cast || !view)return;
-          const direction=Math.sign(view.scaleX) || 1;
-          const cast=addVfx(attack.cast,view.x+direction*75*Math.abs(view.scaleX),view.y-135*Math.abs(view.scaleY),.5).setAlpha(.9);
-          this.tweens.add({targets:cast,scaleX:cast.scaleX*1.15,scaleY:cast.scaleY*1.15,alpha:0,duration:450,onComplete:()=>cast.destroy()});
+          if(state === 'attack') playTrigger('attack-start');
         });
         view.on('marker',()=>{
-          if(!attack||!view)return;
-          const direction=Math.sign(view.scaleX) || 1;
-          const scale=Math.abs(view.scaleY);
-          const startX=view.x+direction*100*Math.abs(view.scaleX), startY=view.y-150*scale;
-          const targetX=startX+direction*230, targetY=view.y-95*scale;
-          if(attack.projectile){
-            const projectile=addVfx(attack.projectile,startX,startY).setAngle(direction*90);
-            this.tweens.add({targets:projectile,x:targetX,y:targetY,alpha:.2,duration:600,onComplete:()=>{projectile.destroy();spawnImpact(targetX,targetY);}});
-            return;
-          }
-          if(attack.trail){
-            const trail=addVfx(attack.trail,startX,startY,.7).setAngle(direction < 0 ? 180 : 0);
-            this.tweens.add({targets:trail,x:targetX,y:targetY,alpha:0,duration:360,onComplete:()=>{trail.destroy();spawnImpact(targetX,targetY);}});
-            return;
-          }
-          const special=Object.entries(attack).find(([semantic, src])=>!!src && !['cast','trail','projectile','impact'].includes(semantic));
-          if(special?.[1]){
-            const effect=addVfx(special[1],targetX,targetY,.7).setAlpha(.95);
-            this.tweens.add({targets:effect,scaleX:effect.scaleX*1.12,scaleY:effect.scaleY*1.12,alpha:0,duration:520,onComplete:()=>{effect.destroy();spawnImpact(targetX,targetY);}});
-          } else spawnImpact(targetX,targetY);
+          const durations = playTrigger('attack-release');
+          this.time.delayedCall(Math.max(0, ...durations), () => playTrigger('after-primary'));
         });
-        this.events.on('update',()=>{if(view)document.querySelector('#playing')!.textContent=stateLabels[view.state];});
+        this.events.on('update',()=>{
+          if(!view)return;
+          document.querySelector('#playing')!.textContent=stateLabels[view.state];
+          const target=point('target',0,0,true); targetGuide.setPosition(target.x,target.y);
+        });
       }
       else {
         const ref = this.add.image(400, 275, 'reference');

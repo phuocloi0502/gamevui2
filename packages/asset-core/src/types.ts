@@ -8,6 +8,9 @@ export interface Layer {
   originY: number;
   z: number;
   scale?: number;
+  angle?: number;
+  alpha?: number;
+  visible?: boolean;
   tint?: number;
   closedSrc?: string;
   sheet?: { width: number; height: number; count: number; fps: number };
@@ -29,9 +32,36 @@ export interface CombatAttackVfx {
   impact?: string;
   [semantic: string]: string | undefined;
 }
+export type CombatVfxTrigger = 'attack-start' | 'attack-release' | 'after-primary';
+export type CombatVfxAnchor = 'pet' | 'target';
+export type CombatVfxEase = 'Linear' | 'Sine.easeInOut' | 'Quad.easeOut' | 'Back.easeOut';
+export interface CombatVfxPresentation {
+  enabled: boolean;
+  trigger: CombatVfxTrigger;
+  startAnchor: CombatVfxAnchor;
+  endAnchor: CombatVfxAnchor;
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+  originX: number;
+  originY: number;
+  startScale: number;
+  endScale: number;
+  startAngle: number;
+  endAngle: number;
+  startAlpha: number;
+  endAlpha: number;
+  depth: number;
+  delay: number;
+  duration: number;
+  ease: CombatVfxEase;
+  mirror: boolean;
+}
 export interface PetEffects {
   color?: number;
   attack?: CombatAttackVfx;
+  attackPresentation?: Record<string, Partial<CombatVfxPresentation>>;
   /** Legacy manifest binding. Resolved as attack.projectile. */
   projectile?: string;
 }

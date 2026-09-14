@@ -234,6 +234,10 @@ Rig template phát marker generic `attack-release` tại thời điểm tung đ�
 
 Mỗi Combat VFX là một PNG trong suốt riêng, một image-generation operation cho một asset, cùng element/style với pet và đọc rõ ở gameplay size. Không contact sheet. ChatGPT Web tạo artwork; Codex/Asset Studio tạo binding manifest, preview và cho phép thay từng file độc lập.
 
+Sau khi upload, Asset Studio có thể thêm các optional slot còn thiếu, thay từng PNG, bật/tắt và chỉnh toàn bộ presentation của từng Combat VFX rồi lưu vào manifest của stage; ChatGPT Web không cần tạo code hoặc nhúng timing/position vào artwork.
+
+Với layer đặc biệt như multi-tail, người dùng nhân bản/thêm animation track trong Studio rồi chọn layer đích bằng string ID. Artwork contract không cần yêu cầu renderer biết số lượng đuôi.
+
 `impact` là effect của attacker/skill, spawn tại target/impact point khi hit được xác nhận. Không tạo asset target-specific như `fire-wolf-hit-slime.png` hoặc `fire-wolf-hit-golem.png`; một Fire Wolf impact phải dùng được với mọi target phù hợp. Hurt animation, flash, knockback và death thuộc target/runtime gameplay.
 
 Burn, slow, poison, drain và radiant mark chỉ là future shared/global status VFX concept. Pet Layer Factory không tạo status asset riêng cho từng pet, trừ khi executable recipe sau này yêu cầu.

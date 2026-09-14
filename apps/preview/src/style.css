@@ -71,7 +71,10 @@ select { padding: 8px 16px; border: 1px solid #424958; border-radius: 6px; backg
 .creator-footer button:disabled { cursor: wait; opacity: .55; }
 #create-status { color: #a9c8b6; font-size: 11px; }
 .replacement-slot > small { grid-column: 1 / -1; overflow: hidden; color: #687386; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
-#replace-status { color: #a9c8b6; font-size: 11px; }
+#replace-status, #add-status { color: #a9c8b6; font-size: 11px; }
+.image-editor h3 { margin: 18px 0 10px; color: #d8dde7; font-size: 14px; }
+.image-addition { margin-top: 20px; padding-top: 2px; border-top: 1px solid #303744; }
+.image-addition[hidden] { display: none; }
 
 .preview-grid {
   display: grid;
@@ -111,7 +114,10 @@ select { padding: 8px 16px; border: 1px solid #424958; border-radius: 6px; backg
 .transform-editor { margin-top: 14px; padding-top: 14px; border-top: 1px solid #303644; }
 .editor-help { margin: 5px 0 10px; color: #818b9d; font-size: 10px; line-height: 1.5; }
 .transform-fields { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
-.number-field { display: inline-flex; align-items: center; gap: 5px; color: #aeb7c8; font-size: 10px; }
+.number-field, .select-field { display: inline-flex; align-items: center; gap: 5px; color: #aeb7c8; font-size: 10px; }
+.checkbox-field, .tint-field { color: #aeb7c8; font-size: 10px; }
+.tint-field { display: flex; align-items: center; gap: 5px; }
+.tint-field input[type='color'] { width: 34px; height: 25px; padding: 1px; border: 1px solid #424958; border-radius: 5px; background: #232935; }
 .layer-editor { margin-top: 14px; padding-top: 12px; border-top: 1px solid #303644; }
 .layer-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; align-items: center; margin: 10px 0; padding-top: 8px; border-top: 1px solid #292f3a; }
 .layer-heading { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
@@ -119,6 +125,19 @@ select { padding: 8px 16px; border: 1px solid #424958; border-radius: 6px; backg
 .visibility-toggle { padding: 4px 7px; border: 1px solid #3c4858; border-radius: 5px; background: #202833; color: #b8c6d9 !important; cursor: pointer; }
 .layer-row .number-field { display: grid; gap: 2px; }
 .layer-row .number-field input { width: 100%; min-width: 0; }
+.combat-editor { margin-top: 18px; padding-top: 14px; border-top: 1px solid #303644; }
+.editor-empty { color: #707b8d; font-size: 10px; }
+.vfx-editor { margin: 8px 0; padding-bottom: 10px; border: 1px solid #384355; border-radius: 7px; background: #171d27; }
+.vfx-editor summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px; color: #bfc7d3; font-size: 10px; cursor: pointer; }
+.vfx-editor summary span:first-child { display: flex; align-items: baseline; gap: 7px; }
+.vfx-editor summary b { color: #9dd8cf; font-size: 11px; }
+.vfx-editor summary small { color: #768195; }
+.vfx-settings, .vfx-editor fieldset { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; margin: 0; padding: 10px; border: 0; border-top: 1px solid #292f3a; }
+.vfx-editor fieldset { margin: 0 10px; padding-right: 0; padding-left: 0; }
+.vfx-editor legend { padding: 0 6px; color: #8592a6; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; }
+.vfx-editor .number-field, .vfx-editor .select-field { display: grid; gap: 3px; }
+.vfx-editor .number-field input, .vfx-editor .select-field select { width: 100%; min-width: 0; }
+.vfx-editor > button { margin: 10px 10px 0; padding: 6px 10px; }
 .animation-editor { margin-top: 18px; padding-top: 14px; border-top: 1px solid #303644; }
 .clip-editor { margin: 8px 0; border: 1px solid #303744; border-radius: 7px; background: #161b23; }
 .clip-editor summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px; color: #bfc7d3; font-size: 10px; cursor: pointer; }
@@ -130,7 +149,11 @@ select { padding: 8px 16px; border: 1px solid #424958; border-radius: 6px; backg
 .clip-settings .number-field input { width: 110px; }
 .clip-settings button { padding: 6px 10px; }
 .track-row { display: grid !important; grid-template-columns: minmax(115px, .7fr) minmax(0, 2fr); gap: 10px !important; padding: 10px; border-top: 1px solid #252b35; }
-.track-row > span { display: grid; gap: 2px; }
+.track-meta { display: grid; gap: 7px; }
+.track-meta .select-field { display: grid; gap: 3px; }
+.track-meta select { width: 100%; min-width: 0; }
+.track-actions { display: flex; flex-wrap: wrap; gap: 5px; }
+.track-actions button { padding: 5px 7px; font-size: 9px; }
 .keyframe-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(62px, 1fr)); gap: 6px; width: 100%; }
 .keyframe-fields label { display: grid; gap: 3px; min-width: 0; }
 .keyframe-fields label span { color: #7f8b9d; font-size: 8px; white-space: nowrap; }
@@ -169,4 +192,5 @@ dl { color: #b5bcc9; font-size: 12px; line-height: 2; }
   .toolbar-actions { align-items: end; flex-direction: column; }
   .creator-fields, .upload-slots { grid-template-columns: 1fr; }
   .track-row { grid-template-columns: 1fr; }
+  .vfx-settings, .vfx-editor fieldset { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

@@ -199,6 +199,76 @@ function assetManifestApi() {
           res.end(error instanceof Error ? error.message : "Could not replace pet images");
         }
       });
+      server.middlewares.use("/__asset-studio/add-pet-images", async (req, res) => {
+        if (req.method !== "POST") {
+          res.statusCode = 405;
+          res.end("Method Not Allowed");
+          return;
+        }
+        try {
+          const body = await readJsonBody(req);
+          const id = typeof body.id === "string" ? body.id : "";
+          const manifest = body.manifest;
+          const uploads = body.uploads;
+          if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id) || manifest?.id !== id || manifest?.kind !== "pet" || !Array.isArray(manifest?.layers) || !Array.isArray(uploads) || !uploads.length) {
+            throw new Error("Gói thêm asset không hợp lệ");
+          }
+          const current = (await readPetManifests()).find((item) => item.id === id);
+          if (!current) throw new Error(`Không tìm thấy pet ${id}`);
+          if (manifest.lineageId !== current.lineageId || manifest.evolutionLevel !== current.evolutionLevel || manifest.extends !== current.extends || !knownRigs.has(manifest.extends)) {
+            throw new Error("Không được đổi danh tính, level hoặc rig khi thêm asset");
+          }
+          const levelFolder = `level-${current.evolutionLevel}`;
+          const publicPrefix = `/assets/pets/${current.lineageId}/${levelFolder}/`;
+          const sourcesOf = (item) => new Set([
+            ...item.layers.flatMap((layer) => [layer.src, layer.closedSrc].filter(Boolean)),
+            item.effects?.projectile,
+            ...Object.values(item.effects?.attack ?? {}),
+          ].filter((src) => typeof src === "string"));
+          const previousSources = sourcesOf(current);
+          const nextSources = sourcesOf(manifest);
+          if ([...nextSources].some((src) => !src.startsWith(publicPrefix))) throw new Error("Manifest chứa đường dẫn ảnh ngoài pet");
+          if ([...previousSources].some((src) => !nextSources.has(src))) throw new Error("Chức năng này chỉ thêm asset, không được xóa binding hiện có");
+          const seen = new Set();
+          const decoded = [];
+          for (const upload of uploads) {
+            if (!/^[a-z0-9]+(?:-[a-z0-9]+)*\.png$/.test(upload?.file) || !["layers", "effects"].includes(upload?.folder)) throw new Error("Tên file upload không hợp lệ");
+            const src = `${publicPrefix}${upload.folder}/${upload.file}`;
+            if (seen.has(src) || previousSources.has(src) || !nextSources.has(src)) throw new Error(`Asset mới không hợp lệ: ${src}`);
+            seen.add(src);
+            const inboxFile = safeChild(inboxRoot, current.lineageId, levelFolder, upload.folder, upload.file);
+            const publicFile = safeChild(publicPetRoot, current.lineageId, levelFolder, upload.folder, upload.file);
+            if (await exists(inboxFile) || await exists(publicFile)) throw new Error(`${src} đã tồn tại`);
+            decoded.push({
+              file: upload.file,
+              folder: upload.folder,
+              inboxFile,
+              publicFile,
+              sourceData: decodePng(upload.sourceDataUrl, upload.file).data,
+              runtimeData: decodePng(upload.runtimeDataUrl, `${upload.file} runtime`).data,
+            });
+          }
+          const manifestFile = safeChild(manifestRoot, current.lineageId, levelFolder, "asset.json");
+          const writtenFiles = [];
+          for (const upload of decoded) {
+            await mkdir(safeChild(inboxRoot, current.lineageId, levelFolder, upload.folder), { recursive: true });
+            await mkdir(safeChild(publicPetRoot, current.lineageId, levelFolder, upload.folder), { recursive: true });
+            server.watcher.unwatch(upload.inboxFile);
+            server.watcher.unwatch(upload.publicFile);
+            await writeFile(upload.inboxFile, upload.sourceData);
+            await writeFile(upload.publicFile, upload.runtimeData);
+            writtenFiles.push(upload.inboxFile, upload.publicFile);
+          }
+          server.watcher.unwatch(manifestFile);
+          await writeFile(manifestFile, JSON.stringify(manifest, null, 2) + "\n", "utf8");
+          for (const file of [...writtenFiles, manifestFile]) server.watcher.add(file);
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify({ ok: true, added: [...seen] }));
+        } catch (error) {
+          res.statusCode = 400;
+          res.end(error instanceof Error ? error.message : "Could not add pet images");
+        }
+      });
       server.middlewares.use("/__asset-studio/save-manifest", async (req, res) => {
         if (req.method !== "POST") {
           res.statusCode = 405;

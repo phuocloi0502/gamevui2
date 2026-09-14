@@ -177,6 +177,10 @@ Fox sản xuất mới mặc định dùng `shadow`, `effect-back`, `tail`, `rea
 
 Pet visual VFX (`effect-back`, `effect-front`, `particles`) là layer luôn gắn với model. Combat VFX là binding optional, riêng theo từng evolution stage trong `effects.attack`: `cast`, `trail`, `projectile`, `impact` và semantic special do recipe quy định. Không dùng `effect-front` làm projectile, không bắt species melee có projectile và không gộp impact vào projectile. `effects.projectile` chỉ là field legacy được resolver đọc thành `effects.attack.projectile`; không dùng field legacy cho manifest mới.
 
+Asset Studio là nguồn chỉnh presentation sau khi artwork được upload. Layer lưu transform/visibility trong `layers`; từng Combat VFX lưu enabled, trigger, timing, start/end anchor và transform trong `effects.attackPresentation`. UI **Quản lý ảnh pet** có thể thay PNG hiện có và thêm slot optional/VFX còn thiếu do executable recipe khai báo. Không hard-code lại các thông số presentation riêng của pet trong renderer.
+
+Animation editor phải cho phép thêm, nhân bản, xóa track và chọn target từ `Layer.id` hiện có. Đây là đường UI chuẩn để gắn chuyển động riêng cho optional/multi-tail layer; không sửa rig dùng chung chỉ để thêm target của một evolution.
+
 Pivot chân đặt gần khớp nối với body, tail tại gốc đuôi và head gần cổ.
 
 ### 4. Ghép preview/master

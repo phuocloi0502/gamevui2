@@ -66,6 +66,8 @@ Pet visual VFX như `effect-back`, `effect-front`, `particles` là layer của m
 
 Combat VFX giữ cùng skill identity qua Level 1/2/3 nhưng tăng dần độ mạnh hình ảnh; stage folder đã xác định version nên có thể dùng cùng filename như `impact.png`. `impact` thuộc attacker/skill và dùng chung với mọi target phù hợp; reaction/status của target không nằm trong pet artwork package.
 
+Asset Studio lưu phần tinh chỉnh Combat VFX trong `effects.attackPresentation`, keyed bằng cùng semantic ID với `effects.attack`. Mỗi entry có thể bật/tắt và chỉnh trigger (`attack-start`, `attack-release`, `after-primary`), delay, duration/easing, start/end anchor (`pet` hoặc `target`), X/Y, scale, angle, alpha, image origin, depth và mirror theo hướng pet. UI **Quản lý ảnh pet** cho phép thay PNG đã bind hoặc thêm slot optional/VFX còn thiếu trong executable recipe. Đây là presentation data của evolution stage, không phải damage/collision gameplay.
+
 `rear-far`, `rear-near`, `front-far`, `front-near` phải trỏ tới bốn PNG production khác nhau. Không dùng một `leg.png` chung cho bốn instance trong contract Fox mới.
 
 `closedSrc` là biến thể nhắm mắt của chính layer `head`; ảnh mở/nhắm phải có cùng canvas, alignment, silhouette và pivot. Không cần tạo layer mắt riêng nếu chỉ cần blink.
@@ -73,6 +75,8 @@ Combat VFX giữ cùng skill identity qua Level 1/2/3 nhưng tăng dần độ m
 ### Evolution nhiều đuôi
 
 Level 1/2 dùng `tail` bình thường. Ở Level 3, Asset Studio cho phép chọn `tail` đơn hoặc khai báo các layer optional `tail-left-outer`, `tail-left-inner`, `tail-center`, `tail-right-inner`, `tail-right-outer`. Mỗi layer có `id`, `src`, transform, pivot và `z` riêng như mọi layer khác.
+
+Animation editor có thể thêm, nhân bản, xóa track và đổi target sang bất kỳ `Layer.id` đang có. Multi-tail vì thế chỉ cần các string ID trong manifest/clip override; renderer không biết hoặc giới hạn số đuôi.
 
 Renderer không biết khái niệm “9 tails”. Clip override của pet target trực tiếp các ID string thực tế. Nếu không có layer `tail`, track `tail` mặc định trong rig được bỏ qua; manifest chỉ cần override/thêm các track cho tail ID cần chuyển động. Không thêm enum hoặc nhánh renderer cho từng số lượng đuôi.
 

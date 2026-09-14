@@ -12,7 +12,7 @@ export class PetView extends Phaser.GameObjects.Container {
   private fired = false;
   private nodes = new Map<string, Phaser.GameObjects.Container>();
   private images = new Map<string, Phaser.GameObjects.Sprite>();
-  private bases = new Map<string, {x:number;y:number;scale:number}>();
+  private bases = new Map<string, {x:number;y:number;scale:number;angle:number;alpha:number}>();
   private nextBlink = 2800;
   private blendFrom = new Map<string, number[]>();
   private blendTime = 200;
@@ -20,13 +20,13 @@ export class PetView extends Phaser.GameObjects.Container {
   constructor(scene: Phaser.Scene, x: number, y: number, readonly pet: ReturnType<typeof resolvePet>) {
     super(scene,x,y);
     for (const layer of [...pet.layers].sort((a,b)=>a.z-b.z)) {
-      const node=scene.add.container(layer.x,layer.y).setScale(layer.scale ?? 1).setDepth(layer.z);
+      const node=scene.add.container(layer.x,layer.y).setScale(layer.scale ?? 1).setAngle(layer.angle ?? 0).setAlpha(layer.alpha ?? 1).setVisible(layer.visible !== false).setDepth(layer.z);
       const sprite=scene.add.sprite(0,0,layer.src).setOrigin(layer.originX,layer.originY);
-      if(layer.tint) sprite.setTint(layer.tint);
+      if(layer.tint!==undefined) sprite.setTint(layer.tint);
       node.add(sprite);
       (layer.parent ? this.nodes.get(layer.parent)! : this).add(node);
       this.nodes.set(layer.id,node); this.images.set(layer.id,sprite);
-      this.bases.set(layer.id,{x:layer.x,y:layer.y,scale:layer.scale??1});
+      this.bases.set(layer.id,{x:layer.x,y:layer.y,scale:layer.scale??1,angle:layer.angle??0,alpha:layer.alpha??1});
     }
     scene.add.existing(this);
     this.updateBound=(_time,delta)=>this.tick(delta);
@@ -39,6 +39,10 @@ export class PetView extends Phaser.GameObjects.Container {
     this.blendTime=0; this.state=state; this.elapsed=0; this.fired=false; this.tick(0); this.emit('state-start',state);
   }
   setLayerVisible(id:string,visible:boolean) { this.nodes.get(id)?.setVisible(visible); }
+  setLayerTint(id:string,tint?:number) {
+    const sprite=this.images.get(id); if(!sprite)return;
+    if(tint===undefined)sprite.clearTint(); else sprite.setTint(tint);
+  }
   setLayerOrigin(id:string, property:'originX'|'originY', value:number) {
     const sprite = this.images.get(id);
     if (!sprite || !Number.isFinite(value)) return;
@@ -51,13 +55,16 @@ export class PetView extends Phaser.GameObjects.Container {
     node.setDepth(value);
     node.parentContainer?.sort('depth');
   }
-  setLayerTransform(id:string, property:'x'|'y'|'scale', value:number) {
+  setLayerTransform(id:string, property:'x'|'y'|'scale'|'angle'|'alpha', value:number) {
     const node = this.nodes.get(id);
     const base = this.bases.get(id);
     if (!node || !base || !Number.isFinite(value)) return;
     if (property === 'scale') {
       node.setScale(value);
       this.bases.set(id, { ...base, scale: value });
+    } else if (property === 'angle' || property === 'alpha') {
+      node[property] = value;
+      this.bases.set(id, { ...base, [property]: value });
     } else {
       node[property] = value;
       this.bases.set(id, { ...base, [property]: value });
@@ -73,7 +80,7 @@ export class PetView extends Phaser.GameObjects.Container {
     const t=(this.elapsed%clip.duration)/clip.duration;
     for(const [id,node] of this.nodes) {
       const b=this.bases.get(id)!;
-      node.setPosition(b.x,b.y).setScale(b.scale).setAngle(0).setAlpha(1);
+      node.setPosition(b.x,b.y).setScale(b.scale).setAngle(b.angle).setAlpha(b.alpha);
     }
     for(const track of clip.tracks) {
       const node=this.nodes.get(track.target); if(!node) continue;
@@ -83,7 +90,8 @@ export class PetView extends Phaser.GameObjects.Container {
       const base=this.bases.get(track.target)!;
       if(track.property==='x'||track.property==='y') node[track.property]=base[track.property]+value;
       else if(track.property==='scaleX'||track.property==='scaleY') node[track.property]=base.scale*value;
-      else node[track.property]=value;
+      else if(track.property==='angle') node.angle=base.angle+value;
+      else if(track.property==='alpha') node.alpha=base.alpha*value;
     }
     this.blendTime+=delta*this.speed;
     if(this.blendTime<180){
@@ -92,6 +100,7 @@ export class PetView extends Phaser.GameObjects.Container {
         n.setPosition(Phaser.Math.Linear(b[0],n.x,k),Phaser.Math.Linear(b[1],n.y,k));
         n.setAngle(Phaser.Math.Linear(b[2],n.angle,k));
         n.setScale(Phaser.Math.Linear(b[3],n.scaleX,k),Phaser.Math.Linear(b[4],n.scaleY,k));
+        n.setAlpha(Phaser.Math.Linear(b[5],n.alpha,k));
       }
     }
     const blink=this.lifetime>=this.nextBlink;

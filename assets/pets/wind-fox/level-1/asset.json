@@ -23,7 +23,8 @@
       "originX": 0.5,
       "originY": 0.5,
       "z": 0,
-      "scale": 0.85
+      "scale": 0.85,
+      "visible": true
     },
     {
       "id": "tail",

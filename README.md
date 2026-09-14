@@ -44,6 +44,10 @@ Studio giữ ảnh upload mới và bản runtime trước đó theo revision tr
 `assets/inbox/<lineage>/level-<n>/replacements/`, đồng thời chuẩn hóa ảnh mới về đúng kích thước
 production hiện tại trước khi cập nhật `public/assets/`.
 
+Mục **CHỈNH TỪNG LAYER** lưu cả vị trí, tỷ lệ, góc, alpha, màu phủ, origin, z-order và visibility. Mục **CHỈNH COMBAT VFX** cho phép bật/tắt và lưu presentation riêng cho từng semantic: trigger/delay, thời lượng/easing, neo Pet hoặc Mục tiêu, transform đầu-cuối, origin, depth và hướng lật. **Quản lý ảnh pet** thay PNG hiện có hoặc thêm slot optional/VFX còn thiếu từ executable recipe. Các chỉnh sửa nằm trong manifest của đúng evolution stage, không cần sửa renderer cho từng pet.
+
+Trong **CHỈNH 4 CHUYỂN ĐỘNG**, có thể thêm, nhân bản, xóa track và đổi `Layer đích` bằng ID. Vì vậy evolution multi-tail có thể nhân track `tail`, rồi trỏ từng bản tới các tail ID riêng mà không sửa rig dùng chung hoặc renderer.
+
 Fire Fox Level 1 đã có PNG alpha và 4 clip: idle, walk, attack, hurt. Preview có điều khiển clip, pause, scale, flip, tốc độ, nền và visibility từng layer. Đọc `assets/pets/fire-fox/level-1/PRODUCTION.md` để biết bản gốc, prompt và giới hạn của từng clip. Chạy `node scripts/test-core.mjs` để kiểm tra kế thừa và loop.
 
 Pet animation mới dùng workflow layer-first: tạo production PNG độc lập trước, ghép bằng Phaser, rồi mới export `master.png`/`preview.png` để duyệt. Không dùng master làm nguồn crop/tách layer. Xem artwork contract tại `docs/chatgpt-pet-layer-factory.md` và integration contract tại `docs/asset-workflow.md`.
