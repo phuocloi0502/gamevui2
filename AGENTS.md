@@ -23,14 +23,14 @@
 
 ### Giới hạn công việc Codex để tiết kiệm quota
 
-Với mỗi lượt tích hợp asset, Codex mặc định chỉ làm các việc sau:
+Với mỗi lượt tích hợp asset hoặc chỉnh UI, Codex mặc định chỉ làm các việc sau:
 
 - kiểm tra kích thước và alpha tự động;
 - sửa manifest và code cần thiết;
-- chạy test/build đúng một lần sau khi hoàn tất các thay đổi;
-- mở preview đúng một lần ở cuối để nghiệm thu.
+- không chạy test/build;
+- không tự mở preview, chụp screenshot hoặc nghiệm thu bằng mắt.
 
-Không lặp lại build, test, screenshot hoặc kiểm tra preview sau từng thay đổi nhỏ. Gom các chỉnh sửa trong cùng yêu cầu thành một lượt xử lý. Chỉ thực hiện thêm vòng kiểm tra khi lần cuối phát hiện lỗi thực sự hoặc người dùng yêu cầu rõ ràng.
+Người dùng tự kiểm tra trực quan bằng UI Asset Studio. Chỉ chạy test/build hoặc mở preview khi người dùng yêu cầu rõ ràng trong lượt hiện tại. Gom các chỉnh sửa trong cùng yêu cầu thành một lượt xử lý.
 
 Quy trình chuyển giao:
 
@@ -290,7 +290,7 @@ Một asset chỉ được coi là hoàn tất khi:
 - animation loop không giật ở điểm nối;
 - effect không che mặt hoặc thông tin gameplay quan trọng;
 - tên file và config hợp lệ;
-- đã preview trong Phaser hoặc một harness tương đương khi có phần tích hợp code.
+- đã sẵn sàng để người dùng preview trong Phaser; Codex chỉ tự nghiệm thu khi được yêu cầu rõ ràng.
 
 ## Cách báo cáo kết quả
 

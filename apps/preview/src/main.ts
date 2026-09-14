@@ -15,7 +15,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <p class="muted">Characters · Items · Environment · VFX<br>Các nhóm sẽ xuất hiện khi có asset.</p>
   <footer>ARTWORK → RIG → PREVIEW<br>Phaser 3 / TypeScript</footer></aside>
   <main><header><div><p class="label">WORKSPACE / PETS</p><h1>Pet workshop</h1><p class="muted">Một bộ khung chung. Mỗi pet một cá tính.</p></div><span class="badge">LOCAL STUDIO</span></header>
-  <section class="layout"><div><div class="toolbar"><select id="pet-select" aria-label="Chọn pet"></select><span>ART REFERENCE</span></div><div id="stage"></div><p id="caption" class="muted"></p></div>
+  <section class="layout"><div class="studio-panel"><div class="toolbar"><select id="pet-select" aria-label="Chọn pet"></select><span>ART REFERENCE</span></div><div class="preview-grid"><div id="stage"></div><div id="controls-slot"></div></div><p id="caption" class="muted"></p></div>
   <article><p class="label">ASSET INSPECTOR</p><h2 id="name"></h2><dl id="details"></dl><hr><p class="label">KẾ THỪA</p><p class="chain">Pet Base → <strong id="child"></strong></p><p class="muted">Canvas và idle lấy từ rig chung. Element, layer và thông số riêng nằm trong manifest của pet.</p><hr><p class="label">TIẾN ĐỘ</p><p id="status"></p></article></section></main>`;
 const select = document.querySelector<HTMLSelectElement>('#pet-select')!;
 for (const pet of pets) select.add(new Option(pet.name, pet.id));
@@ -23,7 +23,7 @@ let game: Phaser.Game | undefined;
 let view: PetView | undefined;
 const controls=document.createElement('div'); controls.className='controls';
 controls.innerHTML=`<div class="clips">${['idle','walk','attack','hurt'].map(s=>`<button data-state="${s}">${s}</button>`).join('')}</div><div class="options"><button id="pause">Tạm dừng</button><button id="flip">Lật hướng</button><label>Zoom <input id="zoom" type="range" min="0.4" max="1.8" step="0.1" value="1"></label><label>Tốc độ <select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label><label>Nền <select id="background"><option value="#141820">Tối</option><option value="#eee5d7">Sáng</option><option value="#475b65">Xanh xám</option></select></label><span id="playing">idle</span></div><div id="transform-editor"></div><div id="layer-controls"></div><p id="save-status" class="save-status" aria-live="polite"></p>`;
-document.querySelector('#stage')!.after(controls);
+document.querySelector('#controls-slot')!.append(controls);
 controls.addEventListener('click',e=>{
  const b=(e.target as HTMLElement).closest<HTMLButtonElement>('button'); if(!b||!view)return;
  if(b.dataset.state) view.play(b.dataset.state as State);

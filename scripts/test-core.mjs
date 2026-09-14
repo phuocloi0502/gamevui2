@@ -20,4 +20,15 @@ for(const clip of Object.values(rig.clips))for(const t of clip.tracks){
  assert.ok(t.values.every(Number.isFinite));
  if(clip.loop)assert.equal(t.values[0],t.values.at(-1),`${t.target}: loop seam`);
 }
+for (const file of ['fire-fox', 'water-fox', 'wind-fox', 'shadow-fox']) {
+ const definition=JSON.parse(readFileSync(`assets/pets/${file}/asset.json`));
+ const candidate=resolvePet(definition,registry);
+ const layerIds=new Set(candidate.layers.map(layer=>layer.id));
+ for(const clip of Object.values(candidate.rig.clips))for(const track of clip.tracks){
+  if(clip.loop)assert.equal(track.values[0],track.values.at(-1),`${file}/${track.target}: loop seam`);
+ }
+ for(const clip of Object.values(definition.overrides?.clips ?? {}))for(const track of clip.tracks){
+  assert.ok(layerIds.has(track.target),`${file}: missing override target ${track.target}`);
+ }
+}
 console.log('PASS: inheritance, overrides, missing/duplicate/parent validation, optional anatomy, loop seams');

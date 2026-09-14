@@ -1,0 +1,172 @@
+{
+  "id": "shadow-fox",
+  "name": "Shadow Fox",
+  "kind": "pet",
+  "extends": "pet-base",
+  "status": "production",
+  "element": "shadow",
+  "reference": "/assets/pets/shadow-fox/preview.png",
+  "effects": {
+    "projectile": "/assets/pets/shadow-fox/effects/elemental-effect.png",
+    "color": 11245823
+  },
+  "layers": [
+    {
+      "id": "shadow",
+      "src": "/assets/pets/shadow-fox/layers/shadow.png",
+      "x": 0,
+      "y": 0,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 0,
+      "scale": 0.9
+    },
+    {
+      "id": "tail-back",
+      "src": "/assets/pets/shadow-fox/layers/tail2.png",
+      "x": -60,
+      "y": -105,
+      "originX": 0.84,
+      "originY": 0.9,
+      "z": 1,
+      "scale": 0.9
+    },
+    {
+      "id": "tail-front",
+      "src": "/assets/pets/shadow-fox/layers/tail.png",
+      "x": -55,
+      "y": -102,
+      "originX": 0.86,
+      "originY": 0.88,
+      "z": 2,
+      "scale": 0.9
+    },
+    {
+      "id": "rear-far",
+      "src": "/assets/pets/shadow-fox/layers/leg.png",
+      "x": -51,
+      "y": -81,
+      "originX": 0.5,
+      "originY": 0.15,
+      "z": 3,
+      "scale": 0.74,
+      "tint": 10592673
+    },
+    {
+      "id": "front-far",
+      "src": "/assets/pets/shadow-fox/layers/leg.png",
+      "x": 57,
+      "y": -82,
+      "originX": 0.5,
+      "originY": 0.15,
+      "z": 4,
+      "scale": 0.75,
+      "tint": 10592673
+    },
+    {
+      "id": "body",
+      "src": "/assets/pets/shadow-fox/layers/body.png",
+      "x": 0,
+      "y": -119,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 5,
+      "scale": 0.7
+    },
+    {
+      "id": "rear-near",
+      "src": "/assets/pets/shadow-fox/layers/leg.png",
+      "x": -72,
+      "y": -88,
+      "originX": 0.5,
+      "originY": 0.15,
+      "z": 6,
+      "scale": 0.84
+    },
+    {
+      "id": "front-near",
+      "src": "/assets/pets/shadow-fox/layers/leg.png",
+      "x": 30,
+      "y": -91,
+      "originX": 0.5,
+      "originY": 0.15,
+      "z": 7,
+      "scale": 0.86
+    },
+    {
+      "id": "head",
+      "src": "/assets/pets/shadow-fox/layers/head.png",
+      "closedSrc": "/assets/pets/shadow-fox/layers/head-closed.png",
+      "x": 41,
+      "y": -153,
+      "originX": 0.5,
+      "originY": 0.88,
+      "z": 8,
+      "scale": 0.8
+    }
+  ],
+  "overrides": {
+    "clips": {
+      "idle": {
+        "duration": 2200,
+        "loop": true,
+        "tracks": [
+          { "target": "body", "property": "scaleY", "values": [1, 1.022, 1] },
+          { "target": "head", "property": "y", "values": [0, -2, 0] },
+          { "target": "head", "property": "angle", "values": [0, -1.2, 0] },
+          { "target": "tail-back", "property": "angle", "values": [-2.5, 3.5, -2.5] },
+          { "target": "tail-back", "property": "scaleY", "values": [1, 1.018, 1] },
+          { "target": "tail-front", "property": "angle", "values": [2.5, -3, 2.5] },
+          { "target": "tail-front", "property": "y", "values": [0, -2, 0] }
+        ]
+      },
+      "walk": {
+        "duration": 720,
+        "loop": true,
+        "tracks": [
+          { "target": "body", "property": "y", "values": [0, -4, 0, -4, 0] },
+          { "target": "head", "property": "y", "values": [0, -5, 0, -5, 0] },
+          { "target": "tail-back", "property": "angle", "values": [-5, 5, -5] },
+          { "target": "tail-front", "property": "angle", "values": [4, -6, 4] },
+          { "target": "rear-far", "property": "angle", "values": [-16, 16, -16] },
+          { "target": "front-far", "property": "angle", "values": [16, -16, 16] },
+          { "target": "rear-near", "property": "angle", "values": [-16, 16, -16] },
+          { "target": "front-near", "property": "angle", "values": [16, -16, 16] },
+          { "target": "rear-far", "property": "y", "values": [-6, 0, -6] },
+          { "target": "front-far", "property": "y", "values": [0, -6, 0] },
+          { "target": "rear-near", "property": "y", "values": [-6, 0, -6] },
+          { "target": "front-near", "property": "y", "values": [0, -6, 0] }
+        ]
+      },
+      "attack": {
+        "duration": 1050,
+        "loop": false,
+        "event": { "at": 470, "name": "projectile" },
+        "tracks": [
+          { "target": "head", "property": "x", "values": [0, -9, 14, 3, 0] },
+          { "target": "head", "property": "angle", "values": [0, -7, 6, 1, 0] },
+          { "target": "body", "property": "scaleX", "values": [1, 0.95, 1.05, 1, 1] },
+          { "target": "tail-back", "property": "angle", "values": [0, 11, -8, 0, 0] },
+          { "target": "tail-back", "property": "scaleY", "values": [1, 1.04, 1.01, 1, 1] },
+          { "target": "tail-front", "property": "angle", "values": [0, -9, 12, 0, 0] }
+        ]
+      },
+      "hurt": {
+        "duration": 600,
+        "loop": false,
+        "tracks": [
+          { "target": "body", "property": "x", "values": [0, -10, 5, -3, 0] },
+          { "target": "head", "property": "x", "values": [0, -12, 6, -2, 0] },
+          { "target": "head", "property": "angle", "values": [0, -8, 5, -2, 0] },
+          { "target": "tail-back", "property": "angle", "values": [0, -7, 4, 0, 0] },
+          { "target": "tail-front", "property": "angle", "values": [0, 8, -5, 0, 0] }
+        ]
+      }
+    }
+  },
+  "preview": {
+    "x": 430,
+    "y": 475,
+    "scale": 0.94
+  }
+}
