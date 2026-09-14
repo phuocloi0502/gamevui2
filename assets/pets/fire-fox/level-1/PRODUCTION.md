@@ -1,5 +1,7 @@
 # Fire Fox — Evolution Level 1
 
+> **LEGACY ASSET RECORD:** This file documents the existing Fire Fox pipeline only. Do not use its master-first/reusable-leg details as the production contract for new pets; use `docs/chatgpt-pet-layer-factory.md` and `packages/asset-core/src/petCatalog.ts`.
+
 Generated with built-in ImageGen, 2026-09-14, using the user's concept board. PNG alpha extraction and normalization by code explicitly approved by user after ImageGen produced a baked checkerboard.
 
 ## Deliverables

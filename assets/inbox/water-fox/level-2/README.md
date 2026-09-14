@@ -1,5 +1,7 @@
 # Water Fox
 
+> **LEGACY SOURCE RECORD:** This inventory preserves an existing `pet-base` package. Its reusable `leg.png` is historical data, not a production instruction for new Fox artwork.
+
 - **PET_ID:** water-fox
 - **PET_NAME:** Water Fox
 - **SPECIES:** fox

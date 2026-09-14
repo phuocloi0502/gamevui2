@@ -2,9 +2,9 @@
 
 > Status: Design catalog and production-routing companion.
 >
-> This document is design and species guidance for Codex and ChatGPT Web. The 50 IDs below are lineage IDs; each lineage supports three evolution asset forms.
+> This is the semantic/art-direction catalog: it describes species identity, anatomy, role, combat identity, evolution direction and VFX language. It is not the executable slot source of truth. The 50 IDs below are lineage IDs; each lineage supports three evolution asset forms.
 >
-> Before creating production PNG assets, ChatGPT Web must also read `docs/chatgpt-pet-layer-factory.md` and the executable recipe in `packages/asset-core/src/petCatalog.ts`.
+> Before creating production PNG assets, ChatGPT Web must also read `docs/chatgpt-pet-layer-factory.md`. `packages/asset-core/src/petCatalog.ts` makes the final executable decision for slots, filenames, required/optional flags, runtime sizes and upload recipes; if this document differs, the TypeScript recipe wins.
 > Do not modify Git history, commit, or push unless explicitly requested.
 
 ---
@@ -116,7 +116,9 @@ Z-order is the numeric `z` in `petCatalog.ts`: smaller is farther back, larger i
 
 Pet visual VFX (`effect-back`, `effect-front`, `particles`) are persistent model layers. Combat VFX are optional per-evolution attack bindings under `effects.attack`: `cast`, `trail`, `projectile`, `impact`, plus only the special semantic keys declared by the species recipe. A melee species does not need `projectile`; `impact` is an independent attacker/skill asset and is reusable against every target species. Damage, collision, target selection and target hurt/death remain gameplay concerns.
 
-Stage folders scope filenames, so every evolution may use `attack-cast.png`, `projectile.png` or `impact.png` without level suffixes. Level 1 is small and clean; Level 2 strengthens the same visual identity; Level 3 is the most powerful expression without changing to an unrelated skill. Legacy `effects.projectile` remains readable, but new manifests use `effects.attack.projectile`.
+Stage folders scope filenames, so every evolution may use `attack-cast.png`, `projectile.png` or `impact.png` without level suffixes. Level 1 is small and clean with few particles; Level 2 strengthens cast/trail/impact and adds energy while preserving the skill lineage; Level 3 is the richest and most powerful expression without changing to an unrelated skill. Legacy `effects.projectile` remains readable, but new manifests use `effects.attack.projectile`.
+
+`impact` belongs to the attacker/skill and spawns at the target or impact point after a confirmed hit. Do not create attacker-target combinations such as `fire-wolf-hit-slime.png`; target hurt animation, flash, knockback and death belong to target/runtime gameplay. Mentions of burn, slow, poison, drain or radiant mark in this catalog describe future shared/global status concepts, not per-pet artwork required by the current factory recipe.
 
 New reusable rigs emit `attack-release` as a transport-neutral marker. The preview/gameplay consumer decides whether that moment activates a projectile, melee trail or special attack asset. Legacy `pet-base` keeps its existing marker name.
 
@@ -488,25 +490,18 @@ Shadow:
 - shadow bolt;
 - drain or weaken.
 
-### Suggested PNG layers
+### Suggested production package
 
 ```text
-shadow
-effect-back
-tail
-rear-far
-rear-near
-body
-front-far
-front-near
-head
-head-closed
-effect-front
-particles
-projectile
+Character / Pet Visual VFX:
+shadow, effect-back, tail, rear-far, rear-near, body,
+front-far, front-near, head, head-closed, effect-front, particles
+
+Combat VFX — Element Tail Bolt:
+attack-cast, projectile, impact
 ```
 
-Fox Level 1/2 use `tail.png`; Level 3 may replace it with the multi-tail IDs configured in `petCatalog.ts`. Never reuse one leg texture for the four Fox positions.
+Fox Level 1/2 use `tail`; Level 3 may replace it with `tail-left-outer`, `tail-left-inner`, `tail-center`, `tail-right-inner`, `tail-right-outer` as configured in `petCatalog.ts`. `rear-far`, `rear-near`, `front-far`, `front-near` are four different anatomical artworks: front/rear anatomy differs, and near/far reflects the 3/4 perspective. Never reuse one leg texture for the four Fox positions.
 
 ### Suggested attachment points
 
@@ -619,20 +614,14 @@ Shadow:
 - dark after-image;
 - short blink-like dash.
 
-### Suggested PNG layers
+### Suggested production package
 
 ```text
-shadow
-rear-ear
-body
-hind-leg-far
-hind-leg-near
-front-paw-far
-front-paw-near
-head
-front-ear
-tail
-element-trail
+Character layers:
+shadow, rear-ear, body, hind-leg, front-paw, head, front-ear, tail, head-closed
+
+Combat VFX — Burst Ram:
+attack-trail, impact
 ```
 
 ### Suggested attachment points
@@ -744,17 +733,14 @@ Shadow:
 - violet cracks;
 - void prison.
 
-### Suggested PNG layers
+### Suggested production package
 
 ```text
-shadow
-rear-feet
-body
-shell
-front-feet
-head
-shell-runes
-element-aura
+Character layers:
+shadow, rear-feet, body, shell, front-feet, head, head-closed, shell-runes
+
+Combat VFX — Element Cage:
+attack-cast, cage, impact
 ```
 
 ### Suggested attachment points
@@ -883,19 +869,15 @@ Shadow:
 - dark fragment;
 - corruption field.
 
-### Suggested PNG layers
+### Suggested production package
 
 ```text
-shadow
-back-wing
-tail
-body
-legs
-front-wing
-head
-horns
-mouth-effect
-element-aura
+Character / Pet Visual VFX:
+shadow, back-wing, tail, body, legs, front-wing, head,
+head-closed, horns, element-aura
+
+Combat VFX — Element Meteor:
+attack-cast, meteor, impact
 ```
 
 ### Suggested attachment points
@@ -1009,19 +991,15 @@ Shadow:
 - purple-black;
 - void orb.
 
-### Suggested PNG layers
+### Suggested production package
 
 ```text
-shadow
-back-wing
-tail-feathers
-body
-talons
-front-wing
-head
-eyes-or-closed
-forehead-rune
-orb-effect
+Character layers:
+shadow, back-wing, tail-feathers, body, talons, front-wing,
+head, head-closed, forehead-rune
+
+Combat VFX — Element Orb:
+attack-cast, projectile, impact
 ```
 
 ### Suggested attachment points
@@ -1131,24 +1109,18 @@ Shadow:
 - dark violet mane;
 - drain bite.
 
-### Suggested PNG layers
+### Suggested production package
 
 ```text
-shadow
-tail
-rear-far
-front-far
-body
-mane
-rear-near
-front-near
-head
-head-closed
-jaw
-fang-effect
+Character layers:
+shadow, tail, rear-far, front-far, body, mane,
+rear-near, front-near, head, head-closed, jaw
+
+Combat VFX — Fang Rush:
+attack-cast, attack-trail, impact
 ```
 
-The four Wolf leg files are separate required artworks. Front/rear anatomy and near/far perspective must be visibly distinct; do not duplicate a single `leg.png`.
+The four Wolf leg files are separate required artworks. Front/rear anatomy and near/far 3/4 perspective must be visibly distinct. Its strong shoulders, narrower muzzle, readable head/jaw/fang action and forward melee silhouette must not read as another Fox. Wolf has no projectile by default.
 
 ### Suggested attachment points
 
@@ -1263,19 +1235,14 @@ Shadow:
 - obsidian / amethyst;
 - dark core.
 
-### Suggested PNG layers
+### Suggested production package
 
 ```text
-shadow
-rear-arm
-rear-leg
-torso
-core
-front-leg
-front-arm
-head
-rock-fragments
-ground-effect
+Character / Pet Visual VFX:
+shadow, rear-arm, rear-leg, torso, core, front-leg, front-arm, head, rock-fragments
+
+Combat VFX — Core Quake:
+attack-cast, ground-wave, impact
 ```
 
 ### Suggested attachment points
@@ -1382,15 +1349,19 @@ Shadow:
 - dark purple viscous body;
 - smoke leakage.
 
-### Suggested PNG layers
+### Suggested production package
 
 ```text
+Character / Pet Visual VFX:
 shadow
 blob
 inner-core
 face
 front-gloss
 top-effect
+
+Combat VFX — Element Pulse:
+attack-cast, pulse, impact
 ```
 
 ### Suggested attachment points
@@ -1500,17 +1471,14 @@ Shadow:
 - navy-purple;
 - dark beam.
 
-### Suggested PNG layers
+### Suggested production package
 
 ```text
-shadow
-tail
-body-lower
-body-upper
-head
-jaw
-crest
-mouth-effect
+Character layers:
+shadow, tail, body-lower, body-upper, head, head-closed, jaw, crest
+
+Combat VFX — Element Lance:
+attack-cast, beam, impact
 ```
 
 ### Suggested attachment points
@@ -1616,19 +1584,14 @@ Light:
 Shadow:
 - void vortex.
 
-### Suggested PNG layers
+### Suggested production package
 
 ```text
-shadow
-rear-wing
-tail-fan
-body
-talons
-front-wing
-head
-crest
-wing-trail
-vortex
+Character layers:
+shadow, rear-wing, tail-fan, body, talons, front-wing, head, head-closed, crest
+
+Combat VFX — Cyclone Dive:
+attack-trail, vortex, impact
 ```
 
 ### Suggested attachment points

@@ -4,7 +4,7 @@
 
 - Mục đích: sản xuất asset và frontend preview, chạy Docker tại cổng 3333.
 - Đọc `README.md` và `docs/asset-workflow.md` để biết layout thực tế.
-- Nếu yêu cầu là tạo artwork cho một pet mới bằng ChatGPT Web, đọc `docs/chatgpt-pet-layer-factory.md` và `docs/pets-catalog.md` trước khi tạo ảnh.
+- Nếu yêu cầu là tạo artwork cho một pet mới bằng ChatGPT Web, bắt buộc đọc `docs/chatgpt-pet-layer-factory.md` trước khi tạo bất kỳ ảnh nào; sau đó đọc `docs/pets-catalog.md` và `packages/asset-core/src/petCatalog.ts` để resolve species recipe.
 - Contract thực thi: `packages/asset-core/src/types.ts`; ưu tiên contract này hơn ví dụ JSON bên dưới.
 - Rig dùng chung: `assets/rigs/`; mỗi lineage có ba cấp tiến hóa và pet kế thừa rig bằng `extends` trong `assets/pets/<lineage-id>/level-<n>/asset.json`.
 - `fox-quadruped` là rig mặc định cho Fox sản xuất mới; Fire Fox Level 1 và các pet legacy giữ rig/manifest hiện tại, không migrate ngầm.
@@ -17,8 +17,8 @@
 
 Đây là quy ước bắt buộc của dự án:
 
-- ChatGPT web chịu trách nhiệm tạo hoặc chỉnh sửa artwork raster bằng Image Generation.
-- Codex chịu trách nhiệm code, cấu trúc asset, tách nền/chuẩn hóa PNG bằng code, manifest, Phaser renderer, animation, ghép preview/master từ production layers, validation và Docker.
+- ChatGPT web chịu trách nhiệm tạo hoặc chỉnh sửa artwork raster bằng Image Generation: từng production layer, Pet Visual VFX và Combat VFX của đúng evolution stage, theo factory guide, catalog và executable recipe. Khi người dùng chỉ yêu cầu artwork, ChatGPT Web không chỉnh code.
+- Codex chịu trách nhiệm architecture, manifest, rig, renderer, Asset Studio, animation, validation, integration và tách nền/chuẩn hóa PNG bằng code; preview/master được ghép từ production layers.
 - Codex không tự gọi ImageGen cho dự án này. Khi thiếu artwork, hãy viết prompt production-ready và hướng dẫn đặt file vào `assets/inbox/`, rồi tiếp tục xử lý các phần code có thể làm độc lập.
 - Nếu ChatGPT web đọc được repo qua GitHub, đó chỉ là nguồn tham khảo cho prompt và contract. Không giả định ChatGPT web có thể commit/push PNG; kết nối GitHub chuẩn là read-only.
 - Không dùng ảnh placeholder để giả vờ là production asset.
@@ -185,38 +185,7 @@ Sau khi có production layers và manifest, Phaser/renderer ghép model để du
 
 ### 5. Tạo config
 
-Config là nguồn dữ liệu để renderer dựng model. Một cấu trúc khởi đầu:
-
-```json
-{
-  "id": "fire_fox",
-  "kind": "pet",
-  "canvas": { "width": 256, "height": 256 },
-  "displayScale": 1,
-  "origin": { "x": 0.5, "y": 1 },
-  "ground": { "x": 0.5, "y": 0.88 },
-  "layers": [
-    { "slot": "shadow", "texture": "fire_fox/shadow", "z": 0 },
-    { "slot": "body", "texture": "fire_fox/body", "z": 10 },
-    { "slot": "head", "texture": "fire_fox/head", "z": 20 },
-    {
-      "slot": "tail_effect",
-      "texture": "fire_fox/tail_fire",
-      "z": 30,
-      "attachTo": "tail_tip"
-    }
-  ],
-  "animations": {
-    "idle": "pet_idle_soft",
-    "walk": "pet_walk_quadruped",
-    "attack": "fire_fox_attack",
-    "hurt": "pet_hurt_soft"
-  },
-  "capabilities": ["blink", "tail_sway", "fire_effect"]
-}
-```
-
-Đây là schema định hướng, không phải API cố định. Khi codebase đã có type/schema thật, cập nhật file này để trỏ về nguồn chuẩn và không duy trì hai schema mâu thuẫn.
+Config là nguồn dữ liệu để renderer dựng model. Không duy trì schema minh họa song song: đọc contract thật tại `packages/asset-core/src/types.ts`, executable species recipe tại `packages/asset-core/src/petCatalog.ts` và manifest hiện có trong `assets/pets/<lineage-id>/level-<n>/asset.json`.
 
 ### 6. Tích hợp và kiểm tra trong Phaser
 

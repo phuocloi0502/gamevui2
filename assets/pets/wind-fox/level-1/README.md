@@ -1,5 +1,7 @@
 # Wind Fox
 
+> **LEGACY ASSET RECORD:** This file describes the existing `pet-base` package. Its reusable `leg.png` is historical compatibility data, not the four-independent-limb contract for new Fox artwork.
+
 - **PET_ID:** wind-fox
 - **EVOLUTION_LEVEL:** 1
 - **PET_NAME:** Wind Fox · Level 1

@@ -1,3 +1,5 @@
+> **LEGACY SOURCE RECORD:** This inventory records an approved asset that was split under the old workflow. Do not use it as the production contract for new pets; follow `docs/chatgpt-pet-layer-factory.md`.
+
 PET_ID: shadow-fox
 PET_NAME: Shadow Fox
 SPECIES: Fox

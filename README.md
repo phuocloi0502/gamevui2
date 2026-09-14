@@ -4,7 +4,16 @@ Repo sản xuất asset 2D và frontend preview; stack Phaser 3 + TypeScript + V
 
 Artwork được tạo ở ChatGPT web. Codex chỉ xử lý PNG đã nhận, code và preview. Đặt ảnh mới vào `assets/inbox/<lineage-id>/level-<n>/`, sau đó yêu cầu Codex tích hợp. Xem `docs/workflow-chatgpt-web-assets.md`.
 
-Nếu yêu cầu là tạo artwork cho một pet mới bằng ChatGPT Web, đọc `docs/chatgpt-pet-layer-factory.md` và Pet Catalog `docs/pets-catalog.md` trước khi tạo ảnh. Một câu ngắn như “Tạo pet Sói hệ Lửa Level 1 theo repo” phải đủ để bắt đầu toàn bộ package production layers.
+## Creating pet artwork with ChatGPT Web
+
+Nếu yêu cầu là tạo artwork cho pet mới bằng ChatGPT Web, đọc theo thứ tự:
+
+1. `docs/chatgpt-pet-layer-factory.md` — workflow bắt buộc và contract cho từng PNG.
+2. `docs/pets-catalog.md` — species identity, anatomy, role và combat identity.
+3. `packages/asset-core/src/petCatalog.ts` — executable recipe cuối cùng cho slot, filename, required/optional và runtime size.
+4. Rig, manifest và approved lineage reference liên quan nếu cần.
+
+Một câu ngắn như “Tạo pet Sói hệ Lửa Level 1 theo repo” phải đủ để ChatGPT Web tự dùng Pet Layer Factory và tạo toàn bộ production artwork package; không yêu cầu người dùng paste lại production prompt dài.
 
 Nếu ChatGPT web được kết nối GitHub, nó có thể đọc contract và asset đã commit để làm reference. PNG mới vẫn đi qua `assets/inbox/` trước khi Codex chuẩn hóa và đưa vào app.
 
@@ -37,6 +46,6 @@ production hiện tại trước khi cập nhật `public/assets/`.
 
 Fire Fox Level 1 đã có PNG alpha và 4 clip: idle, walk, attack, hurt. Preview có điều khiển clip, pause, scale, flip, tốc độ, nền và visibility từng layer. Đọc `assets/pets/fire-fox/level-1/PRODUCTION.md` để biết bản gốc, prompt và giới hạn của từng clip. Chạy `node scripts/test-core.mjs` để kiểm tra kế thừa và loop.
 
-Pet animation mới dùng workflow layer-first: tạo production PNG độc lập trước, ghép bằng Phaser, rồi mới export `master.png`/`preview.png` để duyệt. Không dùng master làm nguồn crop/tách layer. Xem contract chi tiết tại `docs/asset-workflow.md` và prompt Fox tại `docs/pet-art-prompt-template.md`.
+Pet animation mới dùng workflow layer-first: tạo production PNG độc lập trước, ghép bằng Phaser, rồi mới export `master.png`/`preview.png` để duyệt. Không dùng master làm nguồn crop/tách layer. Xem artwork contract tại `docs/chatgpt-pet-layer-factory.md` và integration contract tại `docs/asset-workflow.md`.
 
-Đọc `AGENTS.md` và `docs/asset-workflow.md` trước khi tạo asset.
+Đọc `AGENTS.md` và `docs/asset-workflow.md` trước khi tích hợp asset. Với artwork pet mới trên ChatGPT Web, entry-point luôn là `docs/chatgpt-pet-layer-factory.md`.

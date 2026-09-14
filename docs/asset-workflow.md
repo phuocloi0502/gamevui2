@@ -4,6 +4,8 @@
 
 Repo này sản xuất asset và frontend để kiểm tra chúng. Mục tiêu 100 pet dựa trên rig và clip tái sử dụng, không tạo renderer riêng cho từng pet. Nguồn type chuẩn là `packages/asset-core/src/types.ts`; ví dụ JSON trong tài liệu chỉ minh họa.
 
+Đối với artwork production của pet mới bằng ChatGPT Web, dùng `docs/chatgpt-pet-layer-factory.md` làm hướng dẫn chi tiết; file này chỉ mô tả workflow tích hợp và runtime contract.
+
 ## Nguyên tắc layer-first
 
 Với pet cần animation, production bắt đầu từ các artwork layer độc lập:
@@ -61,6 +63,8 @@ Fox bình thường dùng thứ tự sau; các layer ghi optional có thể bỏ
 | 10 | `particles` | optional |
 
 Pet visual VFX như `effect-back`, `effect-front`, `particles` là layer của model. Combat VFX là asset optional riêng theo từng evolution stage và bind qua `effects.attack`, gồm `cast`, `trail`, `projectile`, `impact` hoặc special semantic do species recipe khai báo. Chúng không phải layer render thường xuyên và không được suy ra từ `effect-front`. `effects.projectile` chỉ được giữ để đọc manifest legacy.
+
+Combat VFX giữ cùng skill identity qua Level 1/2/3 nhưng tăng dần độ mạnh hình ảnh; stage folder đã xác định version nên có thể dùng cùng filename như `impact.png`. `impact` thuộc attacker/skill và dùng chung với mọi target phù hợp; reaction/status của target không nằm trong pet artwork package.
 
 `rear-far`, `rear-near`, `front-far`, `front-near` phải trỏ tới bốn PNG production khác nhau. Không dùng một `leg.png` chung cho bốn instance trong contract Fox mới.
 

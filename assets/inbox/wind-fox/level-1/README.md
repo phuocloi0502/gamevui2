@@ -1,5 +1,7 @@
 # Wind Fox
 
+> **LEGACY SOURCE RECORD:** This inventory preserves an existing source package. Do not reuse its `leg.png` workflow for new Fox production; follow `docs/chatgpt-pet-layer-factory.md` and the executable recipe.
+
 - **PET_ID:** wind-fox
 - **PET_NAME:** Wind Fox
 - **ELEMENT:** wind

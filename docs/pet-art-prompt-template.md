@@ -1,6 +1,6 @@
 # Pet production prompt template — GameVui Asset Studio
 
-Đây là khung để tạo artwork raster cho pet mới bằng ChatGPT web. Nguồn species/element là `docs/pets-catalog.md`; contract runtime là `packages/asset-core/src/types.ts`.
+Đây là companion template chuyên cho Fox. Trước khi dùng, phải đọc `docs/chatgpt-pet-layer-factory.md`; species semantics nằm ở `docs/pets-catalog.md`, còn slot/filename/required/optional/runtimeSize cuối cùng do `packages/asset-core/src/petCatalog.ts` quyết định.
 
 ## Workflow bắt buộc
 
@@ -45,7 +45,7 @@ Level 1 gọn và tiết chế; Level 2 phát triển anatomy accent/element; Le
 - Mỗi anatomy layer phải hoàn chỉnh cả vùng thấy được và vùng sẽ bị che; khớp nối cần đủ hình để rotate/tween không hở.
 - Các layer phải nhất quán về camera 3/4, hướng nhìn, tỷ lệ, palette, ánh sáng, rendering và ground pose dù được tạo độc lập.
 - Không tạo animation frame, sprite sheet, GIF, video, code, JSON, ZIP, `master.png` hoặc `preview.png`.
-- Không tự đoán thêm layer. Chỉ tạo danh sách đã chốt trong specification.
+- Không phát minh slot ngoài executable recipe. Có thể tự chọn optional slot được recipe hỗ trợ khi nó làm rõ species, element, evolution hoặc combat identity; không tạo PNG rỗng.
 
 ## Fox production contract
 
@@ -70,6 +70,8 @@ effects/attack-cast.png    # optional; Combat VFX lúc chuẩn bị đánh
 effects/projectile.png     # optional; chỉ khi species recipe là ranged projectile
 effects/impact.png         # optional; Combat VFX độc lập tại mục tiêu
 ```
+
+Trong danh sách này, `effect-back`, `effect-front`, `particles` là Pet Visual VFX gắn với model. `attack-cast`, `projectile`, `impact` là Combat VFX của đúng evolution stage; chúng xuất hiện theo attack lifecycle và không tham gia z-order thường trực của pet.
 
 Bốn chân là bốn artwork khác nhau. Tuyệt đối không tạo một `leg.png` để reuse cho cả bốn chân trong Fox production mới. Mỗi chân phải có đúng phối cảnh xa/gần và trước/sau của nó, đồng thời có phần trên hoàn chỉnh để giấu dưới body.
 

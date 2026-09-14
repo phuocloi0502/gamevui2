@@ -1,5 +1,7 @@
 # Shadow Fox — Evolution Level 2
 
+> **LEGACY ASSET RECORD:** This records the already-integrated Shadow Fox package. Its shared leg texture and source rebuild steps are not instructions for new Fox production; use `docs/chatgpt-pet-layer-factory.md` and `packages/asset-core/src/petCatalog.ts`.
+
 Shadow Fox is a layered Phaser puppet integrated from the approved artwork in
 `assets/inbox/shadow-fox/level-2/`. The inbox files remain the immutable source package.
 
