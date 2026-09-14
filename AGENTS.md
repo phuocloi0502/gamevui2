@@ -6,6 +6,7 @@
 - Đọc `README.md` và `docs/asset-workflow.md` để biết layout thực tế.
 - Contract thực thi: `packages/asset-core/src/types.ts`; ưu tiên contract này hơn ví dụ JSON bên dưới.
 - Rig dùng chung: `assets/rigs/`; mỗi lineage có ba cấp tiến hóa và pet kế thừa rig bằng `extends` trong `assets/pets/<lineage-id>/level-<n>/asset.json`.
+- `fox-quadruped` là rig mặc định cho Fox sản xuất mới; Fire Fox Level 1 và các pet legacy giữ rig/manifest hiện tại, không migrate ngầm.
 - ID cấp tiến hóa dùng `<lineage-id>-level-<n>` và manifest bắt buộc có `lineageId`, `evolutionLevel` (1, 2 hoặc 3). Hiện có: Fire Fox Level 1, Water Fox Level 2, Wind Fox Level 1 và Shadow Fox Level 2.
 - PNG production: `public/assets/`; reference Fire Fox: `public/references/fire-fox/concept-board.png`.
 - Fire Fox Level 1 đã có PNG alpha và 4 clip puppet dùng chung; đọc `assets/pets/fire-fox/level-1/PRODUCTION.md` trước khi chỉnh sửa. Tai còn gắn đầu; vòng lửa biến dạng từ một ảnh.
@@ -16,7 +17,7 @@
 Đây là quy ước bắt buộc của dự án:
 
 - ChatGPT web chịu trách nhiệm tạo hoặc chỉnh sửa artwork raster bằng Image Generation.
-- Codex chịu trách nhiệm code, cấu trúc asset, tách nền/chuẩn hóa PNG bằng code, manifest, Phaser renderer, animation, preview, validation và Docker.
+- Codex chịu trách nhiệm code, cấu trúc asset, tách nền/chuẩn hóa PNG bằng code, manifest, Phaser renderer, animation, ghép preview/master từ production layers, validation và Docker.
 - Codex không tự gọi ImageGen cho dự án này. Khi thiếu artwork, hãy viết prompt production-ready và hướng dẫn đặt file vào `assets/inbox/`, rồi tiếp tục xử lý các phần code có thể làm độc lập.
 - Nếu ChatGPT web đọc được repo qua GitHub, đó chỉ là nguồn tham khảo cho prompt và contract. Không giả định ChatGPT web có thể commit/push PNG; kết nối GitHub chuẩn là read-only.
 - Không dùng ảnh placeholder để giả vờ là production asset.
@@ -55,7 +56,7 @@ Khi yêu cầu liên quan đến hình ảnh, model 2D, animation hoặc hiệu 
 
 Mục tiêu của hệ thống là:
 
-> Tạo asset gốc, đồng nhất về art direction, tách thành PNG trong suốt khi có ích, rồi dùng Phaser 3 + TypeScript để ghép layer và tạo animation chủ yếu bằng code.
+> Tạo các production layer gốc, đồng nhất về art direction và trong suốt, rồi dùng Phaser 3 + TypeScript để ghép preview/master và tạo animation chủ yếu bằng code.
 
 Asset bao gồm nhưng không giới hạn:
 
@@ -106,7 +107,7 @@ Dùng sprite sheet cho:
 
 Có thể dùng hybrid: body/head/tail chạy tween, mắt đổi texture để blink, effect chạy sprite sheet.
 
-Không yêu cầu AI tạo hàng loạt frame gần giống nhau nếu độ nhất quán không đáng tin cậy. Ưu tiên tạo một master design sạch, tách layer có chủ đích và để Phaser sinh chuyển động. Nếu cần sprite sheet, kiểm tra từng frame về hình dáng, palette, ánh sáng, scale và anchor trước khi dùng.
+Không yêu cầu AI tạo hàng loạt frame gần giống nhau nếu độ nhất quán không đáng tin cậy. Với pet cần animation, ưu tiên tạo trực tiếp các production layer có chủ đích và để Phaser ghép preview rồi sinh chuyển động. Không dùng master artwork để crop/tách và reconstruct layer làm workflow chuẩn cho pet mới. Nếu cần sprite sheet, kiểm tra từng frame về hình dáng, palette, ánh sáng, scale và anchor trước khi dùng.
 
 ## Quy trình cho một asset mới
 
@@ -140,44 +141,44 @@ Trước asset production quy mô lớn, ghi rõ:
 
 Với một dòng asset mới, hoàn thiện một flagship asset trước rồi kiểm chứng bằng asset thứ hai có anatomy khác. Không sản xuất hàng loạt khi renderer và animation contract chưa được chứng minh.
 
-### 3. Tạo master artwork
+### 3. Tạo production layers
 
-- Nền trong suốt nếu asset sẽ được đưa vào game.
-- Không để chữ, nhãn, UI, watermark hoặc background dính vào PNG production.
-- Không crop tai, đuôi, vũ khí, glow hoặc particle.
-- Ánh sáng và bóng đổ phải theo cùng quy ước của game.
-- Nếu shadow cần điều khiển độc lập, xuất shadow thành layer riêng.
-- Giữ master artwork hoàn chỉnh để làm chuẩn đối chiếu khi tách layer.
-
-### 4. Tách layer
-
-Chỉ tách các phần thực sự cần điều khiển độc lập. Mỗi layer phải:
+Với pet cần animation, production layers là source of truth và phải được tạo độc lập ngay từ đầu. Không dùng quy trình `master artwork → crop/tách → reconstruct` làm production chuẩn. Mỗi layer phải:
 
 - có alpha sạch, không viền nền hoặc halo bẩn;
-- khớp chính xác với master khi đặt tại anchor mặc định;
+- khớp đúng thiết kế chung khi renderer ghép tại anchor mặc định;
 - có canvas hoặc metadata đủ để ghép lại không đoán vị trí;
-- chứa phần hình bị che cần thiết để tránh lộ khoảng trống khi xoay/di chuyển;
+- là artwork hoàn chỉnh, gồm cả phần sẽ bị layer khác che, để tránh lộ khoảng trống khi xoay/di chuyển;
 - không chứa shadow/effect ngoài ý muốn.
+
+Chỉ tách phần cần z-order, tween/rotation, animation hoặc visibility/state riêng. Không over-split nếu không có lợi ích animation.
 
 Các slot phổ biến, đều là tùy chọn:
 
 ```text
 shadow
-back_effect
-back_appendage
+effect-back
+tail_or_appendage
 body
-rear_limb
-front_limb
+independent_limbs
 head
 ears_or_horns
 face
 eyes
 equipment
-front_appendage
-front_effect
+effect-front
+particles
 ```
 
 Tên slot mô tả vai trò render, không bắt buộc tên anatomy cụ thể.
+
+Fox sản xuất mới mặc định dùng `shadow`, `effect-back`, `tail`, `rear-far`, `rear-near`, `body`, `front-far`, `front-near`, `head` với `closedSrc`, `effect-front`, `particles`; các layer effect/particles/shadow/blink là optional. Bốn chân là bốn artwork riêng, không dùng một `leg.png` chung. Evolution đặc biệt có thể thay `tail` bằng nhiều ID string như `tail-left-outer` hoặc `tail-center`; manifest và clip target trực tiếp các ID đó, renderer không được hard-code số lượng đuôi.
+
+Pivot chân đặt gần khớp nối với body, tail tại gốc đuôi và head gần cổ.
+
+### 4. Ghép preview/master
+
+Sau khi có production layers và manifest, Phaser/renderer ghép model để duyệt. `master.png`/`preview.png` là kết quả kiểm chứng cuối cùng được render từ production layers, không phải source để cắt layer.
 
 ### 5. Tạo config
 
@@ -260,7 +261,6 @@ assets/
   <kind>/
     <lineage-id>/
       level-<n>/
-        master.png
         layers/
           <slot>.png
         effects/
@@ -268,6 +268,7 @@ assets/
         animations/
           <clip-name>.png
         asset.json
+        # master.png / preview.png chỉ thêm sau khi render từ layers để kiểm chứng
 ```
 
 Quy ước:

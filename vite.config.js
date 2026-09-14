@@ -5,7 +5,7 @@ import { access, copyFile, mkdir, readFile, readdir, writeFile } from "node:fs/p
 const manifestRoot = resolve(process.cwd(), "assets/pets");
 const inboxRoot = resolve(process.cwd(), "assets/inbox");
 const publicPetRoot = resolve(process.cwd(), "public/assets/pets");
-const knownRigs = new Set(["pet-base", "quadruped-base", "hopper-base", "tank-base", "winged-base", "blob-base", "serpent-base"]);
+const knownRigs = new Set(["pet-base", "quadruped-base", "fox-quadruped", "hopper-base", "tank-base", "winged-base", "blob-base", "serpent-base"]);
 
 const exists = async (file) => {
   try { await access(file); return true; } catch { return false; }

@@ -1,11 +1,14 @@
 import { build } from 'esbuild';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 const result=await build({entryPoints:['packages/asset-core/src/resolve.ts'],bundle:true,write:false,format:'esm',platform:'node'});
 const {resolvePet}=await import('data:text/javascript;base64,'+Buffer.from(result.outputFiles[0].text).toString('base64'));
 const pet=JSON.parse(readFileSync('assets/pets/fire-fox/level-1/asset.json'));
 const rig=JSON.parse(readFileSync('assets/rigs/pet-base.json'));
-const registry={[rig.id]:rig};
+const registry=Object.fromEntries(readdirSync('assets/rigs').filter(file=>file.endsWith('.json')).map(file=>{
+ const candidate=JSON.parse(readFileSync(`assets/rigs/${file}`));
+ return [candidate.id,candidate];
+}));
 const resolved=resolvePet(pet,registry);
 assert.equal(resolved.rig.clips.walk.loop,true);
 assert.equal(resolved.rig.clips.attack.event.name,'projectile');
@@ -31,4 +34,27 @@ for (const [file, level] of [['fire-fox', 1], ['water-fox', 2], ['wind-fox', 1],
   assert.ok(layerIds.has(track.target),`${file}: missing override target ${track.target}`);
  }
 }
-console.log('PASS: inheritance, overrides, missing/duplicate/parent validation, optional anatomy, loop seams');
+const foxRig=registry['fox-quadruped'];
+assert.ok(foxRig,'fox-quadruped rig is registered');
+const foxTargets=new Set(Object.values(foxRig.clips).flatMap(clip=>clip.tracks.map(track=>track.target)));
+for(const target of ['body','head','tail','rear-far','rear-near','front-far','front-near']) assert.ok(foxTargets.has(target),`fox rig target: ${target}`);
+
+const multiTailIds=['tail-left-outer','tail-left-inner','tail-center','tail-right-inner','tail-right-outer'];
+const syntheticMultiTail={...pet,id:'test-fox-level-3',lineageId:'test-fox',evolutionLevel:3,extends:'fox-quadruped',layers:[
+ {id:'body',src:'/body.png',x:0,y:0,originX:.5,originY:.5,z:5},
+ {id:'head',src:'/head.png',x:0,y:0,originX:.5,originY:.88,z:8},
+ ...multiTailIds.map((id,index)=>({id,src:`/${id}.png`,x:0,y:0,originX:.85,originY:.85,z:index})),
+],overrides:{clips:{idle:{duration:1800,loop:true,tracks:multiTailIds.map(id=>({target:id,property:'angle',values:[-4,4,-4]}))}}}};
+const resolvedMultiTail=resolvePet(syntheticMultiTail,registry);
+assert.deepEqual(resolvedMultiTail.rig.clips.idle.tracks.map(track=>track.target),multiTailIds);
+
+const catalogBuild=await build({entryPoints:['packages/asset-core/src/petCatalog.ts'],bundle:true,write:false,format:'esm',platform:'node'});
+const {speciesTemplate}=await import('data:text/javascript;base64,'+Buffer.from(catalogBuild.outputFiles[0].text).toString('base64'));
+const foxTemplate=speciesTemplate('fox');
+assert.equal(foxTemplate.rig,'fox-quadruped');
+for(const id of ['rear-far','rear-near','front-far','front-near']) {
+ const slot=foxTemplate.slots.find(candidate=>candidate.id===id);
+ assert.equal(slot.file,`${id}.png`,`${id} must use independent production artwork`);
+}
+assert.ok(!foxTemplate.slots.some(slot=>slot.file==='leg.png'),'new Fox template must not reuse leg.png');
+console.log('PASS: inheritance, overrides, rig targets, dynamic multi-tail IDs, independent Fox legs, optional anatomy, loop seams');

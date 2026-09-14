@@ -1,210 +1,190 @@
-# Pet prompt template — GameVui Asset Studio
+# Pet production prompt template — GameVui Asset Studio
 
-Đây là khung để Codex điền prompt cho từng pet dựa trên `docs/pets-catalog.md`. Không gửi nguyên file này sang ChatGPT web.
+Đây là khung để tạo artwork raster cho pet mới bằng ChatGPT web. Nguồn species/element là `docs/pets-catalog.md`; contract runtime là `packages/asset-core/src/types.ts`.
 
-Workflow có đúng hai giai đoạn:
+## Workflow bắt buộc
 
 ```text
-Giai đoạn 1: full preview PNG → người dùng duyệt / yêu cầu sửa
-Giai đoạn 2: chỉ sau APPROVED → tạo các ảnh PNG layer độc lập
+specification → production layers độc lập → asset.json + rig → Phaser preview/master → duyệt
 ```
 
-Catalog có 50 lineage theo dạng `<element>-<species>` với 10 species và 5 element. Mỗi lineage có ba cấp tiến hóa; stage ID là `<element>-<species>-level-<1|2|3>`. Cùng một species phải giữ nguyên silhouette; element chỉ thay palette, material, particle, aura, projectile/VFX và behavior nhỏ. Không tạo renderer riêng cho từng pet.
+Production layer là source of truth. Không bắt đầu bằng full/master artwork rồi crop, tách hoặc reconstruct để tạo layer. `master.png`/`preview.png` chỉ được export từ bộ production layers sau khi tích hợp; ChatGPT web không tạo chúng trong bước sản xuất PNG.
 
-## Thông tin Codex phải lấy từ catalog
+Concept/full-art cũ chỉ được dùng làm reference cho identity, silhouette và art direction. Mỗi layer phải được tạo mới như một artwork hoàn chỉnh, bao gồm cả phần sẽ bị layer khác che.
+
+Chỉ yêu cầu layer riêng khi cần z-order, tween/rotation, animation hoặc visibility/state riêng. Không over-split lông, tai, mặt hay effect nếu renderer không cần điều khiển chúng riêng.
+
+## Thông tin cần điền
 
 ```text
 PET_ID: <element-species, lowercase-kebab-case>
-EVOLUTION_LEVEL: <1 / 2 / 3>
+EVOLUTION_LEVEL: <1 | 2 | 3>
 PET_NAME: <display name>
-SPECIES: <species section trong docs/pets-catalog.md>
-ELEMENT: <fire / water / wind / light / shadow>
-RARITY: <do người dùng chỉ định; catalog không tự định nghĩa rarity>
-ROLE: <species role trong catalog>
-RANGE: <species attack range trong catalog>
-MAIN_SKILL: <species main skill trong catalog>
-SILHOUETTE: <species silhouette trong catalog>
-PARTS: <species-specific parts trong catalog>
-ELEMENT_BEHAVIOR: <element behavior trong catalog>
+SPECIES: <species trong docs/pets-catalog.md>
+ELEMENT: <fire | water | wind | light | shadow>
+RARITY: <do người dùng chỉ định>
+ROLE: <species role>
+RANGE: <species attack range>
+MAIN_SKILL: <species main skill>
+SILHOUETTE: <species silhouette>
+PARTS: <species-specific parts>
+ELEMENT_BEHAVIOR: <element behavior>
+PRODUCTION_LAYERS: <danh sách layer cần thiết>
 ```
 
-Tiến hóa phải đọc rõ nhưng vẫn cùng một lineage:
+Level 1 gọn và tiết chế; Level 2 phát triển anatomy accent/element; Level 3 có silhouette và VFX mạnh nhất nhưng vẫn cùng lineage, cute/chibi và dễ đọc. Không biến evolution thành species khác.
 
-- Level 1: hình thể nhỏ/gọn, chi tiết và VFX tiết chế;
-- Level 2: anatomy accents phát triển hơn, element rõ hơn;
-- Level 3: silhouette và VFX mạnh nhất nhưng vẫn cute/chibi và dễ đọc.
+## Contract PNG dùng chung
 
-Không biến cấp tiến hóa thành species khác. Mỗi level có một bộ PNG riêng và không ghi đè artwork của level khác.
+- Mỗi output là một PNG riêng, chỉ chứa đúng slot được yêu cầu.
+- Nền trong suốt thật; nếu công cụ không hỗ trợ, dùng cyan phẳng tuyệt đối `#00FFFF`, không checkerboard giả, gradient hay cyan reflection.
+- Không text, label, logo, watermark, UI, frame hoặc background cảnh.
+- Không lẫn body part, ground shadow hoặc effect của slot khác.
+- Không crop silhouette, fur, glow, smoke hoặc particle thuộc chính slot.
+- Safe padding đủ cho filtering và chuyển động.
+- Mỗi anatomy layer phải hoàn chỉnh cả vùng thấy được và vùng sẽ bị che; khớp nối cần đủ hình để rotate/tween không hở.
+- Các layer phải nhất quán về camera 3/4, hướng nhìn, tỷ lệ, palette, ánh sáng, rendering và ground pose dù được tạo độc lập.
+- Không tạo animation frame, sprite sheet, GIF, video, code, JSON, ZIP, `master.png` hoặc `preview.png`.
+- Không tự đoán thêm layer. Chỉ tạo danh sách đã chốt trong specification.
 
-Với Fox, phải giữ: low quadruped body, oversized chibi head, large triangular ears, short legs, very large curved tail; role agile elemental caster; range medium; skill `Element Tail Bolt`.
+## Fox production contract
 
-## Giai đoạn 1 — prompt tạo full preview mở mắt và nhắm mắt
+Fox giữ low quadruped body, oversized chibi head, large triangular ears, short legs và tail lớn; role agile elemental caster, range medium, skill `Element Tail Bolt`.
 
-Mục tiêu là tạo **đúng hai PNG tổng thể** để duyệt: một bản mở mắt như artwork chính và một bản nhắm mắt để làm chuẩn cho `head-closed.png` ở giai đoạn package. Hai ảnh phải là cùng một pet, cùng một thiết kế và cùng một bố cục; bản thứ hai chỉ thay đổi trạng thái mắt.
+Fox bình thường dùng các file sau:
 
 ```text
-Tạo đúng HAI ảnh PNG tổng thể cho pet game 2D fantasy sau đây. Đây là hai bản preview để người dùng duyệt, chưa phải yêu cầu tạo package.
+layers/shadow.png          # optional
+effects/effect-back.png    # optional
+layers/tail.png
+layers/rear-far.png
+layers/rear-near.png
+layers/body.png
+layers/front-far.png
+layers/front-near.png
+layers/head.png
+layers/head-closed.png     # optional blink variant qua closedSrc
+effects/effect-front.png   # optional; có thể dùng làm projectile
+effects/particles.png      # optional
+```
 
-ẢNH 1 — BẢN CHÍNH MỞ MẮT:
-- Pet ở trạng thái idle/ground pose chuẩn, mắt mở rõ ràng.
-- Tên file: <PET_ID>-preview-open.png.
+Bốn chân là bốn artwork khác nhau. Tuyệt đối không tạo một `leg.png` để reuse cho cả bốn chân trong Fox production mới. Mỗi chân phải có đúng phối cảnh xa/gần và trước/sau của nó, đồng thời có phần trên hoàn chỉnh để giấu dưới body.
 
-ẢNH 2 — BẢN ĐỒNG BỘ NHẮM MẮT:
-- Sao chép chính xác thiết kế, canvas, vị trí, scale, silhouette, lighting, palette, shadow và effect của ẢNH 1.
-- Chỉ thay đôi mắt thành trạng thái nhắm tự nhiên, dễ đọc; không đổi biểu cảm, hình dạng đầu, lông mặt hoặc bất kỳ bộ phận nào khác.
-- Tên file: <PET_ID>-preview-closed.png.
+Pivot dự kiến khi tích hợp:
 
-Không tạo thêm ảnh thứ ba, biến thể, góc nhìn khác hoặc pose khác.
+- `rear-far`, `rear-near`, `front-far`, `front-near`: gần khớp nối trên của chân với body;
+- `tail` và từng tail group: tại gốc đuôi;
+- `head`: gần cổ;
+- effect/particles: tại attachment tự nhiên của effect.
+
+`head.png` và `head-closed.png` phải có cùng canvas, kích thước, vị trí pixel, silhouette, ánh sáng và pivot; chỉ trạng thái mắt thay đổi. Tai mặc định nằm trong head, trừ khi thật sự cần animation riêng.
+
+Z-order mặc định từ sau ra trước:
+
+```text
+shadow
+effect-back
+tail hoặc tail groups
+rear-far
+rear-near
+body
+front-far
+front-near
+head
+effect-front
+particles
+```
+
+Optional layer không có trong thiết kế thì bỏ hẳn, không tạo PNG rỗng.
+
+### Multi-tail / evolution đặc biệt
+
+Evolution đặc biệt được thay `tail.png` bằng số lượng tail layer cần thiết, ví dụ:
+
+```text
+layers/tail-left-outer.png
+layers/tail-left-inner.png
+layers/tail-center.png
+layers/tail-right-inner.png
+layers/tail-right-outer.png
+```
+
+Mỗi tail là artwork độc lập, hoàn chỉnh, có gốc đuôi rõ để đặt pivot và có ID kebab-case tương ứng trong manifest. Không gộp thành một texture nhiều đuôi nếu các đuôi cần z-order hoặc animation riêng. Không bắt buộc số lượng cụ thể và không đặt tên theo enum “nine-tail”.
+
+## Prompt production cho Fox mới
+
+```text
+Tạo bộ PRODUCTION LAYERS độc lập cho pet game 2D sau. Không tạo full artwork, master hoặc preview trước.
 
 PET_ID: <PET_ID>
 EVOLUTION_LEVEL: <EVOLUTION_LEVEL>
 Tên: <PET_NAME>
-Species: <SPECIES>
+Species: Fox
 Element: <ELEMENT>
 Rarity: <RARITY>
-Role: <ROLE>
-Attack range: <RANGE>
-Main skill: <MAIN_SKILL>
+Role: agile elemental caster
+Attack range: medium
+Main skill: Element Tail Bolt
 
-BẮT BUỘC TUÂN THỦ SPECIES CATALOG:
-- Giữ nguyên silhouette/anatomy nhận diện của <SPECIES>: <SILHOUETTE>.
-- Element <ELEMENT> chỉ thay palette, material, particle, aura, projectile/VFX và behavior nhỏ.
-- Không biến pet thành species khác, không đổi anatomy để làm effect nổi bật.
-- Species-specific parts phải gồm: <PARTS>.
-- Element behavior phải theo catalog: <ELEMENT_BEHAVIOR>.
+IDENTITY VÀ ART DIRECTION:
+- Cute/chibi fantasy cùng thế giới với các Fox reference đã cung cấp, nhưng là thiết kế gốc.
+- Low quadruped body, đầu chibi lớn, tai tam giác lớn, bốn chân ngắn, đuôi lớn; góc nhìn 3/4 và quay cùng một hướng ở mọi layer.
+- Rendering painterly mềm, gradient có chiều sâu, silhouette rõ ở kích thước gameplay nhỏ.
+- Giữ nhất quán tuyệt đối camera, tỷ lệ, palette, lighting, material và ground pose giữa mọi PNG.
+- Element behavior: <ELEMENT_BEHAVIOR>.
+- Evolution treatment: <mô tả level nhưng không đổi species>.
 
-ART DIRECTION:
-- Cùng thế giới cute/chibi fantasy với Fire Fox, Water Fox và Wind Fox.
-- Rendering painterly mềm, gradient giàu chiều sâu, silhouette rõ ở kích thước gameplay nhỏ.
-- Pet <RARITY> được thể hiện bằng chất liệu, ánh sáng, tỷ lệ tinh tế và VFX; không nhồi chi tiết làm rối silhouette.
-- Reference chỉ dùng cho art direction, tỷ lệ và ground pose; không sao chép khuôn mặt, pattern, pose hoặc thiết kế nhận diện.
+SOURCE-OF-TRUTH:
+- Chính các PNG layer là artwork production và là source of truth.
+- Tạo từng bộ phận trực tiếp như artwork độc lập; không crop/tách từ full artwork và không dựa vào việc reconstruct sau đó.
+- Vẽ đầy đủ cả phần sẽ bị body/head/tail khác che để mỗi layer rotate/tween không lộ khoảng trống.
 
-OUTPUT:
-- Chỉ xuất đúng hai PNG đầy đủ ở trên, mỗi ảnh gồm pet hoàn chỉnh và effect đặc trưng.
-- Canvas vuông khuyến nghị 1254×1254 px hoặc lớn hơn để giữ chi tiết.
-- Hai ảnh phải có cùng canvas và cùng vị trí pixel của subject; subject ở giữa, safe padding rộng quanh mọi bộ phận, glow, khói và particle.
-- Không crop tai, đuôi, vũ khí, glow hoặc particle.
-- Không chữ, label, logo, watermark, UI, frame, background cảnh hoặc shadow dính vào pet.
-- Nền trong suốt thật nếu hỗ trợ; nếu không, nền cyan phẳng tuyệt đối #00FFFF.
-- Không checkerboard giả transparency, không cyan halo và không cyan phản chiếu lên subject.
-- Nền trong suốt/nền cyan phải giống hệt nhau giữa hai ảnh.
-- Tên file bắt buộc: `<PET_ID>-preview-open.png` và `<PET_ID>-preview-closed.png`.
+OUTPUT CHÍNH XÁC:
+<liệt kê các file bắt buộc và optional đã chọn từ Fox production contract>
 
-DỪNG SAU KHI TẠO ĐỦ HAI PNG NÀY. Không tạo layer, không tạo ZIP, không tạo animation frame và không tạo asset.json.
+QUY TẮC CHÂN:
+- rear-far.png, rear-near.png, front-far.png, front-near.png là bốn artwork chân độc lập.
+- Mỗi chân thể hiện đúng vị trí trước/sau và near/far, có phần khớp trên hoàn chỉnh, không chứa body hay chân khác.
+- Không tạo leg.png dùng chung.
+
+QUY TẮC HEAD:
+- head.png chứa head/face và tai nếu tai không được tách riêng theo specification.
+- head-closed.png (nếu yêu cầu) overlay chính xác với head.png và chỉ đổi mắt sang nhắm.
+
+QUY TẮC TAIL:
+- Mỗi tail layer là một artwork hoàn chỉnh với gốc đuôi rõ và padding đủ khi xoay.
+- Nếu specification dùng multi-tail, tạo đúng từng tail ID đã liệt kê; không tạo thêm tail và không gộp các tail cần animation riêng.
+
+QUY TẮC FILE:
+- Mỗi file là một PNG riêng, isolated subject, clean alpha/transparent background.
+- Không chữ, watermark, UI, frame, scenery, checkerboard giả hoặc thành phần của slot khác.
+- Không crop; giữ safe padding quanh toàn bộ slot.
+- Không tạo JSON, code, ZIP, animation frame, sprite sheet, master.png hay preview.png.
+
+Trả từng PNG riêng với đúng tên file và dừng khi đủ danh sách.
 ```
 
-## Giai đoạn 2 — prompt tạo ảnh layer sau khi full preview đã APPROVED
+## Baseline runtime cho Fox bình thường
 
-Prompt này được gửi riêng sau khi người dùng đã duyệt cả hai PNG. Đính kèm lại chính xác `<PET_ID>-preview-open.png` và `<PET_ID>-preview-closed.png` đã duyệt.
+Đây là kích thước khởi đầu của template Asset Studio, không phải yêu cầu ép méo source. Codex có thể điều chỉnh theo anatomy sau khi kiểm tra.
 
-```text
-ĐÂY LÀ CÔNG ĐOẠN TẠO ẢNH LAYER SAU KHI ARTWORK ĐÃ ĐƯỢC DUYỆT.
-
-Ảnh reference:
-- `<PET_ID>-preview-open.png` là artwork mở mắt đã APPROVED.
-- `<PET_ID>-preview-closed.png` là artwork nhắm mắt đã APPROVED.
-
-MỤC TIÊU:
-- Dùng hai artwork APPROVED làm chuẩn nhận diện và art direction.
-- Tạo mới từng bộ phận thành ảnh PNG độc lập để Codex ghép trong Phaser.
-- Đây là tác vụ Image Generation/image editing có kiểm soát, không phải thao tác crop ảnh cơ học.
-- Không tạo ZIP, thư mục package, README, JSON hoặc code.
-
-ĐƯỢC PHÉP TẠO MỚI VÀ RECONSTRUCT:
-- Chủ động vẽ lại từng bộ phận như một artwork layer hoàn chỉnh dựa trên thiết kế APPROVED.
-- Vẽ đầy đủ cả vùng đang thấy và vùng bị các bộ phận khác che khuất.
-- Được làm sạch biên, sửa vùng giao nhau, bổ sung lông/texture/ánh sáng hợp lý và điều chỉnh nhẹ hình học ở phần bị che để layer hoạt động độc lập.
-- Được suy luận chi tiết không nhìn thấy khi cần, miễn là tự nhiên, đúng anatomy, cùng art style và khi ghép lại vẫn tái hiện đúng pet APPROVED.
-- Không cần giữ nguyên từng pixel của preview. Ưu tiên layer sạch, hoàn chỉnh và dùng tốt cho animation hơn việc crop chính xác từng pixel.
-- Vùng nhìn thấy rõ trong preview vẫn là chuẩn chính cho identity, màu sắc, chất liệu, hình dáng và lighting.
-- `body.png`, `leg.png` và `tail.png` phải là bộ phận hoàn chỉnh, không phải mảnh crop bị thiếu.
-- `head-closed.png` dùng ảnh nhắm mắt APPROVED làm chuẩn, khớp canvas/alignment với `head.png` và chỉ khác trạng thái mắt.
-- `elemental-effect.png` được phép tái tạo sạch, đầy đủ và cân đối theo ngôn ngữ VFX trong preview.
-
-GIỚI HẠN SÁNG TẠO:
-- Không đổi species, evolution level, identity, khuôn mặt, silhouette tổng thể, tỷ lệ, hướng nhìn, palette chính hoặc combat identity.
-- Không thêm anatomy, phụ kiện, pattern, spell hoặc dấu hiệu nhận diện mới không có cơ sở từ artwork APPROVED.
-- Không tạo full preview mới, biến thể mới, pose mới hoặc góc nhìn mới.
-- Không tạo animation frame, sprite sheet, GIF, video, code hoặc manifest JSON.
-
-DANH SÁCH ẢNH PHẢI TẠO:
-- `body.png`
-- `head.png`
-- `head-closed.png`
-- `tail.png`
-- `leg.png`
-- `shadow.png`
-- `elemental-effect.png`
-
-QUY TẮC ẢNH:
-- Mỗi output là một PNG riêng và chỉ chứa đúng bộ phận của slot đó.
-- Bộ phận phải hoàn chỉnh cả phần nhìn thấy và phần được reconstruct, đủ để xoay/tween không lộ khoảng trống.
-- Không crop tai, đuôi, glow, smoke hoặc particle thuộc chính slot đó.
-- Không chứa text, watermark, UI, frame, bộ phận khác, shadow hoặc effect ngoài slot.
-- `head.png` và `head-closed.png` phải cùng canvas, kích thước, alignment, silhouette và lighting.
-- `leg.png` là một texture chân hoàn chỉnh có thể reuse khi species cho phép.
-- `shadow.png` chỉ chứa ground shadow.
-- `elemental-effect.png` chỉ chứa effect, không chứa body, head, tail hoặc ground shadow.
-- Nền trong suốt thật nếu hỗ trợ; nếu không, dùng cyan phẳng tuyệt đối `#00FFFF`, không gradient và không phản chiếu cyan lên artwork.
-
-KHÔNG TẠO `asset.json`:
-- Codex sẽ tạo manifest theo `packages/asset-core/src/types.ts`.
-- Không tự đoán schema hoặc thêm field không có trong contract.
-
-SAU KHI TẠO ĐỦ ẢNH:
-- Kiểm tra có đúng bảy PNG và mọi ảnh mở được.
-- Trả từng PNG riêng với đúng tên file; không đóng ZIP.
-- Không tạo thêm file ngoài danh sách.
-```
-
-## Slot và kích thước runtime baseline cho Fox
-
-Các kích thước này lấy từ Fire Fox/Wind Fox runtime hiện tại. Species khác anatomy không được ép dùng Fox layout.
-
-| Slot | Runtime PNG | Nội dung |
+| Slot | Runtime baseline | Pivot/origin gợi ý |
 |---|---:|---|
-| `master.png` / `preview.png` | 600×600 | Bản ghép preview trong Asset Studio |
-| `body.png` | 308×225 | Body/chest, không head/tail/legs |
-| `head.png` | 302×318 | Head + hai tai + face |
-| `head-closed.png` | 302×318 | Overlay chính xác với head mở |
-| `tail.png` | 228×220 | Một large curved tail hoàn chỉnh |
-| `leg.png` | 70×123 | Một leg texture reuse cho bốn instance |
-| `shadow.png` | 320×64 | Ground shadow riêng |
-| `elemental-effect.png` | 101×163 | Tail effect/projectile tĩnh tham chiếu |
+| `shadow` | 320×64 | center |
+| `tail` | 228×220 | gốc đuôi, khoảng `0.85, 0.85` |
+| mỗi chân | 70×123 | khớp trên, khoảng `0.5, 0.15` |
+| `body` | 308×225 | center |
+| `head`, `head-closed` | 302×318 | gần cổ, khoảng `0.5, 0.88` |
 
-Fox slots:
-
-```text
-shadow
-tail
-element-tail-effect
-rear-leg-far
-front-leg-far
-body
-rear-leg-near
-front-leg-near
-head
-head-closed
-```
-
-Fox anchors cần bảo toàn khi tách:
-
-```text
-root
-ground
-head-root
-mouth
-tail-root
-tail-tip
-projectile-origin
-```
+Effect và multi-tail không có kích thước cứng; chọn canvas đủ padding và khai báo transform trong `asset.json`.
 
 ## Handoff cho Codex
 
-Sau khi người dùng tải các PNG:
+Đặt file vào:
 
 ```text
-assets/inbox/<PET_ID>/level-<EVOLUTION_LEVEL>/
+assets/inbox/<PET_ID>/level-<EVOLUTION_LEVEL>/layers/
+assets/inbox/<PET_ID>/level-<EVOLUTION_LEVEL>/effects/
 ```
 
-Codex sẽ kiểm tra alpha/kích thước/crop/halo, chuẩn hóa PNG sang `public/assets/pets/<PET_ID>/level-<EVOLUTION_LEVEL>/`, tạo `assets/pets/<PET_ID>/level-<EVOLUTION_LEVEL>/asset.json`, chọn rig phù hợp, preview và validation. Không đổi `status` thành `ready` trước khi kiểm tra trực tiếp.
+Codex kiểm tra alpha/kích thước/crop/halo, giữ source, chuẩn hóa sang `public/assets/pets/`, tạo manifest dùng `fox-quadruped`, ghép preview bằng Phaser và chỉ sau đó mới export `master.png`/`preview.png`. Không đổi status thành `ready` trước validation.

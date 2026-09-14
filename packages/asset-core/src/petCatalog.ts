@@ -54,18 +54,20 @@ export const PET_ELEMENTS: Array<{ id: PetElement; name: string; color: number }
 
 export const SPECIES_TEMPLATES: SpeciesTemplate[] = [
   {
-    id: 'fox', name: 'Fox', archetype: 'quadruped', rig: 'quadruped-base', validated: true,
+    id: 'fox', name: 'Fox', archetype: 'quadruped', rig: 'fox-quadruped', validated: true,
     slots: [
       shadow({ width: 320, height: 64 }),
-      upload('tail', 'Đuôi', [layer('tail', -65, -105, .85, .85, 1, .75)], false, { width: 228, height: 220 }),
-      effect('elemental-effect', 'Effect nguyên tố ở đuôi', layer('element-effect', -158, -145, .5, .95, 2, .95, 'tail'), true, { width: 101, height: 163 }),
-      upload('leg', 'Một chân dùng lại 4 lần', [
-        layer('rear-far', -53, -79, .5, .15, 3, .72), layer('front-far', 59, -81, .5, .15, 4, .74),
-        layer('rear-near', -74, -87, .5, .15, 6, .84), layer('front-near', 28, -90, .5, .15, 7, .86),
-      ], false, { width: 70, height: 123 }),
+      effect('effect-back', 'Effect phía sau', layer('effect-back', 0, -120, .5, .5, 1), false),
+      upload('tail', 'Đuôi', [layer('tail', -65, -105, .85, .85, 2, .75)], false, { width: 228, height: 220 }),
+      upload('rear-far', 'Chân sau · xa', [layer('rear-far', -53, -79, .5, .15, 3, .72)], false, { width: 70, height: 123 }),
+      upload('rear-near', 'Chân sau · gần', [layer('rear-near', -74, -87, .5, .15, 4, .84)], false, { width: 70, height: 123 }),
       upload('body', 'Thân', [layer('body', 0, -117, .5, .5, 5, .68)], false, { width: 308, height: 225 }),
+      upload('front-far', 'Chân trước · xa', [layer('front-far', 59, -81, .5, .15, 6, .74)], false, { width: 70, height: 123 }),
+      upload('front-near', 'Chân trước · gần', [layer('front-near', 28, -90, .5, .15, 7, .86)], false, { width: 70, height: 123 }),
       upload('head', 'Đầu mở mắt', [layer('head', 39, -151, .5, .88, 8, .78)], false, { width: 302, height: 318 }),
       closed('head', { width: 302, height: 318 }),
+      effect('effect-front', 'Effect phía trước / projectile', layer('effect-front', 90, -145, .5, .5, 9), true),
+      effect('particles', 'Particles', layer('particles', 0, -135, .5, .5, 10), false),
     ],
   },
   {

@@ -21,12 +21,12 @@ Chạy `docker compose up -d --build`, mở http://localhost:3333.
 Kiểm tra build: `docker compose exec preview npm run build`.
 Dừng: `docker compose down`. Sau khi đổi dependency: `docker compose run --rm preview npm ci` rồi khởi động lại.
 
-Frontend tự tìm `assets/pets/*/level-*/asset.json`, không cần thêm route hoặc viết class mới cho từng pet. Mỗi lineage có tối đa ba cấp `level-1`, `level-2`, `level-3`. Fire Fox Level 1 kế thừa `pet-base` qua trường `extends`; override chỉ chứa khác biệt của nó.
+Frontend tự tìm `assets/pets/*/level-*/asset.json`, không cần thêm route hoặc viết class mới cho từng pet. Mỗi lineage có tối đa ba cấp `level-1`, `level-2`, `level-3`. Fire Fox Level 1 tiếp tục kế thừa legacy `pet-base`; Fox sản xuất mới dùng `fox-quadruped` và bốn PNG chân độc lập.
 
 Asset Studio có form **Tạo pet từ layer**. Chọn một trong 10 species và element,
 chọn Level 1/2/3 rồi upload các PNG trong suốt theo recipe hiển thị. Hệ thống giữ bản gốc trong
 `assets/inbox/<lineage>/level-<n>/`, tạo runtime files + manifest và dùng rig thuộc một trong
-6 nhóm: quadruped, hopper, tank, winged, blob hoặc serpent. Sau khi tạo có thể
+6 nhóm: quadruped, hopper, tank, winged, blob hoặc serpent. Template Fox dùng rig chuyên biệt `fox-quadruped`; các layer optional hoặc evolution multi-tail vẫn được mô tả hoàn toàn bằng manifest. Sau khi tạo có thể
 chỉnh X/Y/scale/origin/z của từng layer và tự lưu vào `asset.json`.
 Pet đã có cũng có thể dùng **Thay ảnh pet** để đổi một hoặc nhiều PNG đang được manifest tham chiếu.
 Studio giữ ảnh upload mới và bản runtime trước đó theo revision trong
@@ -34,5 +34,7 @@ Studio giữ ảnh upload mới và bản runtime trước đó theo revision tr
 production hiện tại trước khi cập nhật `public/assets/`.
 
 Fire Fox Level 1 đã có PNG alpha và 4 clip: idle, walk, attack, hurt. Preview có điều khiển clip, pause, scale, flip, tốc độ, nền và visibility từng layer. Đọc `assets/pets/fire-fox/level-1/PRODUCTION.md` để biết bản gốc, prompt và giới hạn của từng clip. Chạy `node scripts/test-core.mjs` để kiểm tra kế thừa và loop.
+
+Pet animation mới dùng workflow layer-first: tạo production PNG độc lập trước, ghép bằng Phaser, rồi mới export `master.png`/`preview.png` để duyệt. Không dùng master làm nguồn crop/tách layer. Xem contract chi tiết tại `docs/asset-workflow.md` và prompt Fox tại `docs/pet-art-prompt-template.md`.
 
 Đọc `AGENTS.md` và `docs/asset-workflow.md` trước khi tạo asset.

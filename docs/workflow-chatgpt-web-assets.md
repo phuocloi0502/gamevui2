@@ -29,22 +29,27 @@ Nếu workspace của bạn có một connector hoặc agent GitHub được c�
 ## Các bước chuẩn
 
 1. Trong ChatGPT web, mở repo GitHub đã kết nối nếu cần đọc contract; dùng prompt asset ở chế độ tạo ảnh hoặc chỉnh sửa ảnh.
-2. Yêu cầu ảnh production rõ ràng: PNG, nền trong suốt nếu có thể; không chữ, watermark, UI hoặc background.
+2. Chốt specification và yêu cầu từng production layer độc lập: PNG, nền trong suốt nếu có thể; không chữ, watermark, UI hoặc background. Mỗi anatomy layer phải vẽ đủ vùng sẽ bị che.
 3. Tải ảnh xuống máy.
 4. Đặt ảnh vào `assets/inbox/<lineage-id>/level-<n>/`. Ví dụ:
 
 ```text
-assets/inbox/fire-fox/level-1/
-  master.png
-  body.png
-  head.png
-  tail.png
-  fire.png
+assets/inbox/<lineage-id>/level-<n>/
+  layers/
+    body.png
+    head.png
+    rear-far.png
+    rear-near.png
+    front-far.png
+    front-near.png
+    tail.png
+  effects/
+    effect-front.png
 ```
 
 5. Nhắn cho Codex: `Xử lý Fire Fox Level 1 trong assets/inbox/fire-fox/level-1 và tích hợp vào preview.`
 6. Codex sẽ kiểm tra mode RGBA, alpha, kích thước, crop, naming, anchors và độ khớp với manifest; sau đó copy kết quả đã chuẩn hóa sang `public/assets/`.
-7. Codex cập nhật config, renderer, animation và preview; không tạo lại artwork bằng ImageGen.
+7. Codex cập nhật config/animation và để renderer ghép preview; không tạo lại artwork bằng ImageGen. `master.png`/`preview.png` chỉ được export sau bước ghép này.
 
 ## Prompt template cho ChatGPT web
 
@@ -59,7 +64,7 @@ Canvas: <kích thước>
 Output: PNG, isolated subject, clean alpha/transparent background nếu công cụ hỗ trợ.
 Giữ: <palette, silhouette, anatomy, lighting>
 Không có: text, label, watermark, UI, background, shadow nếu shadow là layer riêng.
-Mục đích: layer dùng trong Phaser; giữ đủ phần bị che để có thể xoay/tween mà không lộ khoảng trống.
+Mục đích: production layer dùng trong Phaser và là source of truth; tạo trực tiếp như artwork độc lập, giữ đủ phần bị che để có thể xoay/tween mà không lộ khoảng trống. Không crop/tách từ master.
 Tên file đề xuất: <asset-id>/<slot>.png
 ```
 
@@ -76,19 +81,24 @@ Xuất lại PNG cùng kích thước để có thể overlay trực tiếp tron
 
 ## Gói bàn giao cho Codex
 
-Một asset tốt nên có master và các layer độc lập. Với pet, ưu tiên các slot:
+Một asset tốt bắt đầu bằng các layer độc lập. Với Fox mới, package mặc định là:
 
 ```text
-master.png
-body.png
-head.png
-eyes-open.png
-eyes-closed.png
-ears.png       # chỉ tách nếu cần chuyển động riêng
-tail.png
-effect.png
-shadow.png
+layers/shadow.png          # optional
+effects/effect-back.png    # optional
+layers/tail.png
+layers/rear-far.png
+layers/rear-near.png
+layers/body.png
+layers/front-far.png
+layers/front-near.png
+layers/head.png
+layers/head-closed.png     # optional, dùng closedSrc
+effects/effect-front.png   # optional
+effects/particles.png      # optional
 ```
+
+Bốn chân Fox là bốn artwork production khác nhau, không dùng `leg.png` chung. Evolution đặc biệt có thể thay `tail.png` bằng nhiều file `tail-<name>.png`; renderer render theo ID string và z-order trong manifest. Không tạo layer optional rỗng. `master.png`/`preview.png` là output kiểm chứng từ renderer, không nằm trong gói source do ChatGPT web tạo.
 
 Nếu ChatGPT web không tạo được alpha thật và xuất nền caro, vẫn tải file vào inbox. Codex được phép dùng code để chroma-key nền phẳng, crop, padding, kiểm tra alpha và tạo output mới; giữ file gốc để có thể xử lý lại.
 
@@ -96,7 +106,7 @@ Nếu ChatGPT web không tạo được alpha thật và xuất nền caro, vẫ
 
 - Gộp yêu cầu concept và các biến thể tĩnh vào một lần tạo khi chúng có cùng subject.
 - Dùng chỉnh sửa có mục tiêu nhỏ thay vì tạo lại toàn bộ asset.
-- Tạo một master chuẩn, sau đó để Codex tạo chuyển động bằng Phaser.
+- Tạo bộ production layers chuẩn, sau đó để Phaser ghép preview và tạo chuyển động.
 - Dùng sprite sheet chỉ cho effect thật sự biến dạng như lửa, khói và vụ nổ.
 - Không yêu cầu ChatGPT web tạo hàng chục frame gần giống nhau nếu tween/layer có thể xử lý.
 - Chỉ đưa vào ChatGPT web những reference cần thiết; giữ prompt và output trong thư mục source của repo.
