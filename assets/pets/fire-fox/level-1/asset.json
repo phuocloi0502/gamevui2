@@ -12,7 +12,59 @@
   "reference": "/references/fire-fox/concept-board.png",
   "effects": {
     "projectile": "/assets/pets/fire-fox/level-1/fire.png",
-    "color": 16751144
+    "color": 16751144,
+    "attack": {
+      "cast": "/assets/pets/fire-fox/level-1/effects/attack-cast.png",
+      "impact": "/assets/pets/fire-fox/level-1/effects/impact.png"
+    },
+    "attackPresentation": {
+      "cast": {
+        "enabled": true,
+        "trigger": "attack-start",
+        "startAnchor": "pet",
+        "endAnchor": "pet",
+        "startX": 75,
+        "startY": -135,
+        "endX": 75,
+        "endY": -135,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.5,
+        "endScale": 0.58,
+        "startAngle": 0,
+        "endAngle": 0,
+        "startAlpha": 0.9,
+        "endAlpha": 0,
+        "depth": 20,
+        "delay": 0,
+        "duration": 450,
+        "ease": "Sine.easeInOut",
+        "mirror": true
+      },
+      "impact": {
+        "enabled": true,
+        "trigger": "after-primary",
+        "startAnchor": "target",
+        "endAnchor": "target",
+        "startX": 0,
+        "startY": 0,
+        "endX": 0,
+        "endY": 0,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.65,
+        "endScale": 0.78,
+        "startAngle": 0,
+        "endAngle": 0,
+        "startAlpha": 0.95,
+        "endAlpha": 0,
+        "depth": 21,
+        "delay": 0,
+        "duration": 420,
+        "ease": "Quad.easeOut",
+        "mirror": true
+      }
+    }
   },
   "layers": [
     {
@@ -26,8 +78,18 @@
       "scale": 0.75
     },
     {
+      "id": "effect-back",
+      "x": 0,
+      "y": -120,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 1,
+      "scale": 1,
+      "src": "/assets/pets/fire-fox/level-1/effects/effect-back.png"
+    },
+    {
       "id": "rear-far",
-      "src": "/assets/pets/fire-fox/level-1/leg.png",
+      "src": "/assets/pets/fire-fox/level-1/layers/rear-far.png",
       "x": -53,
       "y": -79,
       "originX": 0.5,
@@ -38,7 +100,7 @@
     },
     {
       "id": "front-far",
-      "src": "/assets/pets/fire-fox/level-1/leg.png",
+      "src": "/assets/pets/fire-fox/level-1/layers/front-far.png",
       "x": 59,
       "y": -81,
       "originX": 0.5,
@@ -59,7 +121,7 @@
     },
     {
       "id": "rear-near",
-      "src": "/assets/pets/fire-fox/level-1/leg.png",
+      "src": "/assets/pets/fire-fox/level-1/layers/rear-near.png",
       "x": -74,
       "y": -87,
       "originX": 0.5,
@@ -69,7 +131,7 @@
     },
     {
       "id": "front-near",
-      "src": "/assets/pets/fire-fox/level-1/leg.png",
+      "src": "/assets/pets/fire-fox/level-1/layers/front-near.png",
       "x": 28,
       "y": -90,
       "originX": 0.5,
@@ -86,6 +148,50 @@
       "originY": 0.88,
       "z": 8,
       "scale": 0.78
+    },
+    {
+      "id": "eyes-open",
+      "x": 0,
+      "y": 0,
+      "originX": 0.5,
+      "originY": 0.88,
+      "z": 8.1,
+      "scale": 1,
+      "parent": "head",
+      "blink": "open",
+      "src": "/assets/pets/fire-fox/level-1/layers/eyes-open.png"
+    },
+    {
+      "id": "eyes-closed",
+      "x": 0,
+      "y": 0,
+      "originX": 0.5,
+      "originY": 0.88,
+      "z": 8.11,
+      "scale": 1,
+      "parent": "head",
+      "blink": "closed",
+      "src": "/assets/pets/fire-fox/level-1/layers/eyes-closed.png"
+    },
+    {
+      "id": "effect-front",
+      "x": 90,
+      "y": -145,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 9,
+      "scale": 1,
+      "src": "/assets/pets/fire-fox/level-1/effects/effect-front.png"
+    },
+    {
+      "id": "particles",
+      "x": 0,
+      "y": -135,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 10,
+      "scale": 1,
+      "src": "/assets/pets/fire-fox/level-1/effects/particles.png"
     }
   ],
   "preview": {
