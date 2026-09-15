@@ -9,12 +9,12 @@
   "extends": "pet-base",
   "status": "production",
   "element": "fire",
-  "reference": "/references/fire-fox/concept-board.png",
+  "reference": "/assets/pets/fire-fox/level-1/body.png",
   "effects": {
-    "projectile": "/assets/pets/fire-fox/level-1/fire.png",
     "color": 16751144,
     "attack": {
       "cast": "/assets/pets/fire-fox/level-1/effects/attack-cast.png",
+      "projectile": "/assets/pets/fire-fox/level-1/effects/projectile.png",
       "impact": "/assets/pets/fire-fox/level-1/effects/impact.png"
     },
     "attackPresentation": {
@@ -23,9 +23,9 @@
         "trigger": "attack-start",
         "startAnchor": "pet",
         "endAnchor": "pet",
-        "startX": 75,
+        "startX": 150,
         "startY": -135,
-        "endX": 75,
+        "endX": 150,
         "endY": -135,
         "originX": 0.5,
         "originY": 0.5,
@@ -52,8 +52,8 @@
         "endY": 0,
         "originX": 0.5,
         "originY": 0.5,
-        "startScale": 0.65,
-        "endScale": 0.78,
+        "startScale": 0.25,
+        "endScale": 0.18,
         "startAngle": 0,
         "endAngle": 0,
         "startAlpha": 0.95,
@@ -62,6 +62,29 @@
         "delay": 0,
         "duration": 420,
         "ease": "Quad.easeOut",
+        "mirror": true
+      },
+      "projectile": {
+        "enabled": true,
+        "trigger": "attack-release",
+        "startAnchor": "pet",
+        "endAnchor": "target",
+        "startX": 180,
+        "startY": -110,
+        "endX": 0,
+        "endY": 0,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.25,
+        "endScale": 0.25,
+        "startAngle": 0,
+        "endAngle": 0,
+        "startAlpha": 1,
+        "endAlpha": 0.2,
+        "depth": 20,
+        "delay": 0,
+        "duration": 600,
+        "ease": "Linear",
         "mirror": true
       }
     }
@@ -107,9 +130,10 @@
       "y": -81,
       "originX": 0.5,
       "originY": 0.15,
-      "z": 4,
+      "z": 6,
       "scale": 0.74,
-      "tint": 13415840
+      "tint": 13415840,
+      "visible": true
     },
     {
       "id": "body",
@@ -177,29 +201,6 @@
       "blink": "closed",
       "src": "/assets/pets/fire-fox/level-1/layers/eyes-closed.png",
       "angle": -7
-    },
-    {
-      "id": "effect-front",
-      "x": 30,
-      "y": -56,
-      "originX": 0.5,
-      "originY": 0.5,
-      "z": 9,
-      "scale": 0.6,
-      "src": "/assets/pets/fire-fox/level-1/effects/effect-front.png",
-      "visible": true,
-      "alpha": 0.8
-    },
-    {
-      "id": "particles",
-      "x": 105,
-      "y": -57,
-      "originX": 0.5,
-      "originY": 0.5,
-      "z": 10,
-      "scale": 1,
-      "src": "/assets/pets/fire-fox/level-1/effects/particles.png",
-      "visible": true
     }
   ],
   "preview": {
@@ -257,24 +258,6 @@
               0.8,
               0.3
             ]
-          },
-          {
-            "target": "particles",
-            "property": "alpha",
-            "values": [
-              0.8,
-              0.3,
-              0.8
-            ]
-          },
-          {
-            "target": "effect-front",
-            "property": "x",
-            "values": [
-              -4,
-              4,
-              -4
-            ]
           }
         ]
       },
@@ -328,6 +311,124 @@
               -12,
               0,
               0
+            ]
+          }
+        ]
+      },
+      "walk": {
+        "duration": 650,
+        "loop": true,
+        "tracks": [
+          {
+            "target": "body",
+            "property": "y",
+            "values": [
+              0,
+              -4,
+              0,
+              -4,
+              0
+            ]
+          },
+          {
+            "target": "head",
+            "property": "y",
+            "values": [
+              0,
+              -5,
+              0,
+              -5,
+              0
+            ]
+          },
+          {
+            "target": "tail",
+            "property": "angle",
+            "values": [
+              -7,
+              7,
+              -7
+            ]
+          },
+          {
+            "target": "rear-far",
+            "property": "angle",
+            "values": [
+              -18,
+              18,
+              -18
+            ]
+          },
+          {
+            "target": "front-far",
+            "property": "angle",
+            "values": [
+              18,
+              -18,
+              18
+            ]
+          },
+          {
+            "target": "rear-near",
+            "property": "angle",
+            "values": [
+              -18,
+              18,
+              -18
+            ]
+          },
+          {
+            "target": "front-near",
+            "property": "angle",
+            "values": [
+              18,
+              -18,
+              18
+            ]
+          },
+          {
+            "target": "rear-far",
+            "property": "y",
+            "values": [
+              -7,
+              0,
+              -7
+            ]
+          },
+          {
+            "target": "front-far",
+            "property": "y",
+            "values": [
+              0,
+              -7,
+              0
+            ]
+          },
+          {
+            "target": "rear-near",
+            "property": "y",
+            "values": [
+              -7,
+              0,
+              -7
+            ]
+          },
+          {
+            "target": "front-near",
+            "property": "y",
+            "values": [
+              0,
+              -7,
+              0
+            ]
+          },
+          {
+            "target": "effect-back",
+            "property": "scaleX",
+            "values": [
+              1,
+              0.9,
+              1
             ]
           }
         ]
