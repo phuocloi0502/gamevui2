@@ -1,0 +1,222 @@
+{
+  "id": "shadow-fox-level-3",
+  "lineageId": "shadow-fox",
+  "evolutionLevel": 3,
+  "name": "Shadow Fox · Level 3",
+  "kind": "pet",
+  "species": "fox",
+  "archetype": "quadruped",
+  "extends": "fox-quadruped",
+  "status": "production",
+  "element": "shadow",
+  "reference": "/assets/pets/shadow-fox/level-3/layers/body.png",
+  "layers": [
+    {
+      "id": "effect-back",
+      "x": 0,
+      "y": -120,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 1,
+      "scale": 1,
+      "src": "/assets/pets/shadow-fox/level-3/effects/effect-back.png"
+    },
+    {
+      "id": "tail",
+      "x": -65,
+      "y": -105,
+      "originX": 0.85,
+      "originY": 0.85,
+      "z": 2,
+      "scale": 0.75,
+      "src": "/assets/pets/shadow-fox/level-3/layers/tail.png"
+    },
+    {
+      "id": "rear-far",
+      "x": -53,
+      "y": -79,
+      "originX": 0.5,
+      "originY": 0.15,
+      "z": 3,
+      "scale": 0.72,
+      "src": "/assets/pets/shadow-fox/level-3/layers/rear-far.png"
+    },
+    {
+      "id": "rear-near",
+      "x": -74,
+      "y": -87,
+      "originX": 0.5,
+      "originY": 0.15,
+      "z": 4,
+      "scale": 0.84,
+      "src": "/assets/pets/shadow-fox/level-3/layers/rear-near.png"
+    },
+    {
+      "id": "body",
+      "x": 0,
+      "y": -117,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 5,
+      "scale": 0.68,
+      "src": "/assets/pets/shadow-fox/level-3/layers/body.png"
+    },
+    {
+      "id": "front-far",
+      "x": 59,
+      "y": -81,
+      "originX": 0.5,
+      "originY": 0.15,
+      "z": 6,
+      "scale": 0.74,
+      "src": "/assets/pets/shadow-fox/level-3/layers/front-far.png"
+    },
+    {
+      "id": "front-near",
+      "x": 28,
+      "y": -90,
+      "originX": 0.5,
+      "originY": 0.15,
+      "z": 7,
+      "scale": 0.86,
+      "src": "/assets/pets/shadow-fox/level-3/layers/front-near.png"
+    },
+    {
+      "id": "head",
+      "x": 39,
+      "y": -151,
+      "originX": 0.5,
+      "originY": 0.88,
+      "z": 8,
+      "scale": 0.78,
+      "src": "/assets/pets/shadow-fox/level-3/layers/head.png"
+    },
+    {
+      "id": "eyes-open",
+      "x": 0,
+      "y": 0,
+      "originX": 0.5,
+      "originY": 0.88,
+      "z": 8.1,
+      "scale": 1,
+      "parent": "head",
+      "blink": "open",
+      "src": "/assets/pets/shadow-fox/level-3/layers/eyes-open.png"
+    },
+    {
+      "id": "eyes-closed",
+      "x": 0,
+      "y": 0,
+      "originX": 0.5,
+      "originY": 0.88,
+      "z": 8.11,
+      "scale": 1,
+      "parent": "head",
+      "blink": "closed",
+      "src": "/assets/pets/shadow-fox/level-3/layers/eyes-closed.png"
+    },
+    {
+      "id": "effect-front",
+      "x": 90,
+      "y": -145,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 9,
+      "scale": 1,
+      "src": "/assets/pets/shadow-fox/level-3/effects/effect-front.png"
+    },
+    {
+      "id": "particles",
+      "x": 0,
+      "y": -135,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 10,
+      "scale": 1,
+      "src": "/assets/pets/shadow-fox/level-3/effects/particles.png"
+    }
+  ],
+  "preview": {
+    "x": 420,
+    "y": 440,
+    "scale": 1
+  },
+  "effects": {
+    "attack": {
+      "cast": "/assets/pets/shadow-fox/level-3/effects/attack-cast.png",
+      "projectile": "/assets/pets/shadow-fox/level-3/effects/projectile.png",
+      "impact": "/assets/pets/shadow-fox/level-3/effects/impact.png"
+    },
+    "attackPresentation": {
+      "cast": {
+        "enabled": true,
+        "trigger": "attack-start",
+        "startAnchor": "pet",
+        "endAnchor": "pet",
+        "startX": 75,
+        "startY": -135,
+        "endX": 75,
+        "endY": -135,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.5,
+        "endScale": 0.58,
+        "startAngle": 0,
+        "endAngle": 0,
+        "startAlpha": 0.9,
+        "endAlpha": 0,
+        "depth": 20,
+        "delay": 0,
+        "duration": 450,
+        "ease": "Sine.easeInOut",
+        "mirror": true
+      },
+      "projectile": {
+        "enabled": true,
+        "trigger": "attack-release",
+        "startAnchor": "pet",
+        "endAnchor": "target",
+        "startX": 100,
+        "startY": -150,
+        "endX": 0,
+        "endY": 0,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.55,
+        "endScale": 0.55,
+        "startAngle": 90,
+        "endAngle": 90,
+        "startAlpha": 1,
+        "endAlpha": 0.2,
+        "depth": 20,
+        "delay": 0,
+        "duration": 600,
+        "ease": "Linear",
+        "mirror": true
+      },
+      "impact": {
+        "enabled": true,
+        "trigger": "after-primary",
+        "startAnchor": "target",
+        "endAnchor": "target",
+        "startX": 0,
+        "startY": 0,
+        "endX": 0,
+        "endY": 0,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.65,
+        "endScale": 0.78,
+        "startAngle": 0,
+        "endAngle": 0,
+        "startAlpha": 0.95,
+        "endAlpha": 0,
+        "depth": 21,
+        "delay": 0,
+        "duration": 420,
+        "ease": "Quad.easeOut",
+        "mirror": true
+      }
+    }
+  }
+}

@@ -23,27 +23,14 @@
       "angle": 1
     },
     {
-      "id": "tail-left-outer",
-      "x": -40,
-      "y": -104,
-      "originX": 0.88,
-      "originY": 0.86,
+      "id": "tail",
+      "x": -65,
+      "y": -105,
+      "originX": 0.85,
+      "originY": 0.85,
       "z": 2,
-      "scale": 1.3,
-      "src": "/assets/pets/light-fox/level-3/layers/tail-left-outer.png",
-      "visible": true
-    },
-    {
-      "id": "tail-left-inner",
-      "x": -84,
-      "y": -106,
-      "originX": 0.87,
-      "originY": 0.86,
-      "z": 2.1,
-      "scale": 1.4,
-      "src": "/assets/pets/light-fox/level-3/layers/tail-left-inner.png",
-      "visible": true,
-      "angle": 20
+      "scale": 0.75,
+      "src": "/assets/pets/light-fox/level-3/layers/tail.png"
     },
     {
       "id": "rear-far",
@@ -196,24 +183,6 @@
             ]
           },
           {
-            "target": "tail-left-outer",
-            "property": "angle",
-            "values": [
-              -4,
-              4,
-              -4
-            ]
-          },
-          {
-            "target": "tail-left-inner",
-            "property": "angle",
-            "values": [
-              4,
-              -4,
-              4
-            ]
-          },
-          {
             "target": "effect-front",
             "property": "scaleY",
             "values": [
@@ -269,30 +238,12 @@
             ]
           },
           {
-            "target": "tail-left-outer",
-            "property": "angle",
-            "values": [
-              -7,
-              7,
-              -7
-            ]
-          },
-          {
             "target": "effect-back",
             "property": "angle",
             "values": [
               -2,
               2,
               -2
-            ]
-          },
-          {
-            "target": "tail-left-inner",
-            "property": "angle",
-            "values": [
-              -7,
-              7,
-              -7
             ]
           },
           {
@@ -412,28 +363,6 @@
           },
           {
             "target": "effect-back",
-            "property": "angle",
-            "values": [
-              0,
-              15,
-              -12,
-              0,
-              0
-            ]
-          },
-          {
-            "target": "tail-left-outer",
-            "property": "angle",
-            "values": [
-              0,
-              15,
-              -12,
-              0,
-              0
-            ]
-          },
-          {
-            "target": "tail-left-inner",
             "property": "angle",
             "values": [
               0,

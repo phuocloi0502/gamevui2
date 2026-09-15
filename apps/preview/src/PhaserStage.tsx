@@ -112,7 +112,10 @@ export function PhaserStage({ pet, remountKey, background, playingRef, onView }:
       scene: Preview,
     });
     gameRef.current = game;
+    const resize = new ResizeObserver(() => game.scale.refresh());
+    resize.observe(parent);
     return () => {
+      resize.disconnect();
       onViewRef.current(undefined);
       gameRef.current = undefined;
       game.destroy(true);

@@ -79,13 +79,15 @@
     },
     {
       "id": "effect-back",
-      "x": 0,
-      "y": -120,
+      "x": -14,
+      "y": -108,
       "originX": 0.5,
       "originY": 0.5,
       "z": 1,
-      "scale": 1,
-      "src": "/assets/pets/fire-fox/level-1/effects/effect-back.png"
+      "scale": 1.3,
+      "src": "/assets/pets/fire-fox/level-1/effects/effect-back.png",
+      "visible": true,
+      "alpha": 0.7
     },
     {
       "id": "rear-far",
@@ -143,60 +145,193 @@
       "id": "head",
       "src": "/assets/pets/fire-fox/level-1/head.png",
       "x": 39,
-      "y": -151,
+      "y": -120,
       "originX": 0.5,
       "originY": 0.88,
       "z": 8,
-      "scale": 0.78
+      "scale": 0.78,
+      "angle": -1
     },
     {
       "id": "eyes-open",
-      "x": 0,
-      "y": 0,
+      "x": 75,
+      "y": -13,
       "originX": 0.5,
       "originY": 0.88,
       "z": 8.1,
-      "scale": 1,
+      "scale": 0.3,
       "parent": "head",
       "blink": "open",
-      "src": "/assets/pets/fire-fox/level-1/layers/eyes-open.png"
+      "src": "/assets/pets/fire-fox/level-1/layers/eyes-open.png",
+      "angle": -7
     },
     {
       "id": "eyes-closed",
-      "x": 0,
-      "y": 0,
+      "x": 75,
+      "y": -13,
       "originX": 0.5,
       "originY": 0.88,
       "z": 8.11,
-      "scale": 1,
+      "scale": 0.3,
       "parent": "head",
       "blink": "closed",
-      "src": "/assets/pets/fire-fox/level-1/layers/eyes-closed.png"
+      "src": "/assets/pets/fire-fox/level-1/layers/eyes-closed.png",
+      "angle": -7
     },
     {
       "id": "effect-front",
-      "x": 90,
-      "y": -145,
+      "x": 30,
+      "y": -56,
       "originX": 0.5,
       "originY": 0.5,
       "z": 9,
-      "scale": 1,
-      "src": "/assets/pets/fire-fox/level-1/effects/effect-front.png"
+      "scale": 0.6,
+      "src": "/assets/pets/fire-fox/level-1/effects/effect-front.png",
+      "visible": true,
+      "alpha": 0.8
     },
     {
       "id": "particles",
-      "x": 0,
-      "y": -135,
+      "x": 105,
+      "y": -57,
       "originX": 0.5,
       "originY": 0.5,
       "z": 10,
       "scale": 1,
-      "src": "/assets/pets/fire-fox/level-1/effects/particles.png"
+      "src": "/assets/pets/fire-fox/level-1/effects/particles.png",
+      "visible": true
     }
   ],
   "preview": {
     "x": 420,
     "y": 440,
-    "scale": 1
+    "scale": 0.7
+  },
+  "overrides": {
+    "clips": {
+      "idle": {
+        "duration": 1800,
+        "loop": true,
+        "tracks": [
+          {
+            "target": "body",
+            "property": "scaleY",
+            "values": [
+              1,
+              1.025,
+              1
+            ]
+          },
+          {
+            "target": "head",
+            "property": "y",
+            "values": [
+              0,
+              -2,
+              0
+            ]
+          },
+          {
+            "target": "head",
+            "property": "angle",
+            "values": [
+              0,
+              -1,
+              0
+            ]
+          },
+          {
+            "target": "tail",
+            "property": "angle",
+            "values": [
+              -4,
+              4,
+              -4
+            ]
+          },
+          {
+            "target": "effect-back",
+            "property": "alpha",
+            "values": [
+              0.3,
+              0.8,
+              0.3
+            ]
+          },
+          {
+            "target": "particles",
+            "property": "alpha",
+            "values": [
+              0.8,
+              0.3,
+              0.8
+            ]
+          },
+          {
+            "target": "effect-front",
+            "property": "x",
+            "values": [
+              -4,
+              4,
+              -4
+            ]
+          }
+        ]
+      },
+      "attack": {
+        "duration": 900,
+        "loop": false,
+        "event": {
+          "at": 400,
+          "name": "projectile"
+        },
+        "tracks": [
+          {
+            "target": "head",
+            "property": "x",
+            "values": [
+              0,
+              -3,
+              10,
+              3,
+              0
+            ]
+          },
+          {
+            "target": "head",
+            "property": "angle",
+            "values": [
+              0,
+              -9,
+              7,
+              2,
+              0
+            ]
+          },
+          {
+            "target": "body",
+            "property": "scaleX",
+            "values": [
+              1,
+              0.94,
+              1.06,
+              1,
+              1
+            ]
+          },
+          {
+            "target": "tail",
+            "property": "angle",
+            "values": [
+              0,
+              15,
+              -12,
+              0,
+              0
+            ]
+          }
+        ]
+      }
+    }
   }
 }

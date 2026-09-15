@@ -31,6 +31,31 @@ export function StudioEditors({ pet, manifest, view, onSave, onRebuild, onPlay }
     onSave();
   };
 
+  const removeLayer = (layerId: string) => {
+    const removed = collectDescendantIds(pet.layers, layerId);
+    const names = pet.layers.filter(layer => removed.has(layer.id)).map(layer => `${layerLabel(layer.id)} (${layer.id})`);
+    if (!names.length) return;
+    if (removed.size >= pet.layers.length) {
+      window.alert('Không xóa hết layer. Pet cần còn ít nhất một layer.');
+      return;
+    }
+    const extra = names.length > 1 ? `\nCũng sẽ xóa layer con: ${names.slice(1).join(', ')}.` : '';
+    if (!window.confirm(`Xóa ${names[0]} khỏi pet này?${extra}\nẢnh PNG gốc vẫn giữ trong inbox/public.`)) return;
+    const remaining = pet.layers.filter(layer => !removed.has(layer.id));
+    pet.layers.splice(0, pet.layers.length, ...remaining);
+    if (manifest.layers !== pet.layers) {
+      manifest.layers.splice(0, manifest.layers.length, ...remaining);
+    }
+    const nextReference = remaining.find(layer => layer.id === 'body')?.src ?? remaining[0]?.src;
+    if (nextReference) {
+      manifest.reference = nextReference;
+      pet.reference = nextReference;
+    }
+    stripClipTracks(manifest, pet, removed);
+    onRebuild();
+    onSave();
+  };
+
   return (
     <div id="transform-editor" className="transform-editor">
       <div className="nudge-step">
@@ -56,7 +81,7 @@ export function StudioEditors({ pet, manifest, view, onSave, onRebuild, onPlay }
 
       <div className="layer-editor">
         <p className="label">CHỈNH TỪNG LAYER</p>
-        <p className="editor-help">Bật/tắt để kiểm tra từng phần. Neo X/Y là khớp xoay trong ảnh (0–1). Z nhỏ nằm sau, Z lớn nằm trước. Layer được gom theo chân, thân–đuôi, đầu và hiệu ứng.</p>
+        <p className="editor-help">Bật/tắt để kiểm tra từng phần. Neo X/Y là khớp xoay trong ảnh (0–1). Z nhỏ nằm sau, Z lớn nằm trước. Xóa layer (ví dụ đuôi không dùng) sẽ lưu vào asset.json; ảnh gốc không bị xóa.</p>
         {groupPetLayers(pet.layers).map(group => (
           <details key={group.id} className="layer-group" open>
             <summary>
@@ -64,7 +89,7 @@ export function StudioEditors({ pet, manifest, view, onSave, onRebuild, onPlay }
               <span>{group.layers.length} layer</span>
             </summary>
             {group.layers.map(layer => (
-              <LayerRow key={layer.id} layer={layer} step={nudgeStep} view={view} onSave={onSave} />
+              <LayerRow key={layer.id} layer={layer} step={nudgeStep} view={view} onSave={onSave} onRemove={() => removeLayer(layer.id)} />
             ))}
           </details>
         ))}
@@ -176,23 +201,60 @@ export function StudioEditors({ pet, manifest, view, onSave, onRebuild, onPlay }
   );
 }
 
-function LayerRow({ layer, step, view, onSave }: {
+function collectDescendantIds(layers: Layer[], rootId: string) {
+  const ids = new Set([rootId]);
+  let grew = true;
+  while (grew) {
+    grew = false;
+    for (const layer of layers) {
+      if (layer.parent && ids.has(layer.parent) && !ids.has(layer.id)) {
+        ids.add(layer.id);
+        grew = true;
+      }
+    }
+  }
+  return ids;
+}
+
+function stripClipTracks(manifest: PetDefinition, pet: ResolvedPet, ids: Set<string>) {
+  const filterClip = (clip: Clip): Clip => ({ ...clip, tracks: clip.tracks.filter(track => !ids.has(track.target)) });
+  const overrides = manifest.overrides?.clips;
+  if (overrides) {
+    for (const state of Object.keys(overrides) as State[]) {
+      const clip = overrides[state];
+      if (!clip) continue;
+      overrides[state] = filterClip(clip);
+    }
+  }
+  if (!pet.rig.clips) return;
+  for (const state of Object.keys(pet.rig.clips) as State[]) {
+    const clip = pet.rig.clips[state];
+    if (!clip) continue;
+    pet.rig.clips[state] = overrides?.[state] ?? filterClip(clip);
+  }
+}
+
+function LayerRow({ layer, step, view, onSave, onRemove }: {
   layer: Layer;
   step: number;
   view: PetView | undefined;
   onSave: () => void;
+  onRemove: () => void;
 }) {
   return (
     <div className="layer-row">
       <div className="layer-heading">
         <span className="layer-name">{layerLabel(layer.id)} ({layer.id})</span>
-        <label className="visibility-toggle">
-          <input type="checkbox" checked={layer.visible !== false} onChange={event => {
-            layer.visible = event.target.checked;
-            view?.setLayerVisible(layer.id, event.target.checked);
-            onSave();
-          }} /> Hiển thị
-        </label>
+        <div className="layer-heading-actions">
+          <label className="visibility-toggle">
+            <input type="checkbox" checked={layer.visible !== false} onChange={event => {
+              layer.visible = event.target.checked;
+              view?.setLayerVisible(layer.id, event.target.checked);
+              onSave();
+            }} /> Hiển thị
+          </label>
+          <button type="button" className="layer-delete" onClick={onRemove}>Xóa</button>
+        </div>
       </div>
       <NumberField label="Vị trí X" step={step} value={layer.x} onChange={value => { layer.x = value; view?.setLayerTransform(layer.id, 'x', value); onSave(); }} />
       <NumberField label="Vị trí Y" step={step} value={layer.y} onChange={value => { layer.y = value; view?.setLayerTransform(layer.id, 'y', value); onSave(); }} />

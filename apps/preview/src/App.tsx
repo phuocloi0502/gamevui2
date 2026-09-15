@@ -89,12 +89,12 @@ export function App({ petDefinitions, rigs }: { petDefinitions: PetDefinition[];
       </aside>
       <main>
         <header>
-          <div>
+          <div className="workspace-title">
             <p className="label">WORKSPACE / {path ? `PETS / ${path.elementName.toUpperCase()} / LEVEL ${path.level}` : 'PETS'}</p>
             <h1>Pet workshop</h1>
-            <p className="muted">{path ? `${path.archetypeName} · ${path.speciesName}` : 'Một bộ khung chung. Mỗi pet một cá tính.'}</p>
+            {path && <p className="muted">{path.archetypeName} · {path.speciesName}</p>}
           </div>
-          <span className="badge">LOCAL STUDIO</span>
+          <span className="badge">LOCAL</span>
         </header>
         <section className="layout">
           <div className="studio-panel">
@@ -187,28 +187,12 @@ export function App({ petDefinitions, rigs }: { petDefinitions: PetDefinition[];
                 </div>
               </div>
             )}
-            <p className="muted">
-              {pet?.layers.length ? 'Preview layer ghép bằng renderer dùng chung.' : 'Bảng ảnh tham khảo gốc • Chưa phải pet đã tách nền hoặc rig hoàn chỉnh.'}
-            </p>
           </div>
           {pet && (
-            <article>
-              <p className="label">ASSET INSPECTOR</p>
-              <h2>{pet.name}</h2>
-              <dl>
-                Lineage: {pet.lineageId} · Tiến hóa: Level {pet.evolutionLevel} · Species: {species || 'chưa khai báo'} · Element: {pet.element} · Nhóm: {group?.name ?? 'Legacy'} · Layers: {pet.layers.length}
-              </dl>
-              <hr />
-              <p className="label">KẾ THỪA</p>
-              <p className="chain"><span>{group?.name ?? 'Legacy'} ({pet.extends})</span> → <strong>{pet.name}</strong></p>
-              <p className="muted">Canvas và animation lấy từ rig nhóm. Ảnh layer và thông số lắp ghép nằm trong manifest của pet.</p>
-              <hr />
-              <p className="label">TIẾN ĐỘ</p>
-              <p id="status">
-                {pet.layers.length
-                  ? `PNG alpha • ${pet.layers.length} layer instances • 4 animation states • ${pet.element} effect`
-                  : 'Đã lưu concept. PNG layer và animation production chưa được tạo.'}
-              </p>
+            <article className="asset-inspector">
+              <span className="label">ASSET</span>
+              <strong>{pet.name}</strong>
+              <span className="muted">{pet.lineageId} · Lv{pet.evolutionLevel} · {species || '—'} · {pet.element} · {group?.name ?? 'Legacy'} · {pet.layers.length} layer · {pet.extends}</span>
             </article>
           )}
         </section>
