@@ -16,7 +16,7 @@ export interface Layer {
   blink?: 'open' | 'closed';
   sheet?: { width: number; height: number; count: number; fps: number };
 }
-export type State = 'idle' | 'walk' | 'attack' | 'hurt';
+export type State = 'idle' | 'walk' | 'attack';
 export type EvolutionLevel = 1 | 2 | 3;
 export interface Track { target: string; property: 'x'|'y'|'angle'|'scaleX'|'scaleY'|'alpha'; values: number[] }
 export interface Clip { duration: number; loop: boolean; tracks: Track[]; event?: { at: number; name: string } }

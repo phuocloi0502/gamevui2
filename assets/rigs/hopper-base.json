@@ -14,10 +14,6 @@
     "attack": { "duration": 760, "loop": false, "event": { "at": 390, "name": "attack-release" }, "tracks": [
       { "target": "body", "property": "scaleX", "values": [1, 0.82, 1.12, 1] },
       { "target": "head", "property": "x", "values": [0, -12, 28, 0] }
-    ] },
-    "hurt": { "duration": 520, "loop": false, "tracks": [
-      { "target": "body", "property": "x", "values": [0, -12, 5, 0] },
-      { "target": "head", "property": "angle", "values": [0, -7, 3, 0] }
     ] }
   }
 }

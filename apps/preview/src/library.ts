@@ -49,3 +49,7 @@ export function petsInFolder(pets: ResolvedPet[], elementId: PetElement, level?:
 export function speciesInArchetype(archetypeId: PetArchetypeId): PetSpeciesId[] {
   return [...(PET_ARCHETYPES.find(item => item.id === archetypeId)?.species ?? [])];
 }
+
+export function petAtLevel(pets: ResolvedPet[], pet: ResolvedPet, level: EvolutionLevel) {
+  return pets.find(item => item.lineageId === pet.lineageId && item.evolutionLevel === level);
+}

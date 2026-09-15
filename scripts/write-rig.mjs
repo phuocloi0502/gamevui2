@@ -5,8 +5,7 @@ const legs=['rear-far','front-far','rear-near','front-near'];
 const clips={
  idle:{duration:1800,loop:true,tracks:[t('body','scaleY',[1,1.025,1]),t('head','y',[0,-2,0]),t('head','angle',[0,-1,0]),t('tail','angle',[-4,4,-4])]},
  walk:{duration:650,loop:true,tracks:[t('body','y',[0,-4,0,-4,0]),t('head','y',[0,-5,0,-5,0]),t('tail','angle',[-7,7,-7]),...legs.map((id,i)=>t(id,'angle',i%2?[18,-18,18]:[-18,18,-18])),...legs.map((id,i)=>t(id,'y',i%2?[0,-7,0]:[-7,0,-7]))]},
- attack:{duration:900,loop:false,event:{at:400,name:'projectile'},tracks:[t('head','x',[0,-10,15,4,0]),t('head','angle',[0,-9,7,2,0]),t('body','scaleX',[1,.94,1.06,1,1]),t('tail','angle',[0,15,-12,0,0]),t('flame','scaleY',[1,1.3,1.15,1,1])]},
- hurt:{duration:550,loop:false,tracks:[t('body','x',[0,-10,5,-3,0]),t('head','x',[0,-12,6,-2,0]),t('head','angle',[0,-8,5,-2,0])]}
+ attack:{duration:900,loop:false,event:{at:400,name:'projectile'},tracks:[t('head','x',[0,-10,15,4,0]),t('head','angle',[0,-9,7,2,0]),t('body','scaleX',[1,.94,1.06,1,1]),t('tail','angle',[0,15,-12,0,0]),t('flame','scaleY',[1,1.3,1.15,1,1])]}
 };
 writeFileSync('assets/rigs/pet-base.json',JSON.stringify({id:'pet-base',canvas:{width:512,height:512},idle:{duration:1800,bob:2},clips},null,2)+'\n');
 const root='/assets/pets/fire-fox/level-1/';

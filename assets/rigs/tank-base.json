@@ -15,10 +15,6 @@
       { "target": "body", "property": "scaleY", "values": [1, 0.92, 1.08, 1] },
       { "target": "torso", "property": "y", "values": [0, -8, 12, 0] },
       { "target": "front-arm", "property": "angle", "values": [0, -18, 28, 0] }
-    ] },
-    "hurt": { "duration": 650, "loop": false, "tracks": [
-      { "target": "body", "property": "x", "values": [0, -7, 3, 0] },
-      { "target": "torso", "property": "x", "values": [0, -7, 3, 0] }
     ] }
   }
 }

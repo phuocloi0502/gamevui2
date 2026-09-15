@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import { PET_ARCHETYPES, PET_ELEMENTS, archetypeFor, speciesTemplate, slotsForEvolution } from '../../../packages/asset-core/src/petCatalog';
-import type { PetDefinition, Rig, State } from '../../../packages/asset-core/src/types';
+import type { EvolutionLevel, PetDefinition, Rig, State } from '../../../packages/asset-core/src/types';
 import { resolvePet } from '../../../packages/asset-core/src/resolve';
 import { PetView } from '../../../packages/pet-runtime/src/PetView';
 import { saveManifest } from './api';
@@ -9,7 +9,7 @@ import { ImageEditorPanel } from './ImageEditorPanel';
 import { LibraryTree } from './LibraryTree';
 import { PhaserStage } from './PhaserStage';
 import { StudioEditors } from './StudioEditors';
-import { libraryPath, petsInFolder } from './library';
+import { libraryPath, petAtLevel, petsInFolder } from './library';
 import { selectedPetKey, stateLabels } from './labels';
 
 export function App({ petDefinitions, rigs }: { petDefinitions: PetDefinition[]; rigs: Record<string, Rig> }) {
@@ -107,7 +107,27 @@ export function App({ petDefinitions, rigs }: { petDefinitions: PetDefinition[];
                 ))}
               </select>
               <div className="toolbar-actions">
-                <button type="button" disabled={!canEditImages} onClick={() => { setImageEditorOpen(true); setCreatorOpen(false); }}>Quản lý ảnh pet</button>
+                <div className="toolbar-cluster">
+                  {pet && (
+                    <div className="level-switch" role="group" aria-label="Chọn cấp tiến hóa">
+                      {([1, 2, 3] as EvolutionLevel[]).map(level => {
+                        const target = petAtLevel(pets, pet, level);
+                        return (
+                          <button
+                            key={level}
+                            type="button"
+                            className={pet.evolutionLevel === level ? 'is-active' : undefined}
+                            disabled={!target}
+                            onClick={() => { if (target && target.id !== pet.id) selectPet(target.id); }}
+                          >
+                            Level {level}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                  <button type="button" disabled={!canEditImages} onClick={() => { setImageEditorOpen(true); setCreatorOpen(false); }}>Quản lý ảnh pet</button>
+                </div>
                 <button type="button" onClick={() => { setCreatorOpen(true); setImageEditorOpen(false); }}>+ Tạo pet từ layer</button>
                 <span>{pet?.layers.length ? 'LIVE RIG / PNG + MOTION' : 'ART REFERENCE'}</span>
               </div>
@@ -120,7 +140,7 @@ export function App({ petDefinitions, rigs }: { petDefinitions: PetDefinition[];
                 <div id="controls-slot">
                   <div className="controls">
                     <div className="clips">
-                      {(['idle', 'walk', 'attack', 'hurt'] as State[]).map(state => (
+                      {(['idle', 'walk', 'attack'] as State[]).map(state => (
                         <button key={state} type="button" onClick={() => viewRef.current?.play(state)}>{stateLabels[state]}</button>
                       ))}
                     </div>

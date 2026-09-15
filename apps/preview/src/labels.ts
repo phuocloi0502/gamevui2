@@ -1,6 +1,6 @@
 import type { CombatVfxTrigger, State } from '../../../packages/asset-core/src/types';
 
-export const stateLabels: Record<State, string> = { idle: 'Đứng yên', walk: 'Di chuyển', attack: 'Tấn công', hurt: 'Trúng đòn' };
+export const stateLabels: Record<State, string> = { idle: 'Đứng yên', walk: 'Di chuyển', attack: 'Tấn công' };
 export const propertyLabels: Record<string, string> = {
   x: 'Dịch ngang · pixel', y: 'Dịch dọc · pixel', angle: 'Góc xoay · độ', scaleX: 'Co giãn ngang · hệ số', scaleY: 'Co giãn dọc · hệ số', alpha: 'Độ trong suốt · 0 đến 1',
 };

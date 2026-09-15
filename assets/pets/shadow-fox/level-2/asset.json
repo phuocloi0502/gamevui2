@@ -372,67 +372,6 @@
             ]
           }
         ]
-      },
-      "hurt": {
-        "duration": 600,
-        "loop": false,
-        "tracks": [
-          {
-            "target": "body",
-            "property": "x",
-            "values": [
-              0,
-              -10,
-              5,
-              -3,
-              0
-            ]
-          },
-          {
-            "target": "head",
-            "property": "x",
-            "values": [
-              0,
-              -12,
-              6,
-              -2,
-              0
-            ]
-          },
-          {
-            "target": "head",
-            "property": "angle",
-            "values": [
-              0,
-              -8,
-              5,
-              -2,
-              0
-            ]
-          },
-          {
-            "target": "tail-back",
-            "property": "angle",
-            "values": [
-              0,
-              -7,
-              4,
-              0,
-              0
-            ]
-          },
-          {
-            "target": "tail-front",
-            "property": "angle",
-            "values": [
-              0,
-              8,
-              -5,
-              0,
-              0
-            ]
-          }
-        ]
       }
     }
   },

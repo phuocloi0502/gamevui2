@@ -109,8 +109,7 @@ export class PetView extends Phaser.GameObjects.Container {
       const sprite=this.images.get(layer.id)!;
       if(layer.blink) this.nodes.get(layer.id)?.setVisible(layer.visible!==false && layer.blink===(blink?'closed':'open'));
       if(layer.sheet) sprite.setFrame(Math.floor(this.lifetime/1000*layer.sheet.fps)%layer.sheet.count);
-      if(this.state==='hurt') sprite.setTint(0xff9b83);
-      else sprite.setTint(layer.tint??0xffffff);
+      sprite.setTint(layer.tint??0xffffff);
     }
   }
 }

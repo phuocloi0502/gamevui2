@@ -80,9 +80,9 @@ export function StudioEditors({ pet, manifest, view, onSave, onRebuild, onPlay }
       </div>
 
       <div className="animation-editor">
-        <p className="label">CHỈNH 4 CHUYỂN ĐỘNG</p>
+        <p className="label">CHỈNH 3 CHUYỂN ĐỘNG</p>
         <p className="editor-help">Mỗi ô là một thời điểm trong animation: Đầu → Giữa → Cuối. X/Y là pixel lệch khỏi vị trí gốc, góc tính bằng độ, scale 1 là kích thước gốc. Chỉnh từng ô sẽ cập nhật preview và chỉ lưu cho pet này.</p>
-        {(['idle', 'walk', 'attack', 'hurt'] as State[]).map(state => {
+        {(['idle', 'walk', 'attack'] as State[]).map(state => {
           const clip = pet.rig.clips?.[state];
           if (!clip) return null;
           return (
