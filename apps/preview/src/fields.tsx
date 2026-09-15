@@ -1,4 +1,3 @@
-// @refresh reload
 import type { ChangeEvent } from 'react';
 
 export function NumberField({ label, value, step = 0.1, onChange }: {

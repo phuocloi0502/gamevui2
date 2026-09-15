@@ -60,13 +60,19 @@ async function readPetManifests() {
   return manifests;
 }
 
+function isPetManifestFile(file) {
+  const normalized = String(file).replaceAll("\\", "/");
+  return normalized.endsWith("/asset.json") && normalized.includes("/assets/pets/");
+}
+
 function assetManifestApi() {
   return {
     name: "asset-manifest-api",
     handleHotUpdate({ file }) {
-      // The editor already applies transform changes to the live PetView.
-      // Do not let saving the imported manifest trigger a full page reload.
-      if (file.startsWith(manifestRoot) && file.endsWith("/asset.json")) return [];
+      if (isPetManifestFile(file)) return [];
+    },
+    hotUpdate({ file }) {
+      if (isPetManifestFile(file)) return [];
     },
     configureServer(server) {
       // Vite snapshots publicDir when the dev server starts. Asset Studio can
@@ -380,7 +386,6 @@ function assetManifestApi() {
           server.watcher.unwatch(file);
           await mkdir(safeChild(manifestRoot, lineageId, levelFolder), { recursive: true });
           await writeFile(file, JSON.stringify(manifest, null, 2) + "\n", "utf8");
-          server.watcher.add(file);
           res.setHeader("Content-Type", "application/json");
           res.end(JSON.stringify({ ok: true, path: `assets/pets/${lineageId}/${levelFolder}/asset.json` }));
         } catch (error) {
@@ -397,5 +402,8 @@ export default defineConfig({
   server: {
     // Cloudflare quick tunnels use random *.trycloudflare.com hosts
     allowedHosts: [".trycloudflare.com"],
+    watch: {
+      ignored: ["**/assets/pets/**/asset.json"],
+    },
   },
 });
