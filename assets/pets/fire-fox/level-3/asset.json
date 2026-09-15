@@ -115,7 +115,7 @@
     }
   ],
   "preview": {
-    "x": 420,
+    "x": 301,
     "y": 440,
     "scale": 1
   },
@@ -198,7 +198,9 @@
       }
     },
     "attackMeta": {
-      "pattern": "single"
+      "pattern": "volley",
+      "volleyCount": 3,
+      "volleySpread": 30
     }
   }
 }

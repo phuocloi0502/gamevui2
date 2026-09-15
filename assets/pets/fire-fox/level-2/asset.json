@@ -115,7 +115,7 @@
     }
   ],
   "preview": {
-    "x": 420,
+    "x": 311,
     "y": 440,
     "scale": 1
   },
@@ -124,7 +124,8 @@
     "attack": {
       "cast": "/assets/pets/fire-fox/level-2/effects/attack-cast.png",
       "projectile": "/assets/pets/fire-fox/level-2/effects/projectile.png",
-      "impact": "/assets/pets/fire-fox/level-2/effects/impact.png"
+      "impact": "/assets/pets/fire-fox/level-2/effects/impact.png",
+      "splash": "/assets/pets/fire-fox/level-2/effects/splash.png"
     },
     "attackPresentation": {
       "cast": {
@@ -195,6 +196,29 @@
         "duration": 420,
         "ease": "Quad.easeOut",
         "mirror": true
+      },
+      "splash": {
+        "enabled": true,
+        "trigger": "after-primary",
+        "startAnchor": "aoe-center",
+        "endAnchor": "aoe-center",
+        "startX": 0,
+        "startY": 0,
+        "endX": 0,
+        "endY": 0,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.08,
+        "endScale": 0.65,
+        "startAngle": 0,
+        "endAngle": 20,
+        "startAlpha": 1,
+        "endAlpha": 0,
+        "depth": 22,
+        "delay": 80,
+        "duration": 400,
+        "ease": "Quad.easeOut",
+        "mirror": false
       }
     },
     "attackMeta": {
