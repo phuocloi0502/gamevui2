@@ -66,6 +66,26 @@ function assetManifestApi() {
       if (file.startsWith(manifestRoot) && file.endsWith("/asset.json")) return [];
     },
     configureServer(server) {
+      // Vite snapshots publicDir when the dev server starts. Asset Studio can
+      // create PNG files after that point, so serve pet production files from
+      // disk here instead of letting a new URL fall through to index.html.
+      server.middlewares.use("/assets/pets", async (req, res, next) => {
+        if (req.method !== "GET" && req.method !== "HEAD") return next();
+        try {
+          const pathname = decodeURIComponent((req.url ?? "").split("?", 1)[0]);
+          if (!/^\/[a-z0-9]+(?:-[a-z0-9]+)*\/level-[123]\/(?:(?:layers|effects)\/)?[a-z0-9]+(?:-[a-z0-9]+)*\.png$/.test(pathname)) return next();
+          const file = safeChild(publicPetRoot, ...pathname.slice(1).split("/"));
+          if (!await exists(file)) return next();
+          const data = await readFile(file);
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "image/png");
+          res.setHeader("Content-Length", String(data.length));
+          res.setHeader("Cache-Control", "no-cache");
+          res.end(req.method === "HEAD" ? undefined : data);
+        } catch {
+          next();
+        }
+      });
       server.middlewares.use("/__asset-studio/pet-manifests", async (req, res) => {
         if (req.method !== "GET") {
           res.statusCode = 405;

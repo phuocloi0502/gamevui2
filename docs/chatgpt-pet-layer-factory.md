@@ -235,7 +235,7 @@ Không tự phát minh anatomy, Combat VFX semantic hoặc filename ngoài execu
 
 Tên trong bảng không có `.png` để dễ đọc; output thực tế luôn thêm `.png` và dùng folder `layers/` hoặc `effects/` đúng như `petCatalog.ts`. Một slot có thể tạo nhiều runtime instances ở species cho phép; không tự suy diễn điều đó cho Fox/Wolf.
 
-RuntimeSize cố định hiện chỉ được khai báo rõ cho Fox baseline: `shadow 320×64`, `tail 228×220`, mỗi chân `70×123`, `body 308×225`, `head/eyes-open/eyes-closed 302×318`. Các slot không có runtimeSize phải giữ aspect/padding chất lượng cao; không tự stretch.
+RuntimeSize cố định hiện chỉ được khai báo rõ cho Fox baseline: `shadow 320×64`, mỗi layer đuôi đơn hoặc multi-tail `228×220`, mỗi chân `70×123`, `body 308×225`, `head/eyes-open/eyes-closed 302×318`. Các slot không có runtimeSize phải giữ aspect/padding chất lượng cao; không tự stretch.
 
 Z-order do `Layer.z` trong executable recipe quyết định, từ số nhỏ ở sau tới số lớn ở trước. Generation order không thay đổi z-order. Combat VFX không phải layer thường trực và không tham gia z-order của pet.
 

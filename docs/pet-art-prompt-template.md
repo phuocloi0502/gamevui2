@@ -184,7 +184,7 @@ Trả từng PNG riêng với đúng tên file và dừng khi đủ danh sách.
 | `body` | 308×225 | center |
 | `head`, `eyes-open`, `eyes-closed` | 302×318 | gần cổ, khoảng `0.5, 0.88` |
 
-Effect và multi-tail không có kích thước cứng; chọn canvas đủ padding và khai báo transform trong `asset.json`.
+Mỗi layer multi-tail dùng runtime canvas 228×220 như tail đơn; effect không có kích thước cứng nên cần canvas đủ padding và transform trong `asset.json`.
 
 ## Handoff cho Codex
 
