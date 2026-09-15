@@ -125,6 +125,9 @@ select { padding: 8px 16px; border: 1px solid #424958; border-radius: 6px; backg
 .creator-fields label { display: grid; gap: 6px; color: #aeb7c8; font-size: 11px; }
 .creator-fields input, .creator-fields select { width: 100%; min-width: 0; padding: 8px; border: 1px solid #424958; border-radius: 6px; background: #232935; color: #fff; }
 .template-status { padding: 10px 12px; border-left: 3px solid #be7b43; background: #24232a; color: #d7bd9f; font-size: 11px; }
+.upload-groups { display: grid; gap: 8px; margin-top: 14px; }
+.upload-groups .layer-group { margin: 0; }
+.upload-groups .upload-slots { padding: 0 10px 10px; }
 .upload-slots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .upload-slot { display: grid; grid-template-columns: minmax(120px, 1fr) minmax(130px, auto); gap: 4px 10px; align-items: center; padding: 10px; border: 1px solid #303744; border-radius: 7px; color: #c4cad5; font-size: 11px; }
 .upload-slot small { color: #818b9d; }

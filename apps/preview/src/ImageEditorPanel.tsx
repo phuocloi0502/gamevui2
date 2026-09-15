@@ -4,7 +4,7 @@ import type { PetDefinition } from '../../../packages/asset-core/src/types';
 import { combatVfxPresentation } from '../../../packages/asset-core/src/resolve';
 import { addPetImages, replacePetImages } from './api';
 import { isPng, readFile, runtimeFile, imageSize } from './files';
-import { combatVfxLabel, layerLabel, selectedPetKey } from './labels';
+import { combatVfxLabel, groupByPetPart, layerLabel, selectedPetKey } from './labels';
 import type { ResolvedPet } from './studioTypes';
 
 type ReplacementAsset = {
@@ -192,24 +192,34 @@ export function ImageEditorPanel({ pet, manifest, onClose }: { pet: ResolvedPet;
         <button type="button" aria-label="Đóng" onClick={onClose}>×</button>
       </div>
       <h3>Thay ảnh hiện có</h3>
-      <p className="editor-help">Thứ tự và nhãn theo executable recipe. Không gộp nhiều layer vào một ô vì chúng đang trỏ cùng file.</p>
-      <div className="upload-slots">
-        {replacementAssets.map(asset => {
-          const currentName = asset.currentSrc.split('/').at(-1) ?? asset.currentSrc;
-          const destPath = asset.destSrc.replace(`/assets/pets/${pet.lineageId}/level-${pet.evolutionLevel}/`, '');
-          return (
-            <label key={asset.key} className="upload-slot replacement-slot">
-              <span>{asset.label}</span>
-              <code>{destPath}</code>
-              <small>
-                {asset.shared
-                  ? `Đang dùng chung ${currentName}. Lưu sẽ tách thành ${destPath}.`
-                  : asset.currentSrc}
-              </small>
-              <input type="file" accept="image/png" onChange={event => setReplaceFiles(current => ({ ...current, [asset.key]: event.target.files?.[0] }))} />
-            </label>
-          );
-        })}
+      <p className="editor-help">Ảnh được gom theo chân, thân–đuôi, đầu và hiệu ứng. Pet cũ đang dùng chung một file cho nhiều chân hoặc mắt sẽ được tách sang layers/id.png khi bạn thay ảnh đó.</p>
+      <div className="upload-groups">
+        {groupByPetPart(replacementAssets, asset => asset.id, asset => asset.kind === 'combat').map(group => (
+          <details key={group.id} className="layer-group" open>
+            <summary>
+              <span><b>{group.label}</b></span>
+              <span>{group.items.length} ảnh</span>
+            </summary>
+            <div className="upload-slots">
+              {group.items.map(asset => {
+                const currentName = asset.currentSrc.split('/').at(-1) ?? asset.currentSrc;
+                const destPath = asset.destSrc.replace(`/assets/pets/${pet.lineageId}/level-${pet.evolutionLevel}/`, '');
+                return (
+                  <label key={asset.key} className="upload-slot replacement-slot">
+                    <span>{asset.label}</span>
+                    <code>{destPath}</code>
+                    <small>
+                      {asset.shared
+                        ? `Đang dùng chung ${currentName}. Lưu sẽ tách thành ${destPath}.`
+                        : asset.currentSrc}
+                    </small>
+                    <input type="file" accept="image/png" onChange={event => setReplaceFiles(current => ({ ...current, [asset.key]: event.target.files?.[0] }))} />
+                  </label>
+                );
+              })}
+            </div>
+          </details>
+        ))}
       </div>
       <div className="creator-footer">
         <button type="button" disabled={replaceBusy} onClick={onReplace}>Lưu ảnh thay thế</button>
@@ -219,13 +229,23 @@ export function ImageEditorPanel({ pet, manifest, onClose }: { pet: ResolvedPet;
         <div className="image-addition">
           <h3>Thêm asset còn thiếu</h3>
           <p className="editor-help">Slot recipe chưa có trên pet này, gồm mắt mở/nhắm nếu pet cũ chưa tách khỏi đầu.</p>
-          <div className="upload-slots">
-            {additionSlots.map(slot => (
-              <label key={slot.id} className="upload-slot">
-                <span>{slot.label} <small>{slot.optional ? 'tùy chọn' : 'bắt buộc còn thiếu'}</small></span>
-                <code>{slot.folder}/{slot.file}</code>
-                <input type="file" accept="image/png" onChange={event => setAddFiles(current => ({ ...current, [slot.id]: event.target.files?.[0] }))} />
-              </label>
+          <div className="upload-groups">
+            {groupByPetPart(additionSlots, slot => slot.instances?.[0]?.id ?? slot.id, slot => !!slot.combatVfx).map(group => (
+              <details key={group.id} className="layer-group" open>
+                <summary>
+                  <span><b>{group.label}</b></span>
+                  <span>{group.items.length} ảnh</span>
+                </summary>
+                <div className="upload-slots">
+                  {group.items.map(slot => (
+                    <label key={slot.id} className="upload-slot">
+                      <span>{slot.label} <small>{slot.optional ? 'tùy chọn' : 'bắt buộc còn thiếu'}</small></span>
+                      <code>{slot.folder}/{slot.file}</code>
+                      <input type="file" accept="image/png" onChange={event => setAddFiles(current => ({ ...current, [slot.id]: event.target.files?.[0] }))} />
+                    </label>
+                  ))}
+                </div>
+              </details>
             ))}
           </div>
           <div className="creator-footer">

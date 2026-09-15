@@ -4,7 +4,7 @@ import type { CombatVfxPresentation, Layer, PetDefinition } from '../../../packa
 import { combatVfxPresentation } from '../../../packages/asset-core/src/resolve';
 import { createPet } from './api';
 import { isPng, readFile, runtimeFile } from './files';
-import { selectedPetKey } from './labels';
+import { groupByPetPart, selectedPetKey } from './labels';
 
 export function CreatorPanel({ onClose }: { onClose: () => void }) {
   const [species, setSpecies] = useState(speciesTemplate(PET_ARCHETYPES[0].species[0])!.id);
@@ -123,13 +123,23 @@ export function CreatorPanel({ onClose }: { onClose: () => void }) {
           ? `${group.name} · ${template.rig} · template đã được kiểm chứng`
           : `${group.name} · ${template.rig} · thông số khởi đầu, cần chỉnh và kiểm chứng bằng pet flagship`}
       </p>
-      <div className="upload-slots">
-        {templateSlots.map(slot => (
-          <label key={slot.id} className="upload-slot">
-            <span>{slot.label} {slot.optional ? <small>tùy chọn</small> : <b>bắt buộc</b>}</span>
-            <code>{slot.folder}/{slot.file}</code>
-            <input type="file" accept="image/png" required={!slot.optional} onChange={event => setFiles(current => ({ ...current, [slot.id]: event.target.files?.[0] }))} />
-          </label>
+      <div className="upload-groups">
+        {groupByPetPart(templateSlots, slot => slot.instances?.[0]?.id ?? slot.id, slot => !!slot.combatVfx).map(group => (
+          <details key={group.id} className="layer-group" open>
+            <summary>
+              <span><b>{group.label}</b></span>
+              <span>{group.items.length} ảnh</span>
+            </summary>
+            <div className="upload-slots">
+              {group.items.map(slot => (
+                <label key={slot.id} className="upload-slot">
+                  <span>{slot.label} {slot.optional ? <small>tùy chọn</small> : <b>bắt buộc</b>}</span>
+                  <code>{slot.folder}/{slot.file}</code>
+                  <input type="file" accept="image/png" required={!slot.optional} onChange={event => setFiles(current => ({ ...current, [slot.id]: event.target.files?.[0] }))} />
+                </label>
+              ))}
+            </div>
+          </details>
         ))}
       </div>
       <div className="creator-footer">

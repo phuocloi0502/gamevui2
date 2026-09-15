@@ -35,14 +35,23 @@ const LAYER_GROUPS = [
   { id: 'effects', label: 'Hiệu ứng', test: (id: string) => /^(effect|particles|rock-fragments|top-effect|front-gloss)/.test(id) || /aura/.test(id) },
 ] as const;
 
-export function groupPetLayers<T extends { id: string }>(layers: T[]) {
-  const buckets = LAYER_GROUPS.map(group => ({ id: group.id, label: group.label, layers: [] as T[] }));
-  const other = { id: 'other', label: 'Khác', layers: [] as T[] };
-  for (const layer of layers) {
-    const bucket = buckets.find((_, index) => LAYER_GROUPS[index].test(layer.id));
-    (bucket ?? other).layers.push(layer);
+export function groupByPetPart<T>(items: T[], idOf: (item: T) => string, isCombat?: (item: T) => boolean) {
+  const buckets = LAYER_GROUPS.map(group => ({ id: group.id, label: group.label, items: [] as T[] }));
+  const combat = { id: 'combat', label: 'Combat VFX', items: [] as T[] };
+  const other = { id: 'other', label: 'Khác', items: [] as T[] };
+  for (const item of items) {
+    if (isCombat?.(item)) {
+      combat.items.push(item);
+      continue;
+    }
+    const bucket = buckets.find((_, index) => LAYER_GROUPS[index].test(idOf(item)));
+    (bucket ?? other).items.push(item);
   }
-  return [...buckets, other].filter(group => group.layers.length);
+  return [...buckets, combat, other].filter(group => group.items.length);
+}
+
+export function groupPetLayers<T extends { id: string }>(layers: T[]) {
+  return groupByPetPart(layers, layer => layer.id).map(group => ({ id: group.id, label: group.label, layers: group.items }));
 }
 const combatVfxLabels: Record<string, string> = {
   cast: 'Combat VFX · tích năng',
