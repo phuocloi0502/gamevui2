@@ -1,6 +1,6 @@
 # GameVui Asset Studio
 
-Repo sản xuất asset 2D và frontend preview; stack Phaser 3 + TypeScript + Vite.
+Repo sản xuất asset 2D và frontend preview; stack React + Phaser 3 + TypeScript + Vite.
 
 Artwork được tạo ở ChatGPT web. Codex chỉ xử lý PNG đã nhận, code và preview. Đặt ảnh mới vào `assets/inbox/<lineage-id>/level-<n>/`, sau đó yêu cầu Codex tích hợp. Xem `docs/workflow-chatgpt-web-assets.md`.
 
@@ -18,7 +18,7 @@ Một câu ngắn như “Tạo pet Sói hệ Lửa Level 1 theo repo” phải 
 Nếu ChatGPT web được kết nối GitHub, nó có thể đọc contract và asset đã commit để làm reference. PNG mới vẫn đi qua `assets/inbox/` trước khi Codex chuẩn hóa và đưa vào app.
 
 ```text
-apps/preview/src/          UI và scene xem asset
+apps/preview/src/          UI React và scene Phaser xem asset
 packages/asset-core/src/  Contract và resolve kế thừa dữ liệu
 packages/pet-runtime/src/ Renderer PetView dùng chung
 assets/rigs/              Bộ khung và animation defaults

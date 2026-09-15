@@ -1,4 +1,5 @@
 import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 import { resolve, relative } from "node:path";
 import { access, copyFile, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 
@@ -324,7 +325,7 @@ function assetManifestApi() {
 }
 
 export default defineConfig({
-  plugins: [assetManifestApi()],
+  plugins: [react(), assetManifestApi()],
   server: {
     // Cloudflare quick tunnels use random *.trycloudflare.com hosts
     allowedHosts: [".trycloudflare.com"],
