@@ -74,7 +74,7 @@ effects/impact.png         # optional; Combat VFX độc lập tại mục tiêu
 
 Trong danh sách này, `effect-back`, `effect-front`, `particles` là Pet Visual VFX gắn với model. `attack-cast`, `projectile`, `impact` là Combat VFX của đúng evolution stage; chúng xuất hiện theo attack lifecycle và không tham gia z-order thường trực của pet.
 
-Bốn chân là bốn artwork khác nhau. Tuyệt đối không tạo một `leg.png` để reuse cho cả bốn chân trong Fox production mới. Mỗi chân phải có đúng phối cảnh xa/gần và trước/sau của nó, đồng thời có phần trên hoàn chỉnh để giấu dưới body.
+Bốn chân là bốn artwork khác nhau trong cùng pose **3/4 side view facing right**. Tuyệt đối không tạo một `leg.png` để reuse, không mirror near/far và không dùng cùng silhouette cho cả bốn chân. Mỗi chân phải có đúng phối cảnh xa/gần và trước/sau, đồng thời chứa phần chân trên/đùi hoàn chỉnh để giấu dưới body; `body.png` không chứa đùi trước hoặc đùi sau.
 
 Pivot dự kiến khi tích hợp:
 
@@ -136,7 +136,7 @@ Main skill: Element Tail Bolt
 
 IDENTITY VÀ ART DIRECTION:
 - Cute/chibi fantasy cùng thế giới với các Fox reference đã cung cấp, nhưng là thiết kế gốc.
-- Low quadruped body, đầu chibi lớn, tai tam giác lớn, bốn chân ngắn, đuôi lớn; góc nhìn 3/4 và quay cùng một hướng ở mọi layer.
+- Low quadruped body, đầu chibi lớn, tai tam giác lớn, bốn chân ngắn, đuôi lớn; pose cố định 3/4 side view facing right ở mọi layer.
 - Rendering painterly mềm, gradient có chiều sâu, silhouette rõ ở kích thước gameplay nhỏ.
 - Giữ nhất quán tuyệt đối camera, tỷ lệ, palette, lighting, material và ground pose giữa mọi PNG.
 - Element behavior: <ELEMENT_BEHAVIOR>.
@@ -152,8 +152,16 @@ OUTPUT CHÍNH XÁC:
 
 QUY TẮC CHÂN:
 - rear-far.png, rear-near.png, front-far.png, front-near.png là bốn artwork chân độc lập.
-- Mỗi chân thể hiện đúng vị trí trước/sau và near/far, có phần khớp trên hoàn chỉnh, không chứa body hay chân khác.
-- Không tạo leg.png dùng chung.
+- Cả bốn cùng anatomy/style/palette/material/lighting của pet, nhưng mỗi chân có góc camera, silhouette và perspective depth riêng.
+- front-near.png: camera-facing front leg; đầy đủ từ vai/phần chân trên tới bàn chân; lớn và rõ hơn front-far; gần thẳng đứng nhưng hơi hướng trước/phải; thấy rõ mặt trên + mặt trước bàn chân.
+- front-far.png: far-side front leg; hẹp và nhỏ hơn front-near; lùi vào trong/sau thân, ít thấy mặt ngoài phần vai/đùi trước; foreshortening rõ; bàn chân nhỏ hơn do perspective.
+- rear-near.png: camera-facing rear leg; đùi sau lớn, hock/knee curve rõ; nghiêng chéo về trước/phải; bàn chân lớn và có khối 3D rõ.
+- rear-far.png: far-side rear leg; đùi hẹp hơn và có cảm giác bị thân overlap/che một phần; lùi về sau và vào trong; bàn chân nhỏ hơn rear-near.
+- Near có visual weight lớn hơn far; perspective depth phải đọc được khi xem từng PNG riêng; bốn bàn chân phải chạm cùng ground plane khi ráp pet.
+- Mỗi chân chứa luôn phần chân trên/đùi tới khớp, kể cả vùng bị che; body.png không chứa đùi trước hoặc đùi sau.
+- Họa tiết nguyên tố bám theo surface/anatomy của đúng chân, không làm thay đổi silhouette.
+- Trong từng prompt generation phải ghi rõ camera-facing side/far side, foreshortening, overlap và depth của layer đó.
+- Không tạo leg.png dùng chung, không mirror near/far, không tạo chân frontal, side-profile 90°, hoặc bốn chân cùng silhouette.
 
 QUY TẮC HEAD:
 - head.png chứa cấu trúc đầu/mặt và tai nếu tai không được tách riêng, nhưng không chứa mắt.

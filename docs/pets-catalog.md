@@ -441,6 +441,17 @@ The tail is the strongest species identifier.
 - tail elemental effect;
 - shadow.
 
+### Fox quadruped camera contract
+
+Mọi Fox production layer giữ pose `3/4 side view facing right`. Bốn chân là bốn artwork phối cảnh độc lập, cùng anatomy/style/palette/material nhưng không mirror near/far:
+
+- `front-near`: camera-facing front leg, đầy đủ từ vai/phần chân trên đến bàn chân; lớn và rõ, gần thẳng đứng nhưng hơi hướng trước/phải; thấy mặt trên và mặt trước bàn chân.
+- `front-far`: far-side front leg, hẹp/nhỏ hơn, lùi vào trong và sau thân, ít lộ mặt ngoài phần chân trên, bàn chân nhỏ hơn do foreshortening.
+- `rear-near`: camera-facing rear leg, đùi sau lớn, hock/knee curve rõ, nghiêng chéo trước/phải, bàn chân lớn và có khối 3D.
+- `rear-far`: far-side rear leg, đùi hẹp và có perspective overlap với thân, lùi sau/vào trong, bàn chân nhỏ hơn `rear-near`.
+
+Mỗi chân chứa phần chân trên/đùi hoàn chỉnh; body không chứa đùi. Near có visual weight lớn hơn far, perspective depth phải đọc được khi xem PNG riêng và mọi bàn chân phải cùng ground plane khi composition. Cấm frontal leg, side-profile 90°, bốn silhouette giống nhau hoặc họa tiết nguyên tố làm biến dạng silhouette chân. Prompt từng layer phải nói rõ camera-facing/far side, foreshortening, overlap và depth.
+
 ### Shared base animations
 
 Good candidates for reuse:

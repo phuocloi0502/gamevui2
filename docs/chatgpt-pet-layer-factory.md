@@ -188,16 +188,29 @@ Với recipe production mới có `head.png`, `eyes-open.png` và `eyes-closed.p
 
 Runtime tạo hai layer thật `eyes-open` và `eyes-closed`, cả hai gắn vào `head`. Manifest lần lượt đánh dấu chúng bằng `blink: "open"` và `blink: "closed"`; runtime chỉ luân phiên visibility, không đổi texture và không dùng `closedSrc`.
 
-## Near/far và quadruped
+## Near/far và Fox quadruped
 
-Trong góc nhìn 3/4:
+Fox bắt buộc giữ cùng một pose tổng thể **3/4 side view, facing right** ở mọi production layer. `front-*` là chân phía đầu/ngực, `rear-*` là chân phía bụng sau/đuôi; `*-near` thuộc camera-facing side, còn `*-far` thuộc far side và phải thể hiện foreshortening, overlap cùng chiều sâu phối cảnh rõ ràng.
 
-- `front-*`: chân phía đầu/ngực;
-- `rear-*`: chân phía bụng sau/đuôi;
-- `*-near`: phía gần người xem, thường rõ/lớn/sáng hơn;
-- `*-far`: phía xa người xem, chịu perspective và có thể tối/nhỏ hơn nhẹ.
+Contract hình học của từng chân:
 
-Fox và Wolf production mới bắt buộc có bốn artwork độc lập:
+- `front-near`: chân trước phía gần camera, đầy đủ từ vai/phần chân trên tới bàn chân; lớn, rõ và có visual weight cao hơn `front-far`; trục chân gần thẳng đứng nhưng hơi hướng về trước/phải; bàn chân cho thấy rõ mặt trên và mặt trước.
+- `front-far`: chân trước ở far side, hẹp và nhỏ hơn `front-near`; vị trí thị giác lùi vào trong và sau thân, ít lộ mặt ngoài của phần vai/đùi trước; có foreshortening và bàn chân nhỏ hơn theo perspective.
+- `rear-near`: chân sau phía gần camera, có đùi sau lớn, hock/knee curve rõ; trục chân nghiêng chéo về trước/phải; bàn chân lớn và đọc được khối 3D.
+- `rear-far`: chân sau ở far side, đùi hẹp hơn và có cảm giác bị thân overlap/che một phần do perspective; trục chân lùi về sau và vào trong; bàn chân nhỏ hơn `rear-near`.
+
+Quy tắc bắt buộc cho cả bộ chân Fox:
+
+- near và far là hai artwork phối cảnh khác nhau, **không mirror đơn giản** và không dùng chung silhouette;
+- cả bốn chân dùng cùng anatomy, style, palette, material, lighting và mức độ chi tiết của đúng pet đó;
+- mỗi PNG chân chứa đầy đủ phần chân trên/đùi tương ứng tới khớp với thân, kể cả vùng dự kiến bị che; `body.png` không chứa đùi trước hoặc đùi sau;
+- near luôn có visual weight lớn hơn far; depth phải đọc được ngay cả khi xem riêng từng PNG;
+- bốn bàn chân phải ráp xuống cùng một ground plane;
+- không tạo chân nhìn frontal, side-profile 90°, hoặc bốn chân cùng một góc/cùng silhouette;
+- họa tiết nguyên tố phải bám theo surface và anatomy riêng của từng chân, không dùng glow/ornament để đổi silhouette;
+- prompt của từng operation phải gọi rõ `camera-facing side` hoặc `far side`, đồng thời mô tả `foreshortening`, `overlap` và `depth` tương ứng; không chỉ ghi tên file.
+
+Fox production mới bắt buộc có bốn artwork độc lập:
 
 ```text
 rear-far.png
@@ -206,7 +219,7 @@ front-far.png
 front-near.png
 ```
 
-Chân trước và sau phải khác anatomy; near/far phải thể hiện perspective. Không duplicate cùng một chân bốn lần và không dùng `leg.png` chung.
+Chân trước và sau phải khác anatomy; near/far phải thể hiện perspective ngay trong từng PNG. Không duplicate cùng một chân bốn lần và không dùng `leg.png` chung.
 
 ## Required, optional và recommended
 

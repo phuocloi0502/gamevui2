@@ -72,6 +72,8 @@ Asset Studio lưu phần tinh chỉnh Combat VFX trong `effects.attackPresentati
 
 `rear-far`, `rear-near`, `front-far`, `front-near` phải trỏ tới bốn PNG production khác nhau. Không dùng một `leg.png` chung cho bốn instance trong contract Fox mới.
 
+Bốn chân Fox dùng cùng pose `3/4 side view facing right` nhưng khác phối cảnh: near lớn/rõ và có visual weight cao hơn far; front/rear có anatomy tương ứng; near/far không được mirror hoặc dùng cùng silhouette. Mỗi layer chân chứa đầy đủ phần chân trên/đùi tới khớp, còn `body` không chứa đùi. Bàn chân phải cùng ground plane; prompt từng layer phải nêu rõ camera-facing/far side, foreshortening, overlap và depth. Mô tả chi tiết bắt buộc nằm trong `docs/chatgpt-pet-layer-factory.md`.
+
 Không tạo closed-head asset. `head.png` là artwork đầu cố định không chứa mắt. `eyes-open` và `eyes-closed` là hai layer độc lập cùng gắn vào `head`; chúng lần lượt khai báo `blink: "open"` và `blink: "closed"`. Hai PNG mắt chỉ chứa đôi mắt, có cùng canvas, kích thước, alignment, origin và vùng trong suốt; renderer luân phiên visibility của hai layer khi blink. Contract mới không dùng `closedSrc`.
 
 ### Evolution nhiều đuôi
