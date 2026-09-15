@@ -20,6 +20,8 @@ const pet={id:'fire-fox-level-1',lineageId:'fire-fox',evolutionLevel:1,name:'Fir
  layer('body','body',0,-117,.5,.5,5,.68),
  layer('rear-near','leg',-74,-87,.5,.15,6,.84),
  layer('front-near','leg',28,-90,.5,.15,7,.86),
- layer('head','head',39,-151,.5,.88,8,.78,{closedSrc:root+'head-closed.png'})
+ layer('head','head',39,-151,.5,.88,8,.78),
+ layer('eyes-open','eyes-open',0,0,.5,.88,8.1,1,{parent:'head',blink:'open'}),
+ layer('eyes-closed','eyes-closed',0,0,.5,.88,8.11,1,{parent:'head',blink:'closed'})
 ]};
 writeFileSync('assets/pets/fire-fox/level-1/asset.json',JSON.stringify(pet,null,2)+'\n');

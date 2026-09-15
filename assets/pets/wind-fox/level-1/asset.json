@@ -102,7 +102,6 @@
     {
       "id": "head",
       "src": "/assets/pets/wind-fox/level-1/layers/head.png",
-      "closedSrc": "/assets/pets/wind-fox/level-1/layers/head-closed.png",
       "x": 39,
       "y": -151,
       "originX": 0.5,

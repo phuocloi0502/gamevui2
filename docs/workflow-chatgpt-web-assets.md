@@ -48,6 +48,8 @@ assets/inbox/<lineage-id>/level-<n>/
   layers/
     body.png
     head.png
+    eyes-open.png
+    eyes-closed.png
     rear-far.png
     rear-near.png
     front-far.png

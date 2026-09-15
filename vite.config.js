@@ -155,7 +155,7 @@ function assetManifestApi() {
           const levelFolder = `level-${manifest.evolutionLevel}`;
           const publicPrefix = `/assets/pets/${manifest.lineageId}/${levelFolder}/`;
           const referencedSources = new Set([
-            ...manifest.layers.flatMap((layer) => [layer.src, layer.closedSrc].filter(Boolean)),
+            ...manifest.layers.map((layer) => layer.src),
             manifest.effects?.projectile,
             ...Object.values(manifest.effects?.attack ?? {}),
           ].filter(Boolean));
@@ -221,7 +221,7 @@ function assetManifestApi() {
           const levelFolder = `level-${current.evolutionLevel}`;
           const publicPrefix = `/assets/pets/${current.lineageId}/${levelFolder}/`;
           const sourcesOf = (item) => new Set([
-            ...item.layers.flatMap((layer) => [layer.src, layer.closedSrc].filter(Boolean)),
+            ...item.layers.map((layer) => layer.src),
             item.effects?.projectile,
             ...Object.values(item.effects?.attack ?? {}),
           ].filter((src) => typeof src === "string"));

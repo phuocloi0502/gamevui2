@@ -97,20 +97,20 @@ The table below supplies species routing and artwork identity. Exact required/op
 
 | Species ID / name | Archetype / rig | Required character files | Optional character / pet visual VFX | Optional Combat VFX |
 |---|---|---|---|---|
-| `fox` / Fox | quadruped / `fox-quadruped` | `tail.png`, `rear-far.png`, `rear-near.png`, `body.png`, `front-far.png`, `front-near.png`, `head.png` | `shadow.png`, `effect-back.png`, `head-closed.png`, `effect-front.png`, `particles.png`; Level 3 tail variants | Element Tail Bolt: `attack-cast.png`, `projectile.png`, `impact.png` |
-| `wolf` / Wolf | quadruped / `quadruped-base` | `tail.png`, `rear-far.png`, `front-far.png`, `body.png`, `rear-near.png`, `front-near.png`, `head.png` | `shadow.png`, `mane.png`, `head-closed.png`, `jaw.png` | Fang Rush: `attack-cast.png`, `attack-trail.png`, `impact.png`; no projectile by default |
-| `bunny` / Bunny | hopper / `hopper-base` | `rear-ear.png`, `body.png`, `hind-leg.png`, `front-paw.png`, `head.png`, `front-ear.png`, `tail.png` | `shadow.png`, `head-closed.png` | Burst Ram: `attack-trail.png`, `impact.png` |
-| `turtle` / Turtle | tank / `tank-base` | `rear-feet.png`, `body.png`, `shell.png`, `front-feet.png`, `head.png` | `shadow.png`, `head-closed.png`, `shell-runes.png` | Element Cage: `attack-cast.png`, `cage.png`, `impact.png` |
-| `dragon` / Dragon | winged / `winged-base` | `back-wing.png`, `tail.png`, `body.png`, `legs.png`, `front-wing.png`, `head.png` | `shadow.png`, `head-closed.png`, `horns.png`, `element-aura.png` | Element Meteor: `attack-cast.png`, `meteor.png`, `impact.png` |
-| `owl` / Owl | winged / `winged-base` | `back-wing.png`, `tail-feathers.png`, `body.png`, `talons.png`, `front-wing.png`, `head.png` | `shadow.png`, `head-closed.png`, `forehead-rune.png` | Element Orb: `attack-cast.png`, `projectile.png`, `impact.png` |
-| `golem` / Golem | tank / `tank-base` | `rear-arm.png`, `rear-leg.png`, `torso.png`, `core.png`, `front-leg.png`, `front-arm.png`, `head.png` | `shadow.png`, `rock-fragments.png` | Core Quake: `attack-cast.png`, `ground-wave.png`, `impact.png` |
+| `fox` / Fox | quadruped / `fox-quadruped` | `tail.png`, `rear-far.png`, `rear-near.png`, `body.png`, `front-far.png`, `front-near.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `effect-back.png`, `effect-front.png`, `particles.png`; Level 3 tail variants | Element Tail Bolt: `attack-cast.png`, `projectile.png`, `impact.png` |
+| `wolf` / Wolf | quadruped / `quadruped-base` | `tail.png`, `rear-far.png`, `front-far.png`, `body.png`, `rear-near.png`, `front-near.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `mane.png`, `jaw.png` | Fang Rush: `attack-cast.png`, `attack-trail.png`, `impact.png`; no projectile by default |
+| `bunny` / Bunny | hopper / `hopper-base` | `rear-ear.png`, `body.png`, `hind-leg.png`, `front-paw.png`, `head.png`, `eyes-open.png`, `eyes-closed.png`, `front-ear.png`, `tail.png` | `shadow.png` | Burst Ram: `attack-trail.png`, `impact.png` |
+| `turtle` / Turtle | tank / `tank-base` | `rear-feet.png`, `body.png`, `shell.png`, `front-feet.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `shell-runes.png` | Element Cage: `attack-cast.png`, `cage.png`, `impact.png` |
+| `dragon` / Dragon | winged / `winged-base` | `back-wing.png`, `tail.png`, `body.png`, `legs.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `horns.png`, `element-aura.png` | Element Meteor: `attack-cast.png`, `meteor.png`, `impact.png` |
+| `owl` / Owl | winged / `winged-base` | `back-wing.png`, `tail-feathers.png`, `body.png`, `talons.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `forehead-rune.png` | Element Orb: `attack-cast.png`, `projectile.png`, `impact.png` |
+| `golem` / Golem | tank / `tank-base` | `rear-arm.png`, `rear-leg.png`, `torso.png`, `core.png`, `front-leg.png`, `front-arm.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `rock-fragments.png` | Core Quake: `attack-cast.png`, `ground-wave.png`, `impact.png` |
 | `slime` / Slime | blob / `blob-base` | `blob.png`, `face.png` | `shadow.png`, `inner-core.png`, `front-gloss.png`, `top-effect.png` | Element Pulse: `attack-cast.png`, `pulse.png`, `impact.png` |
-| `serpent` / Serpent | serpent / `serpent-base` | `tail.png`, `body-lower.png`, `body-upper.png`, `head.png` | `shadow.png`, `head-closed.png`, `jaw.png`, `crest.png` | Element Lance: `attack-cast.png`, `beam.png`, `impact.png` |
-| `hawk` / Hawk | winged / `winged-base` | `rear-wing.png`, `tail-fan.png`, `body.png`, `talons.png`, `front-wing.png`, `head.png` | `shadow.png`, `head-closed.png`, `crest.png` | Cyclone Dive: `attack-trail.png`, `vortex.png`, `impact.png` |
+| `serpent` / Serpent | serpent / `serpent-base` | `tail.png`, `body-lower.png`, `body-upper.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `jaw.png`, `crest.png` | Element Lance: `attack-cast.png`, `beam.png`, `impact.png` |
+| `hawk` / Hawk | winged / `winged-base` | `rear-wing.png`, `tail-fan.png`, `body.png`, `talons.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `crest.png` | Cyclone Dive: `attack-trail.png`, `vortex.png`, `impact.png` |
 
-Fox runtimeSize targets currently defined by code are: shadow 320×64, tail 228×220, each independent leg 70×123, body 308×225 and head/head-closed 302×318. Other species currently have no fixed runtimeSize in the executable catalog; keep high-quality source aspect ratio and let Asset Studio/Codex normalize without stretching.
+Fox runtimeSize targets currently defined by code are: shadow 320×64, tail 228×220, each independent leg 70×123, body 308×225 and head/eyes-open/eyes-closed 302×318. Other species currently have no fixed runtimeSize in the executable catalog; keep high-quality source aspect ratio and let Asset Studio/Codex normalize without stretching.
 
-Z-order is the numeric `z` in `petCatalog.ts`: smaller is farther back, larger is farther front. `head-closed.png` is a state source through `closedSrc`, not another visible layer. It must overlay `head.png` exactly and differ only in the eyes. Element effects should use only filenames allowed by the species recipe. Optional does not mean “always omit”: create a suitable optional file when it materially strengthens the chosen element/species identity.
+Z-order is the numeric `z` in `petCatalog.ts`: smaller is farther back, larger is farther front. `head.png` không chứa mắt. `eyes-open.png` và `eyes-closed.png` là hai layer thật cùng parent `head`, lần lượt có `blink: "open"` và `blink: "closed"`; chúng phải cùng canvas và overlay chính xác trên head. Không tạo closed-head asset hoặc dùng `closedSrc`. Element effects should use only filenames allowed by the species recipe. Optional does not mean “always omit”: create a suitable optional file when it materially strengthens the chosen element/species identity.
 
 ### Combat VFX binding contract
 
@@ -435,7 +435,7 @@ The tail is the strongest species identifier.
 
 - body;
 - head;
-- closed-eye head / blink texture;
+- head không chứa mắt và hai layer mắt độc lập mở/nhắm;
 - four independent leg artworks;
 - large tail;
 - tail elemental effect;
@@ -495,7 +495,7 @@ Shadow:
 ```text
 Character / Pet Visual VFX:
 shadow, effect-back, tail, rear-far, rear-near, body,
-front-far, front-near, head, head-closed, effect-front, particles
+front-far, front-near, head, eyes-open, eyes-closed, effect-front, particles
 
 Combat VFX — Element Tail Bolt:
 attack-cast, projectile, impact
@@ -618,7 +618,7 @@ Shadow:
 
 ```text
 Character layers:
-shadow, rear-ear, body, hind-leg, front-paw, head, front-ear, tail, head-closed
+shadow, rear-ear, body, hind-leg, front-paw, head, eyes-open, eyes-closed, front-ear, tail
 
 Combat VFX — Burst Ram:
 attack-trail, impact
@@ -737,7 +737,7 @@ Shadow:
 
 ```text
 Character layers:
-shadow, rear-feet, body, shell, front-feet, head, head-closed, shell-runes
+shadow, rear-feet, body, shell, front-feet, head, eyes-open, eyes-closed, shell-runes
 
 Combat VFX — Element Cage:
 attack-cast, cage, impact
@@ -874,7 +874,7 @@ Shadow:
 ```text
 Character / Pet Visual VFX:
 shadow, back-wing, tail, body, legs, front-wing, head,
-head-closed, horns, element-aura
+eyes-open, eyes-closed, horns, element-aura
 
 Combat VFX — Element Meteor:
 attack-cast, meteor, impact
@@ -996,7 +996,7 @@ Shadow:
 ```text
 Character layers:
 shadow, back-wing, tail-feathers, body, talons, front-wing,
-head, head-closed, forehead-rune
+head, eyes-open, eyes-closed, forehead-rune
 
 Combat VFX — Element Orb:
 attack-cast, projectile, impact
@@ -1114,7 +1114,7 @@ Shadow:
 ```text
 Character layers:
 shadow, tail, rear-far, front-far, body, mane,
-rear-near, front-near, head, head-closed, jaw
+rear-near, front-near, head, eyes-open, eyes-closed, jaw
 
 Combat VFX — Fang Rush:
 attack-cast, attack-trail, impact
@@ -1239,7 +1239,8 @@ Shadow:
 
 ```text
 Character / Pet Visual VFX:
-shadow, rear-arm, rear-leg, torso, core, front-leg, front-arm, head, rock-fragments
+shadow, rear-arm, rear-leg, torso, core, front-leg, front-arm,
+head, eyes-open, eyes-closed, rock-fragments
 
 Combat VFX — Core Quake:
 attack-cast, ground-wave, impact
@@ -1475,7 +1476,7 @@ Shadow:
 
 ```text
 Character layers:
-shadow, tail, body-lower, body-upper, head, head-closed, jaw, crest
+shadow, tail, body-lower, body-upper, head, eyes-open, eyes-closed, jaw, crest
 
 Combat VFX — Element Lance:
 attack-cast, beam, impact
@@ -1588,7 +1589,7 @@ Shadow:
 
 ```text
 Character layers:
-shadow, rear-wing, tail-fan, body, talons, front-wing, head, head-closed, crest
+shadow, rear-wing, tail-fan, body, talons, front-wing, head, eyes-open, eyes-closed, crest
 
 Combat VFX — Cyclone Dive:
 attack-trail, vortex, impact

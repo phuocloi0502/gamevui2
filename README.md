@@ -34,6 +34,8 @@ Dừng: `docker compose down`. Sau khi đổi dependency: `docker compose run --
 
 Frontend tự tìm `assets/pets/*/level-*/asset.json`, không cần thêm route hoặc viết class mới cho từng pet. Mỗi lineage có tối đa ba cấp `level-1`, `level-2`, `level-3`. Fire Fox Level 1 tiếp tục kế thừa legacy `pet-base`; Fox sản xuất mới dùng `fox-quadruped` và bốn PNG chân độc lập.
 
+Mọi pet recipe có `head` và blink dùng ba layer thật: `head`, `eyes-open` và `eyes-closed`. `head.png` không chứa mắt; hai layer mắt cùng là con của `head` và được runtime luân phiên visibility theo field `blink`. Không dùng closed-head asset hoặc `closedSrc` trong manifest production.
+
 Asset Studio có form **Tạo pet từ layer**. Chọn một trong 10 species và element,
 chọn Level 1/2/3 rồi upload các PNG trong suốt theo recipe hiển thị. Hệ thống giữ bản gốc trong
 `assets/inbox/<lineage>/level-<n>/`, tạo runtime files + manifest và dùng rig thuộc một trong

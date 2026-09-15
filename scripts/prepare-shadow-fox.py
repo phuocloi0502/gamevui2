@@ -12,7 +12,8 @@ OUT.mkdir(parents=True, exist_ok=True)
 TARGETS = {
     "body": ("layers", (308, 225), (4, 4, 304, 221)),
     "head": ("layers", (302, 318), (4, 4, 298, 314)),
-    "head-closed": ("layers", (302, 318), (4, 4, 298, 314)),
+    "eyes-open": ("layers", (302, 318), (4, 4, 298, 314)),
+    "eyes-closed": ("layers", (302, 318), (4, 4, 298, 314)),
     "leg": ("layers", (70, 123), (4, 4, 66, 119)),
     "shadow": ("layers", (320, 64), (10, 10, 310, 54)),
     "tail": ("layers", (310, 300), (4, 4, 306, 296)),
@@ -26,7 +27,7 @@ SOURCE_NAMES = {
     "leg": "leg-angle-3q",
 }
 
-HEAD_SOURCE_NAMES = {"head", "head-closed"}
+HEAD_SOURCE_NAMES = {"head", "eyes-open", "eyes-closed"}
 head_boxes = [
     Image.open(INBOX / "layers" / f"{name}.png").convert("RGBA").getchannel("A").getbbox()
     for name in HEAD_SOURCE_NAMES
@@ -62,6 +63,8 @@ def render_master() -> None:
     canvas = Image.new("RGBA", (600, 600))
     positions: dict[str, tuple[float, float, float]] = {}
     for layer in sorted(manifest["layers"], key=lambda item: item["z"]):
+        if layer.get("blink") == "closed":
+            continue
         px, py, parent_scale = positions.get(layer.get("parent"), (300, 510, 1))
         x = px + layer["x"] * parent_scale
         y = py + layer["y"] * parent_scale

@@ -25,10 +25,10 @@ def extract(name):
     return im
 
 report = {}
-for name, size in [('body',(300,220)),('head',(300,310)),('head-closed',(300,310)),('tail',(220,215)),('leg',(65,115)),('fire',(100,155))]:
+for name, size in [('body',(300,220)),('head',(300,310)),('eyes-open',(300,310)),('eyes-closed',(300,310)),('tail',(220,215)),('leg',(65,115)),('fire',(100,155))]:
     im = extract(name)
     bbox = im.getbbox()
-    if name.startswith('head'):
+    if name == 'head' or name.startswith('eyes-'):
         bbox = extract('head').getbbox()
     im = im.crop(bbox)
     im.thumbnail(size, Image.Resampling.LANCZOS)

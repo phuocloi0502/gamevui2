@@ -58,7 +58,9 @@ Fox bình thường dùng thứ tự sau; các layer ghi optional có thể bỏ
 | 5 | `body` | bắt buộc |
 | 6 | `front-far` | artwork chân độc lập |
 | 7 | `front-near` | artwork chân độc lập |
-| 8 | `head` | bắt buộc; có thể khai báo `closedSrc` |
+| 8 | `head` | bắt buộc; không chứa mắt |
+| 8.1 | `eyes-open` | bắt buộc; parent `head`, `blink: "open"` |
+| 8.11 | `eyes-closed` | bắt buộc; parent `head`, `blink: "closed"` |
 | 9 | `effect-front` | optional |
 | 10 | `particles` | optional |
 
@@ -70,7 +72,7 @@ Asset Studio lưu phần tinh chỉnh Combat VFX trong `effects.attackPresentati
 
 `rear-far`, `rear-near`, `front-far`, `front-near` phải trỏ tới bốn PNG production khác nhau. Không dùng một `leg.png` chung cho bốn instance trong contract Fox mới.
 
-`closedSrc` là biến thể nhắm mắt của chính layer `head`; ảnh mở/nhắm phải có cùng canvas, alignment, silhouette và pivot. Không cần tạo layer mắt riêng nếu chỉ cần blink.
+Không tạo closed-head asset. `head.png` là artwork đầu cố định không chứa mắt. `eyes-open` và `eyes-closed` là hai layer độc lập cùng gắn vào `head`; chúng lần lượt khai báo `blink: "open"` và `blink: "closed"`. Hai PNG mắt chỉ chứa đôi mắt, có cùng canvas, kích thước, alignment, origin và vùng trong suốt; renderer luân phiên visibility của hai layer khi blink. Contract mới không dùng `closedSrc`.
 
 ### Evolution nhiều đuôi
 
@@ -104,7 +106,7 @@ Một pet production mới chỉ hoàn tất khi:
 - layer ghép thành preview đúng silhouette đã duyệt;
 - bốn chân Fox là bốn artwork riêng;
 - pivot/attachment không nhảy khi tween;
-- `head` và `closedSrc` overlay ổn định;
+- `eyes-open` và `eyes-closed` overlay ổn định trên `head` không chứa mắt;
 - animation loop không giật;
 - tên file, manifest, parent, z-order và target ID hợp lệ;
 - preview/master được tạo từ production layers, không được dùng ngược làm source.

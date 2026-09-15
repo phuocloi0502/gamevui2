@@ -5,6 +5,8 @@ root=Path(__file__).resolve().parents[1]
 pet=json.loads((root/'assets/pets/fire-fox/level-1/asset.json').read_text())
 canvas=Image.new('RGBA',(600,600)); positions={}
 for layer in sorted(pet['layers'],key=lambda l:l['z']):
+    if layer.get('blink') == 'closed':
+        continue
     px,py,ps=positions.get(layer.get('parent'),(300,510,1))
     x,y,s=px+layer['x']*ps,py+layer['y']*ps,ps*layer.get('scale',1)
     positions[layer['id']]=(x,y,s)

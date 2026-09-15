@@ -23,6 +23,6 @@
     { "id": "body", "src": "/assets/pets/water-fox/level-2/layers/body.png", "x": 0, "y": -117, "originX": 0.5, "originY": 0.5, "z": 5, "scale": 0.68 },
     { "id": "rear-near", "src": "/assets/pets/water-fox/level-2/layers/leg.png", "x": -74, "y": -87, "originX": 0.5, "originY": 0.15, "z": 6, "scale": 0.84 },
     { "id": "front-near", "src": "/assets/pets/water-fox/level-2/layers/leg.png", "x": 28, "y": -90, "originX": 0.5, "originY": 0.15, "z": 7, "scale": 0.86 },
-    { "id": "head", "src": "/assets/pets/water-fox/level-2/layers/head.png", "closedSrc": "/assets/pets/water-fox/level-2/layers/head-closed.png", "x": 39, "y": -151, "originX": 0.5, "originY": 0.88, "z": 8, "scale": 0.78 }
+    { "id": "head", "src": "/assets/pets/water-fox/level-2/layers/head.png", "x": 39, "y": -151, "originX": 0.5, "originY": 0.88, "z": 8, "scale": 0.78 }
   ]
 }

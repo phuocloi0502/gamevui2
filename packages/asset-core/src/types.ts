@@ -12,7 +12,8 @@ export interface Layer {
   alpha?: number;
   visible?: boolean;
   tint?: number;
-  closedSrc?: string;
+  /** Mutually exclusive visibility state controlled by the generic blink timer. */
+  blink?: 'open' | 'closed';
   sheet?: { width: number; height: number; count: number; fps: number };
 }
 export type State = 'idle' | 'walk' | 'attack' | 'hurt';

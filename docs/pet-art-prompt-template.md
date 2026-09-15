@@ -63,7 +63,8 @@ layers/body.png
 layers/front-far.png
 layers/front-near.png
 layers/head.png
-layers/head-closed.png     # optional blink variant qua closedSrc
+layers/eyes-open.png       # đôi mắt mở, layer con của head
+layers/eyes-closed.png     # đôi mắt nhắm, layer blink độc lập
 effects/effect-front.png   # optional; chỉ là visual layer trước pet
 effects/particles.png      # optional
 effects/attack-cast.png    # optional; Combat VFX lúc chuẩn bị đánh
@@ -82,7 +83,7 @@ Pivot dự kiến khi tích hợp:
 - `head`: gần cổ;
 - effect/particles: tại attachment tự nhiên của effect.
 
-`head.png` và `head-closed.png` phải có cùng canvas, kích thước, vị trí pixel, silhouette, ánh sáng và pivot; chỉ trạng thái mắt thay đổi. Tai mặc định nằm trong head, trừ khi thật sự cần animation riêng.
+`head.png` không chứa mắt. `eyes-open.png` và `eyes-closed.png` chỉ chứa đôi mắt, phải có cùng canvas, kích thước, vị trí pixel, ánh sáng và pivot; chỉ trạng thái mắt thay đổi. Hai file mắt phải overlay chính xác lên head. Tai mặc định nằm trong head, trừ khi thật sự cần animation riêng.
 
 Z-order mặc định từ sau ra trước:
 
@@ -155,8 +156,8 @@ QUY TẮC CHÂN:
 - Không tạo leg.png dùng chung.
 
 QUY TẮC HEAD:
-- head.png chứa head/face và tai nếu tai không được tách riêng theo specification.
-- head-closed.png (nếu yêu cầu) overlay chính xác với head.png và chỉ đổi mắt sang nhắm.
+- head.png chứa cấu trúc đầu/mặt và tai nếu tai không được tách riêng, nhưng không chứa mắt.
+- eyes-open.png và eyes-closed.png overlay chính xác trên head.png; hai file chỉ khác trạng thái mắt.
 
 QUY TẮC TAIL:
 - Mỗi tail layer là một artwork hoàn chỉnh với gốc đuôi rõ và padding đủ khi xoay.
@@ -181,7 +182,7 @@ Trả từng PNG riêng với đúng tên file và dừng khi đủ danh sách.
 | `tail` | 228×220 | gốc đuôi, khoảng `0.85, 0.85` |
 | mỗi chân | 70×123 | khớp trên, khoảng `0.5, 0.15` |
 | `body` | 308×225 | center |
-| `head`, `head-closed` | 302×318 | gần cổ, khoảng `0.5, 0.88` |
+| `head`, `eyes-open`, `eyes-closed` | 302×318 | gần cổ, khoảng `0.5, 0.88` |
 
 Effect và multi-tail không có kích thước cứng; chọn canvas đủ padding và khai báo transform trong `asset.json`.
 

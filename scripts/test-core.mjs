@@ -71,6 +71,19 @@ const foxTemplate=speciesTemplate('fox');
 assert.equal(foxTemplate.rig,'fox-quadruped');
 for(const semantic of ['cast','projectile','impact']) assert.ok(foxTemplate.slots.some(slot=>slot.combatVfx===semantic),`Fox recipe: ${semantic}`);
 assert.ok(!foxTemplate.slots.some(slot=>slot.combatVfx==='trail'),'Fox ranged recipe must not require melee trail');
+const foxEyesOpen=foxTemplate.slots.find(slot=>slot.id==='eyes-open');
+const foxEyesClosed=foxTemplate.slots.find(slot=>slot.id==='eyes-closed');
+assert.equal(foxEyesOpen.instances[0].id,'eyes-open','open eyes must be an independent layer');
+assert.equal(foxEyesOpen.instances[0].parent,'head','open eyes must follow head transforms');
+assert.equal(foxEyesOpen.instances[0].blink,'open','open eyes must own the open blink state');
+assert.equal(foxEyesClosed.instances[0].id,'eyes-closed','closed eyes must be an independent layer');
+assert.equal(foxEyesClosed.instances[0].parent,'head','closed eyes must follow head transforms');
+assert.equal(foxEyesClosed.instances[0].blink,'closed','closed eyes must own the closed blink state');
+for(const templateId of ['fox','wolf','bunny','turtle','golem','dragon','owl','hawk','serpent']) {
+ const template=speciesTemplate(templateId);
+ assert.ok(template.slots.some(slot=>slot.id==='eyes-open'),`${templateId}: eyes-open recipe`);
+ assert.ok(template.slots.some(slot=>slot.id==='eyes-closed'),`${templateId}: eyes-closed recipe`);
+}
 for(const id of ['rear-far','rear-near','front-far','front-near']) {
  const slot=foxTemplate.slots.find(candidate=>candidate.id===id);
  assert.equal(slot.file,`${id}.png`,`${id} must use independent production artwork`);

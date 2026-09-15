@@ -13,7 +13,8 @@ OUT.mkdir(parents=True, exist_ok=True)
 TARGETS = {
     "body": ((308, 225), (4, 4, 304, 221)),
     "head": ((302, 318), (4, 4, 298, 314)),
-    "head-closed": ((302, 318), (4, 4, 298, 314)),
+    "eyes-open": ((302, 318), (4, 4, 298, 314)),
+    "eyes-closed": ((302, 318), (4, 4, 298, 314)),
     "tail": ((228, 220), (4, 4, 224, 216)),
     "leg": ((70, 123), (4, 4, 66, 119)),
     "elemental-effect": ((101, 163), (4, 4, 97, 159)),
@@ -25,10 +26,23 @@ def source_path(name: str) -> Path:
     return SOURCE / folder / f"{name}.png"
 
 
+HEAD_SOURCE_NAMES = {"head", "eyes-open", "eyes-closed"}
+head_boxes = [
+    Image.open(source_path(name)).convert("RGBA").getchannel("A").getbbox()
+    for name in HEAD_SOURCE_NAMES
+]
+HEAD_SHARED_BBOX = (
+    min(box[0] for box in head_boxes if box),
+    min(box[1] for box in head_boxes if box),
+    max(box[2] for box in head_boxes if box),
+    max(box[3] for box in head_boxes if box),
+)
+
+
 def normalize(name: str) -> None:
     canvas_size, target_box = TARGETS[name]
     image = Image.open(source_path(name)).convert("RGBA")
-    bbox = image.getchannel("A").getbbox()
+    bbox = HEAD_SHARED_BBOX if name in HEAD_SOURCE_NAMES else image.getchannel("A").getbbox()
     if not bbox:
         raise ValueError(f"{name}: no visible alpha content")
     image = image.crop(bbox).resize(
@@ -56,6 +70,8 @@ def render_master() -> None:
     canvas = Image.new("RGBA", (600, 600))
     positions: dict[str, tuple[float, float, float]] = {}
     for layer in sorted(manifest["layers"], key=lambda item: item["z"]):
+        if layer.get("blink") == "closed":
+            continue
         px, py, parent_scale = positions.get(layer.get("parent"), (300, 510, 1))
         x = px + layer["x"] * parent_scale
         y = py + layer["y"] * parent_scale

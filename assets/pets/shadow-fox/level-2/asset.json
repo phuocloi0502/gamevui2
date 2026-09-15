@@ -100,7 +100,6 @@
     {
       "id": "head",
       "src": "/assets/pets/shadow-fox/level-2/layers/head.png",
-      "closedSrc": "/assets/pets/shadow-fox/level-2/layers/head-closed.png",
       "x": 60,
       "y": -130,
       "originX": 0.5,

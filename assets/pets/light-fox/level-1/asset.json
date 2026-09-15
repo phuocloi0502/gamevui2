@@ -100,8 +100,7 @@
       "originY": 0.88,
       "z": 8,
       "scale": 0.58,
-      "src": "/assets/pets/light-fox/level-1/layers/head.png",
-      "closedSrc": "/assets/pets/light-fox/level-1/layers/head-closed.png"
+      "src": "/assets/pets/light-fox/level-1/layers/head.png"
     }
   ],
   "preview": {

@@ -97,7 +97,6 @@
     {
       "id": "head",
       "src": "/assets/pets/water-fox/layers/head.png",
-      "closedSrc": "/assets/pets/water-fox/layers/head-closed.png",
       "x": 39,
       "y": -151,
       "originX": 0.5,

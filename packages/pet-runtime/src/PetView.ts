@@ -20,7 +20,7 @@ export class PetView extends Phaser.GameObjects.Container {
   constructor(scene: Phaser.Scene, x: number, y: number, readonly pet: ReturnType<typeof resolvePet>) {
     super(scene,x,y);
     for (const layer of [...pet.layers].sort((a,b)=>a.z-b.z)) {
-      const node=scene.add.container(layer.x,layer.y).setScale(layer.scale ?? 1).setAngle(layer.angle ?? 0).setAlpha(layer.alpha ?? 1).setVisible(layer.visible !== false).setDepth(layer.z);
+      const node=scene.add.container(layer.x,layer.y).setScale(layer.scale ?? 1).setAngle(layer.angle ?? 0).setAlpha(layer.alpha ?? 1).setVisible(layer.visible !== false && layer.blink !== 'closed').setDepth(layer.z);
       const sprite=scene.add.sprite(0,0,layer.src).setOrigin(layer.originX,layer.originY);
       if(layer.tint!==undefined) sprite.setTint(layer.tint);
       node.add(sprite);
@@ -107,16 +107,7 @@ export class PetView extends Phaser.GameObjects.Container {
     if(this.lifetime>this.nextBlink+140) this.nextBlink=this.lifetime+2600+Math.random()*1600;
     for(const layer of this.pet.layers) {
       const sprite=this.images.get(layer.id)!;
-      if(layer.closedSrc) {
-        const textureKey=blink ? layer.closedSrc:layer.src;
-        if(sprite.texture.key!==textureKey) {
-          // Keep the rendered size stable when swapping open/closed textures.
-          // This prevents a blink asset with different source bounds from
-          // making the head visibly pop larger or smaller.
-          const width=sprite.displayWidth, height=sprite.displayHeight;
-          sprite.setTexture(textureKey).setDisplaySize(width,height);
-        }
-      }
+      if(layer.blink) this.nodes.get(layer.id)?.setVisible(layer.visible!==false && layer.blink===(blink?'closed':'open'));
       if(layer.sheet) sprite.setFrame(Math.floor(this.lifetime/1000*layer.sheet.fps)%layer.sheet.count);
       if(this.state==='hurt') sprite.setTint(0xff9b83);
       else sprite.setTint(layer.tint??0xffffff);

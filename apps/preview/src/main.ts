@@ -27,6 +27,8 @@ const layerLabels: Record<string, string> = {
   'front-far': 'Chân trước · phía đầu · xa người xem',
   'front-near': 'Chân trước · phía đầu · gần người xem',
   head: 'Đầu',
+  'eyes-open': 'Đôi mắt mở',
+  'eyes-closed': 'Đôi mắt nhắm',
   'effect-front': 'Hiệu ứng phía trước',
   'element-effect': 'Hiệu ứng nguyên tố',
   flame: 'Ngọn lửa',
@@ -195,7 +197,6 @@ function renderImageEditor(pet: ReturnType<typeof resolvePet>) {
   };
   for (const layer of pet.layers) {
     add(layer.src, layer.id);
-    add(layer.closedSrc, `${layer.id} · blink`);
   }
   for (const [semantic, src] of Object.entries(pet.effects?.attack ?? {})) add(src, combatVfxLabel(semantic));
   replacementAssets = [...bySource].map(([src, labels]) => ({ src, labels: [...labels] }));
@@ -214,7 +215,6 @@ function renderImageEditor(pet: ReturnType<typeof resolvePet>) {
   const template = speciesTemplate(pet.species ?? pet.lineageId.split('-').at(-1) ?? '');
   const layerIds = new Set(pet.layers.map(layer => layer.id));
   additionSlots = template ? slotsForEvolution(template, pet.evolutionLevel).filter(slot => {
-    if (slot.closedFor) return !pet.layers.find(layer => layer.id === slot.closedFor)?.closedSrc;
     if (slot.combatVfx) return !pet.effects?.attack?.[slot.combatVfx];
     return !!slot.instances?.length && slot.instances.every(instance => !layerIds.has(instance.id));
   }) : [];
@@ -290,10 +290,7 @@ document.querySelector('#add-pet-images')!.addEventListener('click', async () =>
     for (const { file, slot } of chosen) {
       const src = `/assets/pets/${manifest.lineageId}/level-${manifest.evolutionLevel}/${slot.folder}/${slot.file}`;
       uploads.push({ file: slot.file, folder: slot.folder, sourceDataUrl: await readFile(file), runtimeDataUrl: await runtimeFile(file, slot.runtimeSize) });
-      if (slot.closedFor) {
-        const target = manifest.layers.find(layer => layer.id === slot.closedFor);
-        if (target) target.closedSrc = src;
-      } else if (slot.combatVfx) {
+      if (slot.combatVfx) {
         manifest.effects ??= {};
         manifest.effects.attack ??= {};
         manifest.effects.attack[slot.combatVfx] = src;
@@ -341,12 +338,7 @@ document.querySelector('#create-pet')!.addEventListener('click', async () => {
       if (!file) continue;
       const src = `/assets/pets/${lineageId}/level-${evolutionLevel}/${slot.folder}/${slot.file}`;
       uploads.push({ file: slot.file, folder: slot.folder, sourceDataUrl: await readFile(file), runtimeDataUrl: await runtimeFile(file, slot.runtimeSize) });
-      if (slot.closedFor) {
-        const target = layers.find(item => item.id === slot.closedFor);
-        if (target) target.closedSrc = src;
-      } else {
-        for (const instance of slot.instances ?? []) layers.push({ ...instance, src });
-      }
+      for (const instance of slot.instances ?? []) layers.push({ ...instance, src });
       if (slot.combatVfx) {
         attack[slot.combatVfx] = src;
         attackPresentation[slot.combatVfx] = combatVfxPresentation(slot.combatVfx);
@@ -692,7 +684,6 @@ function show(id: string) {
       for (const layer of pet.layers) {
         if(layer.sheet)this.load.spritesheet(layer.src,layer.src,{frameWidth:layer.sheet.width,frameHeight:layer.sheet.height});
         else this.load.image(layer.src, layer.src);
-        if(layer.closedSrc)this.load.image(layer.closedSrc,layer.closedSrc);
       }
       for (const src of Object.values(pet.effects?.attack ?? {})) if (src) this.load.image(src, src);
     }
