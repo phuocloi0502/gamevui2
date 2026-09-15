@@ -32,17 +32,6 @@
       "scale": 0.75
     },
     {
-      "id": "water",
-      "src": "/assets/pets/water-fox/effects/elemental-effect.png",
-      "parent": "tail",
-      "x": -158,
-      "y": -145,
-      "originX": 0.5,
-      "originY": 0.95,
-      "z": 2,
-      "scale": 0.95
-    },
-    {
       "id": "rear-far",
       "src": "/assets/pets/water-fox/layers/leg.png",
       "x": -53,

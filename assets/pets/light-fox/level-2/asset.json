@@ -56,18 +56,6 @@
       "visible": true
     },
     {
-      "id": "element-effect",
-      "x": -41,
-      "y": 18.3,
-      "originX": 0.5,
-      "originY": 0.95,
-      "z": 2,
-      "scale": 1,
-      "parent": "tail",
-      "src": "/assets/pets/light-fox/level-2/layers/element-effect.png",
-      "visible": true
-    },
-    {
       "id": "front-far",
       "x": 63,
       "y": -85,

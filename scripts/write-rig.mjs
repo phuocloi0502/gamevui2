@@ -5,7 +5,7 @@ const legs=['rear-far','front-far','rear-near','front-near'];
 const clips={
  idle:{duration:1800,loop:true,tracks:[t('body','scaleY',[1,1.025,1]),t('head','y',[0,-2,0]),t('head','angle',[0,-1,0]),t('tail','angle',[-4,4,-4])]},
  walk:{duration:650,loop:true,tracks:[t('body','y',[0,-4,0,-4,0]),t('head','y',[0,-5,0,-5,0]),t('tail','angle',[-7,7,-7]),...legs.map((id,i)=>t(id,'angle',i%2?[18,-18,18]:[-18,18,-18])),...legs.map((id,i)=>t(id,'y',i%2?[0,-7,0]:[-7,0,-7]))]},
- attack:{duration:900,loop:false,event:{at:400,name:'projectile'},tracks:[t('head','x',[0,-10,15,4,0]),t('head','angle',[0,-9,7,2,0]),t('body','scaleX',[1,.94,1.06,1,1]),t('tail','angle',[0,15,-12,0,0]),t('flame','scaleY',[1,1.3,1.15,1,1])]}
+ attack:{duration:900,loop:false,event:{at:400,name:'projectile'},tracks:[t('head','x',[0,-10,15,4,0]),t('head','angle',[0,-9,7,2,0]),t('body','scaleX',[1,.94,1.06,1,1]),t('tail','angle',[0,15,-12,0,0])]}
 };
 writeFileSync('assets/rigs/pet-base.json',JSON.stringify({id:'pet-base',canvas:{width:512,height:512},idle:{duration:1800,bob:2},clips},null,2)+'\n');
 const root='/assets/pets/fire-fox/level-1/';
@@ -13,7 +13,6 @@ const layer=(id,src,x,y,originX,originY,z,scale,extra={})=>({id,src:root+src+'.p
 const pet={id:'fire-fox-level-1',lineageId:'fire-fox',evolutionLevel:1,name:'Fire Fox · Level 1',kind:'pet',species:'fox',archetype:'quadruped',extends:'pet-base',status:'production',element:'fire',reference:'/references/fire-fox/concept-board.png',effects:{projectile:root+'fire.png',color:16751144},layers:[
  layer('shadow','shadow',0,0,.5,.5,0,.85),
  layer('tail','tail',-65,-105,.85,.85,1,.75),
- layer('flame','fire-loop',-158,-145,.5,.95,2,.95,{parent:'tail',sheet:{width:128,height:192,count:8,fps:16}}),
  layer('rear-far','leg',-53,-79,.5,.15,3,.72,{tint:13415840}),
  layer('front-far','leg',59,-81,.5,.15,4,.74,{tint:13415840}),
  layer('body','body',0,-117,.5,.5,5,.68),

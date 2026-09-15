@@ -255,7 +255,7 @@ Không tự phát minh anatomy, Combat VFX semantic hoặc filename ngoài execu
 | Bunny | hopper / `hopper-base` | `rear-ear`, `body`, `hind-leg`, `front-paw`, `head`, `eyes-open`, `eyes-closed`, `front-ear`, `tail` | `shadow` | Burst Ram: `attack-trail`, `impact` |
 | Turtle | tank / `tank-base` | `rear-feet`, `body`, `shell`, `front-feet`, `head`, `eyes-open`, `eyes-closed` | `shadow`, `shell-runes` | Element Cage: `attack-cast`, `cage`, `impact` |
 | Golem | tank / `tank-base` | `rear-arm`, `rear-leg`, `torso`, `core`, `front-leg`, `front-arm`, `head`, `eyes-open`, `eyes-closed` | `shadow`, `rock-fragments` | Core Quake: `attack-cast`, `ground-wave`, `impact` |
-| Dragon | winged / `winged-base` | `back-wing`, `tail`, `body`, `legs`, `front-wing`, `head`, `eyes-open`, `eyes-closed` | `shadow`, `horns`, `element-aura` | Element Meteor: `attack-cast`, `meteor`, `impact` |
+| Dragon | winged / `winged-base` | `back-wing`, `tail`, `body`, `legs`, `front-wing`, `head`, `eyes-open`, `eyes-closed` | `shadow`, `horns` | Element Meteor: `attack-cast`, `meteor`, `impact` |
 | Owl | winged / `winged-base` | `back-wing`, `tail-feathers`, `body`, `talons`, `front-wing`, `head`, `eyes-open`, `eyes-closed` | `shadow`, `forehead-rune` | Element Orb: `attack-cast`, `projectile`, `impact` |
 | Hawk | winged / `winged-base` | `rear-wing`, `tail-fan`, `body`, `talons`, `front-wing`, `head`, `eyes-open`, `eyes-closed` | `shadow`, `crest` | Cyclone Dive: `attack-trail`, `vortex`, `impact` |
 | Slime | blob / `blob-base` | `blob`, `face` | `shadow`, `inner-core`, `front-gloss`, `top-effect` | Element Pulse: `attack-cast`, `pulse`, `impact` |

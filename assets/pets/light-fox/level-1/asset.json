@@ -32,15 +32,14 @@
       "src": "/assets/pets/light-fox/level-1/layers/tail.png"
     },
     {
-      "id": "element-effect",
-      "x": -100,
-      "y": 50,
+      "id": "effect-back",
+      "x": 0,
+      "y": -120,
       "originX": 0.5,
-      "originY": 0.95,
-      "z": 2,
-      "scale": 1.8,
-      "parent": "tail",
-      "src": "/assets/pets/light-fox/level-1/effects/elemental-effect.png"
+      "originY": 0.5,
+      "z": 1,
+      "scale": 1,
+      "src": "/assets/pets/light-fox/level-1/effects/effect-back.png"
     },
     {
       "id": "rear-far",
@@ -50,7 +49,7 @@
       "originY": 0.15,
       "z": 3,
       "scale": 0.7,
-      "src": "/assets/pets/light-fox/level-1/layers/leg.png"
+      "src": "/assets/pets/light-fox/level-1/layers/rear-far.png"
     },
     {
       "id": "front-far",
@@ -60,7 +59,7 @@
       "originY": 0.15,
       "z": 4,
       "scale": 0.6,
-      "src": "/assets/pets/light-fox/level-1/layers/leg.png"
+      "src": "/assets/pets/light-fox/level-1/layers/front-far.png"
     },
     {
       "id": "body",
@@ -80,7 +79,7 @@
       "originY": 0.15,
       "z": 6,
       "scale": 0.84,
-      "src": "/assets/pets/light-fox/level-1/layers/leg.png"
+      "src": "/assets/pets/light-fox/level-1/layers/rear-near.png"
     },
     {
       "id": "front-near",
@@ -90,7 +89,7 @@
       "originY": 0.15,
       "z": 7,
       "scale": 0.75,
-      "src": "/assets/pets/light-fox/level-1/layers/leg.png"
+      "src": "/assets/pets/light-fox/level-1/layers/front-near.png"
     },
     {
       "id": "head",
@@ -101,6 +100,50 @@
       "z": 8,
       "scale": 0.58,
       "src": "/assets/pets/light-fox/level-1/layers/head.png"
+    },
+    {
+      "id": "eyes-open",
+      "x": 0,
+      "y": 0,
+      "originX": 0.5,
+      "originY": 0.88,
+      "z": 8.1,
+      "scale": 1,
+      "parent": "head",
+      "blink": "open",
+      "src": "/assets/pets/light-fox/level-1/layers/eyes-open.png"
+    },
+    {
+      "id": "eyes-closed",
+      "x": 0,
+      "y": 0,
+      "originX": 0.5,
+      "originY": 0.88,
+      "z": 8.11,
+      "scale": 1,
+      "parent": "head",
+      "blink": "closed",
+      "src": "/assets/pets/light-fox/level-1/layers/eyes-closed.png"
+    },
+    {
+      "id": "effect-front",
+      "x": 90,
+      "y": -145,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 9,
+      "scale": 1,
+      "src": "/assets/pets/light-fox/level-1/effects/effect-front.png"
+    },
+    {
+      "id": "particles",
+      "x": 0,
+      "y": -135,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 10,
+      "scale": 1,
+      "src": "/assets/pets/light-fox/level-1/effects/particles.png"
     }
   ],
   "preview": {
@@ -110,7 +153,59 @@
   },
   "effects": {
     "projectile": "/assets/pets/light-fox/level-1/effects/elemental-effect.png",
-    "color": 16770202
+    "color": 16770202,
+    "attack": {
+      "cast": "/assets/pets/light-fox/level-1/effects/attack-cast.png",
+      "impact": "/assets/pets/light-fox/level-1/effects/impact.png"
+    },
+    "attackPresentation": {
+      "cast": {
+        "enabled": true,
+        "trigger": "attack-start",
+        "startAnchor": "pet",
+        "endAnchor": "pet",
+        "startX": 75,
+        "startY": -135,
+        "endX": 75,
+        "endY": -135,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.5,
+        "endScale": 0.58,
+        "startAngle": 0,
+        "endAngle": 0,
+        "startAlpha": 0.9,
+        "endAlpha": 0,
+        "depth": 20,
+        "delay": 0,
+        "duration": 450,
+        "ease": "Sine.easeInOut",
+        "mirror": true
+      },
+      "impact": {
+        "enabled": true,
+        "trigger": "after-primary",
+        "startAnchor": "target",
+        "endAnchor": "target",
+        "startX": 0,
+        "startY": 0,
+        "endX": 0,
+        "endY": 0,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.65,
+        "endScale": 0.78,
+        "startAngle": 0,
+        "endAngle": 0,
+        "startAlpha": 0.95,
+        "endAlpha": 0,
+        "depth": 21,
+        "delay": 0,
+        "duration": 420,
+        "ease": "Quad.easeOut",
+        "mirror": true
+      }
+    }
   },
   "overrides": {
     "clips": {
@@ -153,17 +248,6 @@
               -12,
               0,
               0
-            ]
-          },
-          {
-            "target": "element-effect",
-            "property": "scaleY",
-            "values": [
-              1,
-              1.3,
-              1.15,
-              1,
-              1
             ]
           }
         ]

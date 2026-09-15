@@ -17,7 +17,6 @@
   "layers": [
     { "id": "shadow", "src": "/assets/pets/water-fox/level-2/layers/shadow.png", "x": 0, "y": 0, "originX": 0.5, "originY": 0.5, "z": 0, "scale": 0.85 },
     { "id": "tail", "src": "/assets/pets/water-fox/level-2/layers/tail.png", "x": -65, "y": -105, "originX": 0.85, "originY": 0.85, "z": 1, "scale": 0.75 },
-    { "id": "water", "src": "/assets/pets/water-fox/level-2/effects/elemental-effect.png", "parent": "tail", "x": -158, "y": -145, "originX": 0.5, "originY": 0.95, "z": 2, "scale": 0.95 },
     { "id": "rear-far", "src": "/assets/pets/water-fox/level-2/layers/leg.png", "x": -53, "y": -79, "originX": 0.5, "originY": 0.15, "z": 3, "scale": 0.72, "tint": 12048639 },
     { "id": "front-far", "src": "/assets/pets/water-fox/level-2/layers/leg.png", "x": 59, "y": -81, "originX": 0.5, "originY": 0.15, "z": 4, "scale": 0.74, "tint": 12048639 },
     { "id": "body", "src": "/assets/pets/water-fox/level-2/layers/body.png", "x": 0, "y": -117, "originX": 0.5, "originY": 0.5, "z": 5, "scale": 0.68 },

@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import type { Clip, CombatVfxAnchor, CombatVfxEase, CombatVfxPresentation, CombatVfxTrigger, PetDefinition, State } from '../../../packages/asset-core/src/types';
+import type { Clip, CombatVfxAnchor, CombatVfxEase, CombatVfxPresentation, CombatVfxTrigger, Layer, PetDefinition, State } from '../../../packages/asset-core/src/types';
 import { combatVfxPresentation } from '../../../packages/asset-core/src/resolve';
 import { PetView } from '../../../packages/pet-runtime/src/PetView';
 import { CheckboxField, NumberField, SelectField, TintField } from './fields';
-import { combatTriggerLabels, combatVfxLabel, keyframeLabel, layerLabel, propertyLabels, stateLabels } from './labels';
+import { combatTriggerLabels, combatVfxLabel, groupPetLayers, keyframeLabel, layerLabel, propertyLabels, stateLabels } from './labels';
 import type { ResolvedPet } from './studioTypes';
 
 const NUDGE_STEPS = [0.1, 1, 10, 100] as const;
@@ -56,29 +56,17 @@ export function StudioEditors({ pet, manifest, view, onSave, onRebuild, onPlay }
 
       <div className="layer-editor">
         <p className="label">CHỈNH TỪNG LAYER</p>
-        <p className="editor-help">Bật/tắt để kiểm tra từng phần. Neo X/Y là khớp xoay trong ảnh (0–1). Z nhỏ nằm sau, Z lớn nằm trước.</p>
-        {pet.layers.map(layer => (
-          <div key={layer.id} className="layer-row">
-            <div className="layer-heading">
-              <span className="layer-name">{layerLabel(layer.id)} ({layer.id})</span>
-              <label className="visibility-toggle">
-                <input type="checkbox" checked={layer.visible !== false} onChange={event => {
-                  layer.visible = event.target.checked;
-                  view?.setLayerVisible(layer.id, event.target.checked);
-                  onSave();
-                }} /> Hiển thị
-              </label>
-            </div>
-            <NumberField label="Vị trí X" step={nudgeStep} value={layer.x} onChange={value => { layer.x = value; view?.setLayerTransform(layer.id, 'x', value); onSave(); }} />
-            <NumberField label="Vị trí Y" step={nudgeStep} value={layer.y} onChange={value => { layer.y = value; view?.setLayerTransform(layer.id, 'y', value); onSave(); }} />
-            <NumberField label="Tỷ lệ" step={nudgeStep} value={layer.scale ?? 1} onChange={value => { layer.scale = value; view?.setLayerTransform(layer.id, 'scale', value); onSave(); }} />
-            <NumberField label="Góc xoay" step={nudgeStep} value={layer.angle ?? 0} onChange={value => { layer.angle = value; view?.setLayerTransform(layer.id, 'angle', value); onSave(); }} />
-            <NumberField label="Độ trong suốt" step={nudgeStep} value={layer.alpha ?? 1} onChange={value => { layer.alpha = value; view?.setLayerTransform(layer.id, 'alpha', value); onSave(); }} />
-            <NumberField label="Điểm neo X" step={nudgeStep} value={layer.originX} onChange={value => { layer.originX = value; view?.setLayerOrigin(layer.id, 'originX', value); onSave(); }} />
-            <NumberField label="Điểm neo Y" step={nudgeStep} value={layer.originY} onChange={value => { layer.originY = value; view?.setLayerOrigin(layer.id, 'originY', value); onSave(); }} />
-            <NumberField label="Thứ tự Z" step={nudgeStep} value={layer.z} onChange={value => { layer.z = value; view?.setLayerZ(layer.id, value); onSave(); }} />
-            <TintField value={layer.tint} onChange={value => { layer.tint = value; view?.setLayerTint(layer.id, value); onSave(); }} />
-          </div>
+        <p className="editor-help">Bật/tắt để kiểm tra từng phần. Neo X/Y là khớp xoay trong ảnh (0–1). Z nhỏ nằm sau, Z lớn nằm trước. Layer được gom theo chân, thân–đuôi, đầu và hiệu ứng.</p>
+        {groupPetLayers(pet.layers).map(group => (
+          <details key={group.id} className="layer-group" open>
+            <summary>
+              <span><b>{group.label}</b></span>
+              <span>{group.layers.length} layer</span>
+            </summary>
+            {group.layers.map(layer => (
+              <LayerRow key={layer.id} layer={layer} step={nudgeStep} view={view} onSave={onSave} />
+            ))}
+          </details>
         ))}
       </div>
 
@@ -184,6 +172,37 @@ export function StudioEditors({ pet, manifest, view, onSave, onRebuild, onPlay }
           );
         })}
       </div>
+    </div>
+  );
+}
+
+function LayerRow({ layer, step, view, onSave }: {
+  layer: Layer;
+  step: number;
+  view: PetView | undefined;
+  onSave: () => void;
+}) {
+  return (
+    <div className="layer-row">
+      <div className="layer-heading">
+        <span className="layer-name">{layerLabel(layer.id)} ({layer.id})</span>
+        <label className="visibility-toggle">
+          <input type="checkbox" checked={layer.visible !== false} onChange={event => {
+            layer.visible = event.target.checked;
+            view?.setLayerVisible(layer.id, event.target.checked);
+            onSave();
+          }} /> Hiển thị
+        </label>
+      </div>
+      <NumberField label="Vị trí X" step={step} value={layer.x} onChange={value => { layer.x = value; view?.setLayerTransform(layer.id, 'x', value); onSave(); }} />
+      <NumberField label="Vị trí Y" step={step} value={layer.y} onChange={value => { layer.y = value; view?.setLayerTransform(layer.id, 'y', value); onSave(); }} />
+      <NumberField label="Tỷ lệ" step={step} value={layer.scale ?? 1} onChange={value => { layer.scale = value; view?.setLayerTransform(layer.id, 'scale', value); onSave(); }} />
+      <NumberField label="Góc xoay" step={step} value={layer.angle ?? 0} onChange={value => { layer.angle = value; view?.setLayerTransform(layer.id, 'angle', value); onSave(); }} />
+      <NumberField label="Độ trong suốt" step={step} value={layer.alpha ?? 1} onChange={value => { layer.alpha = value; view?.setLayerTransform(layer.id, 'alpha', value); onSave(); }} />
+      <NumberField label="Điểm neo X" step={step} value={layer.originX} onChange={value => { layer.originX = value; view?.setLayerOrigin(layer.id, 'originX', value); onSave(); }} />
+      <NumberField label="Điểm neo Y" step={step} value={layer.originY} onChange={value => { layer.originY = value; view?.setLayerOrigin(layer.id, 'originY', value); onSave(); }} />
+      <NumberField label="Thứ tự Z" step={step} value={layer.z} onChange={value => { layer.z = value; view?.setLayerZ(layer.id, value); onSave(); }} />
+      <TintField value={layer.tint} onChange={value => { layer.tint = value; view?.setLayerTint(layer.id, value); onSave(); }} />
     </div>
   );
 }

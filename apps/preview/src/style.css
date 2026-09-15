@@ -198,6 +198,11 @@ select { padding: 8px 16px; border: 1px solid #424958; border-radius: 6px; backg
 .tint-field { display: flex; align-items: center; gap: 5px; }
 .tint-field input[type='color'] { width: 34px; height: 25px; padding: 1px; border: 1px solid #424958; border-radius: 5px; background: #232935; }
 .layer-editor { margin-top: 14px; padding-top: 12px; border-top: 1px solid #303644; }
+.layer-group { margin: 8px 0; border: 1px solid #303744; border-radius: 7px; background: #161b23; }
+.layer-group > summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px; color: #bfc7d3; font-size: 10px; cursor: pointer; }
+.layer-group > summary b { color: #edc49c; font-size: 11px; }
+.layer-group > summary span:last-child { color: #768195; }
+.layer-group .layer-row { margin: 0; padding: 8px 10px; border-top: 1px solid #292f3a; }
 .layer-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; align-items: center; margin: 10px 0; padding-top: 8px; border-top: 1px solid #292f3a; }
 .layer-heading { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .layer-name { overflow: hidden; color: #e1c09e; font-size: 11px; font-weight: 600; text-overflow: ellipsis; }

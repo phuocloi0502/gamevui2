@@ -36,23 +36,6 @@
       "scale": 0.75
     },
     {
-      "id": "flame",
-      "src": "/assets/pets/fire-fox/level-1/fire-loop.png",
-      "x": -158,
-      "y": -145,
-      "originX": 0.5,
-      "originY": 0.95,
-      "z": 2,
-      "scale": 0.95,
-      "parent": "tail",
-      "sheet": {
-        "width": 128,
-        "height": 192,
-        "count": 8,
-        "fps": 16
-      }
-    },
-    {
       "id": "rear-far",
       "src": "/assets/pets/fire-fox/level-1/leg.png",
       "x": -53,

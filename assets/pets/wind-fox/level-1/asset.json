@@ -37,17 +37,6 @@
       "scale": 0.82
     },
     {
-      "id": "wind",
-      "src": "/assets/pets/wind-fox/level-1/effects/elemental-effect.png",
-      "parent": "tail",
-      "x": -123,
-      "y": -20,
-      "originX": 0.5,
-      "originY": 0.95,
-      "z": 2,
-      "scale": 0.95
-    },
-    {
       "id": "rear-far",
       "src": "/assets/pets/wind-fox/level-1/layers/leg.png",
       "x": -25,

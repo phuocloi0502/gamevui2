@@ -101,7 +101,7 @@ The table below supplies species routing and artwork identity. Exact required/op
 | `wolf` / Wolf | quadruped / `quadruped-base` | `tail.png`, `rear-far.png`, `front-far.png`, `body.png`, `rear-near.png`, `front-near.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `mane.png`, `jaw.png` | Fang Rush: `attack-cast.png`, `attack-trail.png`, `impact.png`; no projectile by default |
 | `bunny` / Bunny | hopper / `hopper-base` | `rear-ear.png`, `body.png`, `hind-leg.png`, `front-paw.png`, `head.png`, `eyes-open.png`, `eyes-closed.png`, `front-ear.png`, `tail.png` | `shadow.png` | Burst Ram: `attack-trail.png`, `impact.png` |
 | `turtle` / Turtle | tank / `tank-base` | `rear-feet.png`, `body.png`, `shell.png`, `front-feet.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `shell-runes.png` | Element Cage: `attack-cast.png`, `cage.png`, `impact.png` |
-| `dragon` / Dragon | winged / `winged-base` | `back-wing.png`, `tail.png`, `body.png`, `legs.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `horns.png`, `element-aura.png` | Element Meteor: `attack-cast.png`, `meteor.png`, `impact.png` |
+| `dragon` / Dragon | winged / `winged-base` | `back-wing.png`, `tail.png`, `body.png`, `legs.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `horns.png` | Element Meteor: `attack-cast.png`, `meteor.png`, `impact.png` |
 | `owl` / Owl | winged / `winged-base` | `back-wing.png`, `tail-feathers.png`, `body.png`, `talons.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `forehead-rune.png` | Element Orb: `attack-cast.png`, `projectile.png`, `impact.png` |
 | `golem` / Golem | tank / `tank-base` | `rear-arm.png`, `rear-leg.png`, `torso.png`, `core.png`, `front-leg.png`, `front-arm.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `rock-fragments.png` | Core Quake: `attack-cast.png`, `ground-wave.png`, `impact.png` |
 | `slime` / Slime | blob / `blob-base` | `blob.png`, `face.png` | `shadow.png`, `inner-core.png`, `front-gloss.png`, `top-effect.png` | Element Pulse: `attack-cast.png`, `pulse.png`, `impact.png` |
@@ -885,7 +885,7 @@ Shadow:
 ```text
 Character / Pet Visual VFX:
 shadow, back-wing, tail, body, legs, front-wing, head,
-eyes-open, eyes-closed, horns, element-aura
+eyes-open, eyes-closed, horns
 
 Combat VFX — Element Meteor:
 attack-cast, meteor, impact
