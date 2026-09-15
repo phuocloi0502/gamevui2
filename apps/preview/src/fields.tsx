@@ -1,10 +1,16 @@
+// @refresh reload
 import type { ChangeEvent } from 'react';
 
-export function NumberField({ label, value, onChange }: { label: string; value: number; onChange: (value: number) => void }) {
+export function NumberField({ label, value, step = 0.1, onChange }: {
+  label: string;
+  value: number;
+  step?: number;
+  onChange: (value: number) => void;
+}) {
   return (
     <label className="number-field">
       <span>{label}</span>
-      <input type="number" step="0.01" value={Number.isFinite(value) ? value : ''} onChange={event => {
+      <input type="number" step={step} value={Number.isFinite(value) ? value : ''} onChange={event => {
         const next = Number(event.target.value);
         if (Number.isFinite(next)) onChange(next);
       }} />

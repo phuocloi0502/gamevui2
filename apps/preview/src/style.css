@@ -179,6 +179,18 @@ select { padding: 8px 16px; border: 1px solid #424958; border-radius: 6px; backg
 .controls select { padding: 5px; }
 #playing { color: #ffc48b; font-size: 11px; }
 .transform-editor { margin-top: 14px; padding-top: 14px; border-top: 1px solid #303644; }
+.nudge-step {
+  position: sticky;
+  top: -16px;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  margin: -4px -4px 10px;
+  padding: 8px 4px;
+  background: #191e27;
+}
+.nudge-step label { display: inline-flex; align-items: center; gap: 6px; color: #aeb7c8; font-size: 10px; }
+.nudge-step select { min-width: 72px; padding: 5px 8px; border: 1px solid #424958; border-radius: 5px; background: #232935; color: #fff; font: inherit; }
 .editor-help { margin: 5px 0 10px; color: #818b9d; font-size: 10px; line-height: 1.5; }
 .transform-fields { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
 .number-field, .select-field { display: inline-flex; align-items: center; gap: 5px; color: #aeb7c8; font-size: 10px; }
