@@ -71,7 +71,7 @@ preview / master
 approval
 ```
 
-Không tạo master/full pet đã lắp rồi crop anatomy. Concept/full artwork chỉ là reference. ImageGen xuất **một layer sheet**: mỗi ô là một bộ phận hoàn chỉnh ngay từ đầu. Codex tách ô thành PNG runtime. `preview.png` và `master.png` vẫn là output ghép từ layers, không phải source.
+Không tạo master/full pet rồi crop anatomy thành layer. Concept/full artwork cũ chỉ là art-direction reference. ImageGen xuất **một layer sheet**: các ô đầu là bộ phận isolated hoàn chỉnh; **ô cuối** là ảnh tổng thể đã lắp để đối chiếu đường ghép. Codex chỉ tách các ô slot thành PNG runtime, không tách ô tổng thể. `preview.png` và `master.png` vẫn là output Phaser ghép từ layers.
 
 ## Production artwork package
 
@@ -114,12 +114,12 @@ Nếu recipe đã quy định Combat VFX, người dùng không cần nhắc ri�
 
 - toàn bộ production package của đúng evolution stage nằm trong **một PNG layer sheet duy nhất**;
 - một image-generation operation tạo đúng một ảnh đó; không tạo từng layer thành file riêng;
-- sheet là lưới các bộ phận **tách biệt**, không phải pet đã lắp và không phải master/preview;
-- mỗi ô chứa đúng một slot: character layer, Pet Visual VFX hoặc Combat VFX;
+- các ô slot là bộ phận **tách biệt**; ô cuối cùng là ảnh tổng thể đã lắp (`assembly-ref.png`) để biết đường ghép;
+- mỗi ô slot chứa đúng một slot: character layer, Pet Visual VFX hoặc Combat VFX;
 - không sprite sheet animation, không hàng frame gần giống nhau, không ZIP/README/JSON/code trừ khi người dùng yêu cầu riêng;
 - không dừng giữa chừng và không yêu cầu người dùng nói “tiếp”.
 
-Thứ tự ô trên sheet, trái → phải rồi trên → dưới, theo recipe (không phải z-order): `head → eyes-open → eyes-closed → body → limbs → tail/appendages → species details → pet visual VFX → combat VFX → particles → shadow`. Bỏ ô trống nếu optional không dùng; không vẽ placeholder.
+Thứ tự ô trên sheet, trái → phải rồi trên → dưới, theo recipe (không phải z-order): `head → eyes-open → eyes-closed → body → limbs → tail/appendages → species details → pet visual VFX → combat VFX → particles → shadow → assembly-ref`. Bỏ ô trống nếu optional không dùng; không vẽ placeholder. Ô `assembly-ref` luôn có và luôn đứng cuối.
 
 Trước lần tạo, lập một internal design specification và giữ nguyên trên toàn sheet:
 
@@ -168,7 +168,7 @@ Mỗi level là một package riêng. Không ghi đè hoặc tái sử dụng sa
 
 Ảnh duy nhất là một lưới ô đều, nền trong suốt thật khi công cụ hỗ trợ; nếu không được thì cyan phẳng `#00FFFF`, không checkerboard giả.
 
-Mỗi ô:
+Mỗi ô slot:
 
 - chỉ chứa đúng một slot; isolated subject, không lắp với ô khác;
 - không chứa shadow/effect/body part thuộc slot khác;
@@ -176,9 +176,18 @@ Mỗi ô:
 - anatomy hoàn chỉnh cả vùng sẽ bị layer khác che khi Phaser ghép;
 - body có đủ vùng dưới head/chân/tail; leg có đủ phần trên tới joint; tail có đủ gốc; head có đủ vùng cổ/lông nối.
 
-Cho phép caption nhỏ **dưới** ô, đúng filename recipe (`front-near.png`); caption không đè lên artwork. Không watermark, UI, frame cảnh, hoặc pet full-body ở giữa sheet.
+Ô cuối `assembly-ref.png`:
 
-Không stretch từng bộ phận để ép runtimeSize. Codex/Asset Studio tách từng ô rồi normalize về runtime target.
+- pet rest-pose đã lắp từ các character layer và Pet Visual VFX đã chọn;
+- cùng camera 3/4 facing right, cùng tỷ lệ, lighting và ground plane với các ô slot;
+- dùng `eyes-open`; không nhắm mắt;
+- hiện overlap/z-order đúng (far sau, near trước, head trên body, effect-front trước anatomy nếu có);
+- không nhét Combat VFX vào pet đang đứng;
+- chỉ để đối chiếu đường ghép; không phải source để crop layer và không phải `preview.png`/`master.png` của Phaser.
+
+Cho phép caption nhỏ **dưới** ô, đúng filename recipe (`front-near.png`, `assembly-ref.png`); caption không đè lên artwork. Không watermark, UI hoặc frame cảnh.
+
+Không stretch từng bộ phận để ép runtimeSize. Codex/Asset Studio tách từng ô slot rồi normalize về runtime target; giữ `assembly-ref` làm reference, không đưa vào `layers/` runtime.
 
 Output ImageGen: một file, ví dụ `layer-sheet.png`. Filename từng slot trên caption phải khớp executable recipe.
 
@@ -338,8 +347,8 @@ Expected behavior:
 1. Đọc file này, Pet Catalog, `petCatalog.ts`, `quadruped-base` và reference Wolf/Fire liên quan nếu có.
 2. Resolve `wolf`, `fire`, Level 1; lập design spec Fire Wolf Level 1.
 3. Chọn toàn bộ required slots, optional phù hợp như `mane`, và Combat VFX của Fang Rush: `attack-cast`, `attack-trail`, `impact`; không tạo projectile.
-4. Tạo **một** PNG layer sheet chứa mọi required slot và optional đã chọn; mỗi slot một ô tách biệt; không lắp full pet.
+4. Tạo **một** PNG layer sheet chứa mọi required slot và optional đã chọn (mỗi slot một ô tách biệt), rồi **ô cuối** là ảnh tổng thể đã lắp `assembly-ref.png` để đối chiếu đường ghép.
 5. Không yêu cầu user nói “tiếp”; không xuất từng layer thành file riêng.
 6. Không tạo `asset.json`, không chỉnh code và không tạo preview/master.
-7. Người dùng tải `layer-sheet.png` vào `assets/inbox/<lineage>/level-<n>/`; Codex tách ô rồi đưa từng PNG vào Asset Studio.
+7. Người dùng tải `layer-sheet.png` vào `assets/inbox/<lineage>/level-<n>/`; Codex tách các ô slot vào Asset Studio và giữ `assembly-ref` làm mốc ghép, không đưa vào runtime layers.
 8. Sau khi Phaser ghép preview, nếu một layer chưa đạt, người dùng yêu cầu sửa đúng ô trên sheet hoặc thay đúng PNG đã tách bằng **Thay ảnh pet**.

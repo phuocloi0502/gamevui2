@@ -122,7 +122,7 @@ Stage folders scope filenames, so every evolution may use `attack-cast.png`, `pr
 
 New reusable rigs emit `attack-release` as a transport-neutral marker. The preview/gameplay consumer decides whether that moment activates a projectile, melee trail or special attack asset. Legacy `pet-base` keeps its existing marker name.
 
-All species share the evolution rules below. Never change species identity between levels. ImageGen uses one isolated-parts layer sheet, not a posed full pet to crop. Never bake separate slots into one assembled body, invent filenames, obscure anatomy with VFX or stretch art to runtimeSize.
+All species share the evolution rules below. Never change species identity between levels. ImageGen uses one layer sheet of isolated parts plus a final assembled `assembly-ref` cell for composition reference. Never crop production layers from that assembled cell, invent filenames, obscure anatomy with VFX or stretch art to runtimeSize.
 
 Creation workflow in Asset Studio:
 

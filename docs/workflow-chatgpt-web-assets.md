@@ -39,7 +39,7 @@ DESIGN SPEC → ONE LAYER SHEET → CODEX TÁCH Ô → MANIFEST/RIG → PHASER/A
 Không dùng `master/full artwork đã lắp → tách/crop layer` cho pet production mới. Preview/master chỉ là kết quả ghép để duyệt.
 
 1. Trong ChatGPT web, mở repo GitHub đã kết nối nếu cần đọc contract; dùng prompt layer sheet ở chế độ tạo ảnh.
-2. Chốt specification và yêu cầu **một PNG** chứa mọi production slot: mỗi ô một bộ phận isolated, nền trong suốt nếu có thể; caption filename dưới ô. Mỗi anatomy cell phải vẽ đủ vùng sẽ bị che.
+2. Chốt specification và yêu cầu **một PNG** chứa mọi production slot (mỗi ô một bộ phận isolated) rồi **ô cuối** là pet đã lắp `assembly-ref.png` để đối chiếu đường ghép; nền trong suốt nếu có thể; caption filename dưới ô. Mỗi anatomy cell phải vẽ đủ vùng sẽ bị che.
 3. Tải `layer-sheet.png` xuống máy.
 4. Đặt ảnh vào `assets/inbox/<lineage-id>/level-<n>/layer-sheet.png`.
 5. Nhắn cho Codex: `Xử lý Fire Fox Level 1 trong assets/inbox/fire-fox/level-1 và tích hợp vào preview.`
@@ -50,7 +50,7 @@ Không dùng `master/full artwork đã lắp → tách/crop layer` cho pet produ
 
 Đối với pet production mới, không dùng file này làm danh sách slot hoặc prompt recipe. Đọc `docs/chatgpt-pet-layer-factory.md`, sau đó lấy species semantics từ `docs/pets-catalog.md` và lấy filename/required/optional/runtimeSize cuối cùng từ `packages/asset-core/src/petCatalog.ts`.
 
-Gói bàn giao của mỗi evolution stage là **một layer sheet** gồm character layers, Pet Visual VFX và Combat VFX được recipe hỗ trợ. Một image-generation operation tạo đúng một PNG đó; sau khi Codex tách, production layers mới là source of truth runtime. Combat VFX có thể dùng cùng filename giữa các level vì stage folder xác định version.
+Gói bàn giao của mỗi evolution stage là **một layer sheet** gồm character layers, Pet Visual VFX, Combat VFX được recipe hỗ trợ, và ô cuối `assembly-ref` để đối chiếu ghép. Một image-generation operation tạo đúng một PNG đó; sau khi Codex tách các ô slot (bỏ qua assembly-ref), production layers mới là source of truth runtime. Combat VFX có thể dùng cùng filename giữa các level vì stage folder xác định version.
 
 Pet Visual VFX luôn gắn với model hoặc presentation/idle. Combat VFX xuất hiện theo attack lifecycle và có thể gồm cast, trail, projectile, impact hoặc special travel/AoE asset. Không giả định mọi species có projectile, không dùng `effect-front` làm projectile và không gộp impact vào target-specific artwork.
 
@@ -69,7 +69,7 @@ Nếu ChatGPT web không tạo được alpha thật và xuất nền caro, vẫ
 
 Codex có thể và nên thực hiện:
 
-- tách ô từ layer sheet thành từng PNG slot;
+- tách ô slot từ layer sheet thành từng PNG; bỏ qua ô `assembly-ref`;
 - tách nền, chuẩn hóa alpha và padding;
 - resize, crop và kiểm tra edge halo;
 - tạo atlas/sprite sheet từ file đã có;

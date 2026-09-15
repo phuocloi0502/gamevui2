@@ -5,10 +5,10 @@
 ## Workflow bắt buộc
 
 ```text
-specification → một layer sheet (ô tách biệt) → Codex tách PNG → asset.json + rig → Phaser preview/master → duyệt
+specification → một layer sheet (ô slot + ô tổng thể cuối) → Codex tách PNG slot → asset.json + rig → Phaser preview/master → duyệt
 ```
 
-ImageGen chỉ xuất một PNG chứa mọi slot. Production layer sau khi tách vẫn là source of truth cho Phaser. Không bắt đầu bằng full/master artwork đã lắp rồi crop anatomy. `master.png`/`preview.png` chỉ được export từ bộ production layers sau khi tích hợp.
+ImageGen xuất một PNG: mọi slot isolated, ô cuối `assembly-ref` là pet đã lắp để đối chiếu ghép. Production layer sau khi tách vẫn là source of truth cho Phaser. Không cắt layer từ ô tổng thể. `master.png`/`preview.png` chỉ được export từ bộ production layers sau khi tích hợp.
 
 Concept/full-art cũ chỉ được dùng làm reference cho identity, silhouette và art direction. Mỗi ô trên sheet phải được vẽ như một artwork hoàn chỉnh, bao gồm cả phần sẽ bị layer khác che.
 
@@ -37,9 +37,11 @@ Level 1 gọn và tiết chế; Level 2 phát triển anatomy accent/element; Le
 ## Contract PNG dùng chung
 
 - ImageGen tạo đúng một PNG layer sheet cho cả evolution stage.
-- Sheet là lưới ô tách biệt; không lắp full pet, không master, không preview.
+- Sheet là lưới ô slot tách biệt, **ô cuối** là pet đã lắp (`assembly-ref.png`) để đối chiếu đường ghép.
+- Không dùng ô tổng thể để crop ra layer.
 - Nền trong suốt thật; nếu công cụ không hỗ trợ, dùng cyan phẳng tuyệt đối `#00FFFF`, không checkerboard giả, gradient hay cyan reflection.
-- Mỗi ô chỉ chứa đúng một slot; không lẫn body part, ground shadow hoặc effect của slot khác.
+- Mỗi ô slot chỉ chứa đúng một slot; không lẫn body part, ground shadow hoặc effect của slot khác.
+- Ô `assembly-ref` được phép lắp toàn bộ character + Pet Visual VFX đã chọn.
 - Cho phép caption filename nhỏ dưới ô, không đè artwork. Không logo, watermark, UI hay frame cảnh.
 - Không crop silhouette, fur, glow, smoke hoặc particle thuộc chính slot.
 - Safe padding đủ trong từng ô cho filtering và chuyển động.
@@ -71,6 +73,7 @@ effects/particles.png      # optional
 effects/attack-cast.png    # optional; Combat VFX lúc chuẩn bị đánh
 effects/projectile.png     # optional; chỉ khi species recipe là ranged projectile
 effects/impact.png         # optional; Combat VFX độc lập tại mục tiêu
+assembly-ref.png           # ô cuối trên sheet; pet đã lắp để đối chiếu ghép, không phải runtime layer
 ```
 
 Trong danh sách này, `effect-back`, `effect-front`, `particles` là Pet Visual VFX gắn với model. `attack-cast`, `projectile`, `impact` là Combat VFX của đúng evolution stage; chúng xuất hiện theo attack lifecycle và không tham gia z-order thường trực của pet.
@@ -123,7 +126,7 @@ Mỗi tail là artwork độc lập, hoàn chỉnh, có gốc đuôi rõ để �
 ## Prompt production cho Fox mới
 
 ```text
-Tạo ĐÚNG MỘT PNG LAYER SHEET chứa tất cả production layers của pet game 2D sau. Không tạo từng file layer riêng. Không tạo full pet đã lắp, master hoặc preview.
+Tạo ĐÚNG MỘT PNG LAYER SHEET chứa tất cả production layers của pet game 2D sau, cộng thêm 1 ảnh tổng thể đã lắp ở ô cuối. Không tạo từng file layer riêng. Không tạo master hoặc preview Phaser.
 
 PET_ID: <PET_ID>
 EVOLUTION_LEVEL: <EVOLUTION_LEVEL>
@@ -145,17 +148,27 @@ IDENTITY VÀ ART DIRECTION:
 
 LAYOUT SHEET:
 - Một ảnh duy nhất, lưới ô đều, khoảng cách rõ giữa các ô, nền trong suốt hoặc cyan #00FFFF.
-- Mỗi ô là một bộ phận isolated; không xếp thành con cáo hoàn chỉnh.
+- Các ô slot là bộ phận isolated; không xếp thành con cáo hoàn chỉnh ở những ô này.
+- Ô CUỐI cùng là ảnh tổng thể đã lắp, caption assembly-ref.png, để biết đường ghép / overlap / z-order.
 - Caption nhỏ dưới mỗi ô đúng filename. Caption không đè artwork.
-- Thứ tự ô trái → phải, trên → dưới theo danh sách OUTPUT.
+- Thứ tự ô trái → phải, trên → dưới theo danh sách OUTPUT; assembly-ref luôn cuối.
 
 SOURCE-OF-TRUTH:
-- Mỗi ô là artwork production hoàn chỉnh, gồm cả phần sẽ bị body/head/tail khác che.
-- Không vẽ full pet rồi cắt; không reconstruct sau này.
-- Codex sẽ tách từng ô thành PNG runtime.
+- Mỗi ô slot là artwork production hoàn chỉnh, gồm cả phần sẽ bị body/head/tail khác che.
+- Không cắt layer từ ô tổng thể.
+- Codex sẽ tách từng ô slot thành PNG runtime và bỏ qua ô assembly-ref khi tạo layer.
 
-OUTPUT — mỗi mục một ô:
+OUTPUT — mỗi mục một ô, assembly-ref đứng cuối:
 <liệt kê các file bắt buộc và optional đã chọn từ Fox production contract>
+assembly-ref.png
+
+QUY TẮC Ô TỔNG THỂ:
+- Lắp đúng các character layer và Pet Visual VFX đã vẽ trên sheet (shadow/effect-back/front/particles nếu có).
+- Cùng pose, scale, lighting, ground plane với các ô slot.
+- Dùng mắt mở (eyes-open). Không nhắm mắt.
+- Hiện rõ chân far nằm sau, chân near nằm trước, body che đùi, head trên cổ, tail tại gốc.
+- Không gắn Combat VFX (cast/projectile/impact) vào pet đang đứng.
+- Ô này chỉ để đối chiếu ghép; không phải master/preview runtime.
 
 QUY TẮC CHÂN — bốn ô riêng rear-far, rear-near, front-far, front-near:
 - Cả bốn cùng anatomy/style/palette/material/lighting của pet, nhưng mỗi chân có góc camera, silhouette và perspective depth riêng.
@@ -207,4 +220,4 @@ Mỗi layer multi-tail dùng runtime canvas 228×220 như tail đơn; effect kh�
 assets/inbox/<PET_ID>/level-<EVOLUTION_LEVEL>/layer-sheet.png
 ```
 
-Codex tách từng ô thành `layers/` và `effects/`, kiểm tra alpha/kích thước/crop/halo, giữ source, chuẩn hóa sang `public/assets/pets/`, tạo manifest dùng `fox-quadruped`, ghép preview bằng Phaser và chỉ sau đó mới export `master.png`/`preview.png`. Không đổi status thành `ready` trước validation.
+Codex tách từng ô slot thành `layers/` và `effects/`, bỏ qua `assembly-ref.png` khỏi runtime layers, kiểm tra alpha/kích thước/crop/halo, giữ source, chuẩn hóa sang `public/assets/pets/`, tạo manifest dùng `fox-quadruped`, ghép preview bằng Phaser và chỉ sau đó mới export `master.png`/`preview.png`. Không đổi status thành `ready` trước validation.

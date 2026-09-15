@@ -17,7 +17,7 @@
 
 Đây là quy ước bắt buộc của dự án:
 
-- ChatGPT web chịu trách nhiệm tạo hoặc chỉnh sửa artwork raster bằng Image Generation: **một layer sheet** chứa mọi character layer, Pet Visual VFX và Combat VFX của đúng evolution stage, theo factory guide, catalog và executable recipe. Khi người dùng chỉ yêu cầu artwork, ChatGPT Web không chỉnh code.
+- ChatGPT web chịu trách nhiệm tạo hoặc chỉnh sửa artwork raster bằng Image Generation: **một layer sheet** chứa mọi character layer, Pet Visual VFX, Combat VFX của đúng evolution stage, và ô cuối `assembly-ref` (pet đã lắp để đối chiếu ghép), theo factory guide, catalog và executable recipe. Khi người dùng chỉ yêu cầu artwork, ChatGPT Web không chỉnh code.
 - Codex chịu trách nhiệm architecture, manifest, rig, renderer, Asset Studio, animation, validation, integration, tách ô layer sheet, tách nền/chuẩn hóa PNG bằng code; preview/master được ghép từ production layers.
 - Codex không tự gọi ImageGen cho dự án này. Khi thiếu artwork, hãy viết prompt production-ready và hướng dẫn đặt file vào `assets/inbox/`, rồi tiếp tục xử lý các phần code có thể làm độc lập.
 - Nếu ChatGPT web đọc được repo qua GitHub, đó chỉ là nguồn tham khảo cho prompt và contract. Không giả định ChatGPT web có thể commit/push PNG; kết nối GitHub chuẩn là read-only.
