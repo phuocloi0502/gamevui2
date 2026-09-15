@@ -122,7 +122,7 @@ Stage folders scope filenames, so every evolution may use `attack-cast.png`, `pr
 
 New reusable rigs emit `attack-release` as a transport-neutral marker. The preview/gameplay consumer decides whether that moment activates a projectile, melee trail or special attack asset. Legacy `pet-base` keeps its existing marker name.
 
-All species share the evolution rules below. Never change species identity between levels. Never generate contact sheets, bake separate layers together, crop production layers from a master, invent filenames, obscure anatomy with VFX or stretch art to runtimeSize.
+All species share the evolution rules below. Never change species identity between levels. ImageGen uses one isolated-parts layer sheet, not a posed full pet to crop. Never bake separate slots into one assembled body, invent filenames, obscure anatomy with VFX or stretch art to runtimeSize.
 
 Creation workflow in Asset Studio:
 
@@ -450,7 +450,7 @@ Mọi Fox production layer giữ pose `3/4 side view facing right`. Bốn chân 
 - `rear-near`: camera-facing rear leg, đùi sau lớn, hock/knee curve rõ, nghiêng chéo trước/phải, bàn chân lớn và có khối 3D.
 - `rear-far`: far-side rear leg, đùi hẹp và có perspective overlap với thân, lùi sau/vào trong, bàn chân nhỏ hơn `rear-near`.
 
-Mỗi chân chứa phần chân trên/đùi hoàn chỉnh; body không chứa đùi. Near có visual weight lớn hơn far, perspective depth phải đọc được khi xem PNG riêng và mọi bàn chân phải cùng ground plane khi composition. Cấm frontal leg, side-profile 90°, bốn silhouette giống nhau hoặc họa tiết nguyên tố làm biến dạng silhouette chân. Prompt từng layer phải nói rõ camera-facing/far side, foreshortening, overlap và depth.
+Mỗi chân chứa phần chân trên/đùi hoàn chỉnh; body không chứa đùi. Near có visual weight lớn hơn far, perspective depth phải đọc được khi xem từng ô riêng và mọi bàn chân phải cùng ground plane khi composition. Cấm frontal leg, side-profile 90°, bốn silhouette giống nhau hoặc họa tiết nguyên tố làm biến dạng silhouette chân. Prompt layer sheet phải nói rõ camera-facing/far side, foreshortening, overlap và depth cho từng ô chân.
 
 ### Shared base animations
 

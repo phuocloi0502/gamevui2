@@ -8,13 +8,13 @@ Repo này sản xuất asset và frontend để kiểm tra chúng. Mục tiêu 1
 
 ## Nguyên tắc layer-first
 
-Với pet cần animation, production bắt đầu từ các artwork layer độc lập:
+Với pet cần animation, ImageGen xuất một layer sheet các bộ phận isolated:
 
 ```text
-production layers → asset.json + rig → Phaser ghép → preview/master để duyệt
+layer sheet → Codex tách production layers → asset.json + rig → Phaser ghép → preview/master để duyệt
 ```
 
-Không dùng `master artwork → crop/tách layer → reconstruct vùng bị che` làm workflow production chuẩn cho pet mới. Mỗi production layer phải được tạo như một artwork hoàn chỉnh ngay từ đầu, gồm cả phần sẽ bị layer khác che, để có thể rotate/tween mà không lộ khoảng trống.
+Không dùng `master artwork đã lắp → crop/tách layer → reconstruct vùng bị che` làm workflow production chuẩn cho pet mới. Mỗi ô trên sheet phải được tạo như một artwork hoàn chỉnh ngay từ đầu, gồm cả phần sẽ bị layer khác che, để có thể rotate/tween mà không lộ khoảng trống.
 
 `master.png` và `preview.png` là kết quả kiểm chứng được render từ production layers. Chúng không phải source để cắt layer. Một concept hoặc full-art có thể dùng làm art-direction reference, nhưng không được coi là nguồn production để crop.
 
@@ -72,7 +72,7 @@ Asset Studio lưu phần tinh chỉnh Combat VFX trong `effects.attackPresentati
 
 `rear-far`, `rear-near`, `front-far`, `front-near` phải trỏ tới bốn PNG production khác nhau. Không dùng một `leg.png` chung cho bốn instance trong contract Fox mới.
 
-Bốn chân Fox dùng cùng pose `3/4 side view facing right` nhưng khác phối cảnh: near lớn/rõ và có visual weight cao hơn far; front/rear có anatomy tương ứng; near/far không được mirror hoặc dùng cùng silhouette. Mỗi layer chân chứa đầy đủ phần chân trên/đùi tới khớp, còn `body` không chứa đùi. Bàn chân phải cùng ground plane; prompt từng layer phải nêu rõ camera-facing/far side, foreshortening, overlap và depth. Mô tả chi tiết bắt buộc nằm trong `docs/chatgpt-pet-layer-factory.md`.
+Bốn chân Fox dùng cùng pose `3/4 side view facing right` nhưng khác phối cảnh: near lớn/rõ và có visual weight cao hơn far; front/rear có anatomy tương ứng; near/far không được mirror hoặc dùng cùng silhouette. Mỗi layer chân chứa đầy đủ phần chân trên/đùi tới khớp, còn `body` không chứa đùi. Bàn chân phải cùng ground plane; prompt layer sheet phải nêu rõ camera-facing/far side, foreshortening, overlap và depth cho từng ô chân. Mô tả chi tiết bắt buộc nằm trong `docs/chatgpt-pet-layer-factory.md`.
 
 Không tạo closed-head asset. `head.png` là artwork đầu cố định không chứa mắt. `eyes-open` và `eyes-closed` là hai layer độc lập cùng gắn vào `head`; chúng lần lượt khai báo `blink: "open"` và `blink: "closed"`. Hai PNG mắt chỉ chứa đôi mắt, có cùng canvas, kích thước, alignment, origin và vùng trong suốt; renderer luân phiên visibility của hai layer khi blink. Contract mới không dùng `closedSrc`.
 
@@ -87,7 +87,7 @@ Renderer không biết khái niệm “9 tails”. Clip override của pet targe
 ## Thêm pet mới
 
 1. Lập asset specification: silhouette, palette, canvas, production layers, pivot, z-order, animation và output.
-2. Tạo từng production PNG độc lập trong `assets/inbox/<lineage-id>/level-<n>/layers/` hoặc `effects/`. Không tạo chúng bằng cách cắt master.
+2. Tạo một layer sheet rồi để Codex tách vào `assets/inbox/<lineage-id>/level-<n>/layers/` hoặc `effects/`. Không tạo chúng bằng cách cắt master đã lắp.
 3. Kiểm tra alpha, padding, kích thước và phần anatomy bị che của từng layer.
 4. Tạo `assets/pets/<lineage-id>/level-<n>/asset.json`; đường dẫn runtime bắt đầu `/assets/pets/<lineage-id>/level-<n>/`.
 5. Chuẩn hóa/copy PNG sang `public/assets/pets/<lineage-id>/level-<n>/` mà không ghi đè source trong inbox.
@@ -102,7 +102,7 @@ Fire Fox Level 1 giữ nguyên `extends: "pet-base"`, manifest, texture dùng ch
 
 Một pet production mới chỉ hoàn tất khi:
 
-- production layers được tạo độc lập và có alpha sạch;
+- production layers (sau khi tách sheet) có alpha sạch;
 - mọi phần cần chuyển động có vùng bị che được vẽ đầy đủ;
 - không crop, watermark, background hoặc effect lẫn sai layer;
 - layer ghép thành preview đúng silhouette đã duyệt;

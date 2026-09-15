@@ -58,7 +58,9 @@ Sau khi parse, đọc species section trong Pet Catalog và executable recipe. K
 ```text
 DESIGN SPEC
     ↓
-PRODUCTION LAYERS
+ONE LAYER SHEET (isolated cells)
+    ↓
+Codex tách ô → production layers
     ↓
 manifest / rig
     ↓
@@ -69,7 +71,7 @@ preview / master
 approval
 ```
 
-Không tạo master/full pet trước rồi crop, tách hoặc reconstruct. Concept/full artwork đã tồn tại chỉ là reference. Production PNG phải được thiết kế như bộ phận hoàn chỉnh ngay từ đầu. `preview.png` và `master.png` là output ghép từ layers, không phải source.
+Không tạo master/full pet đã lắp rồi crop anatomy. Concept/full artwork chỉ là reference. ImageGen xuất **một layer sheet**: mỗi ô là một bộ phận hoàn chỉnh ngay từ đầu. Codex tách ô thành PNG runtime. `preview.png` và `master.png` vẫn là output ghép từ layers, không phải source.
 
 ## Production artwork package
 
@@ -110,16 +112,16 @@ Nếu recipe đã quy định Combat VFX, người dùng không cần nhắc ri�
 
 ## Execution contract cho Image Generation
 
-- mỗi production asset — character layer, Pet Visual VFX hoặc Combat VFX — là một PNG độc lập;
-- mỗi image-generation hoặc edit operation chỉ tạo đúng một PNG asset;
-- thực hiện tuần tự cho đến khi đủ package;
-- không contact sheet, sprite sheet hoặc nhiều layer trong một ảnh;
-- không dừng sau layer đầu và không yêu cầu người dùng nói “tiếp”;
-- không tạo ZIP, README, JSON hoặc code trừ khi người dùng yêu cầu riêng.
+- toàn bộ production package của đúng evolution stage nằm trong **một PNG layer sheet duy nhất**;
+- một image-generation operation tạo đúng một ảnh đó; không tạo từng layer thành file riêng;
+- sheet là lưới các bộ phận **tách biệt**, không phải pet đã lắp và không phải master/preview;
+- mỗi ô chứa đúng một slot: character layer, Pet Visual VFX hoặc Combat VFX;
+- không sprite sheet animation, không hàng frame gần giống nhau, không ZIP/README/JSON/code trừ khi người dùng yêu cầu riêng;
+- không dừng giữa chừng và không yêu cầu người dùng nói “tiếp”.
 
-Ưu tiên thứ tự generation để giữ identity: `head → eyes-open → eyes-closed → body → limbs → tail/appendages → species details → pet visual VFX → combat VFX → particles → shadow`. Thứ tự này không phải z-order.
+Thứ tự ô trên sheet, trái → phải rồi trên → dưới, theo recipe (không phải z-order): `head → eyes-open → eyes-closed → body → limbs → tail/appendages → species details → pet visual VFX → combat VFX → particles → shadow`. Bỏ ô trống nếu optional không dùng; không vẽ placeholder.
 
-Trước lần tạo đầu tiên, lập một internal design specification và giữ nguyên xuyên suốt:
+Trước lần tạo, lập một internal design specification và giữ nguyên trên toàn sheet:
 
 - species và evolution level;
 - body/head proportions;
@@ -130,7 +132,7 @@ Trước lần tạo đầu tiên, lập một internal design specification và
 - camera/view angle và facing direction;
 - VFX vocabulary.
 
-Khi công cụ hỗ trợ reference image, dùng các layer đã tạo trước làm visual/style reference cho layer tiếp theo. Không redesign pet ở mỗi call.
+Không redesign pet giữa các ô. Nếu cần sửa, chỉnh đúng ô trên cùng một sheet hoặc tạo lại toàn bộ sheet một lần.
 
 ## Art direction mặc định
 
@@ -162,28 +164,32 @@ Element thay palette, material, ornament nhỏ và VFX; không biến anatomy th
 
 Mỗi level là một package riêng. Không ghi đè hoặc tái sử dụng sai artwork của level khác.
 
-## Artwork contract cho từng PNG
+## Artwork contract cho layer sheet
 
-- Chỉ chứa đúng layer đó; transparent background thật khi công cụ hỗ trợ.
-- Không chữ, label, watermark, UI, frame, background hoặc fake checkerboard.
-- Không chứa shadow/effect/body part thuộc slot khác.
-- Không crop anatomy, fur, glow hoặc particle của chính slot; có safe padding trong suốt.
-- Anatomy phải hoàn chỉnh cả vùng sẽ bị layer khác che.
-- Body có đủ vùng dưới head/chân/tail; leg có đủ phần trên tới joint; tail có đủ gốc; head có đủ vùng cổ/lông nối.
-- Mục tiêu là layer rotate/tween độc lập mà không lộ khoảng trống.
-- Không stretch để ép runtimeSize. Ưu tiên anatomy đúng và aspect ratio; Codex/Asset Studio normalize source về runtime target.
+Ảnh duy nhất là một lưới ô đều, nền trong suốt thật khi công cụ hỗ trợ; nếu không được thì cyan phẳng `#00FFFF`, không checkerboard giả.
 
-Output phải dùng đúng filename trong executable recipe. Không đổi `front-near.png` thành tên tự đặt.
+Mỗi ô:
+
+- chỉ chứa đúng một slot; isolated subject, không lắp với ô khác;
+- không chứa shadow/effect/body part thuộc slot khác;
+- không crop anatomy, fur, glow hoặc particle của chính slot; có safe padding trong ô;
+- anatomy hoàn chỉnh cả vùng sẽ bị layer khác che khi Phaser ghép;
+- body có đủ vùng dưới head/chân/tail; leg có đủ phần trên tới joint; tail có đủ gốc; head có đủ vùng cổ/lông nối.
+
+Cho phép caption nhỏ **dưới** ô, đúng filename recipe (`front-near.png`); caption không đè lên artwork. Không watermark, UI, frame cảnh, hoặc pet full-body ở giữa sheet.
+
+Không stretch từng bộ phận để ép runtimeSize. Codex/Asset Studio tách từng ô rồi normalize về runtime target.
+
+Output ImageGen: một file, ví dụ `layer-sheet.png`. Filename từng slot trên caption phải khớp executable recipe.
 
 ## Head, eye layers và blink
 
 Với recipe production mới có `head.png`, `eyes-open.png` và `eyes-closed.png`:
 
 - `head.png` là canonical head nhưng **không chứa mắt mở hoặc mắt nhắm**;
-- `eyes-open.png` chỉ chứa đôi mắt mở trên canvas trong suốt;
-- tạo `eyes-closed.png` bằng edit/reference từ `eyes-open.png`, chỉ đổi trạng thái mắt;
-- hai file mắt phải giữ nguyên canvas, kích thước, vị trí pixel, style, lighting và alignment;
-- cả hai phải overlay chính xác lên `head.png`, không chứa lại đầu, tai, mõm, lông hoặc decoration;
+- `eyes-open.png` chỉ chứa đôi mắt mở;
+- `eyes-closed.png` chỉ chứa đôi mắt nhắm, cùng canvas/alignment với ô mắt mở;
+- hai ô mắt overlay chính xác lên ô `head.png`, không chứa lại đầu, tai, mõm, lông hoặc decoration;
 - không tạo closed-head asset.
 
 Runtime tạo hai layer thật `eyes-open` và `eyes-closed`, cả hai gắn vào `head`. Manifest lần lượt đánh dấu chúng bằng `blink: "open"` và `blink: "closed"`; runtime chỉ luân phiên visibility, không đổi texture và không dùng `closedSrc`.
@@ -203,12 +209,12 @@ Quy tắc bắt buộc cho cả bộ chân Fox:
 
 - near và far là hai artwork phối cảnh khác nhau, **không mirror đơn giản** và không dùng chung silhouette;
 - cả bốn chân dùng cùng anatomy, style, palette, material, lighting và mức độ chi tiết của đúng pet đó;
-- mỗi PNG chân chứa đầy đủ phần chân trên/đùi tương ứng tới khớp với thân, kể cả vùng dự kiến bị che; `body.png` không chứa đùi trước hoặc đùi sau;
-- near luôn có visual weight lớn hơn far; depth phải đọc được ngay cả khi xem riêng từng PNG;
-- bốn bàn chân phải ráp xuống cùng một ground plane;
+- mỗi ô chân chứa đầy đủ phần chân trên/đùi tương ứng tới khớp với thân, kể cả vùng dự kiến bị che; ô `body` không chứa đùi trước hoặc đùi sau;
+- near luôn có visual weight lớn hơn far; depth phải đọc được ngay cả khi xem riêng từng ô;
+- bốn bàn chân phải ráp xuống cùng một ground plane khi ghép;
 - không tạo chân nhìn frontal, side-profile 90°, hoặc bốn chân cùng một góc/cùng silhouette;
 - họa tiết nguyên tố phải bám theo surface và anatomy riêng của từng chân, không dùng glow/ornament để đổi silhouette;
-- prompt của từng operation phải gọi rõ `camera-facing side` hoặc `far side`, đồng thời mô tả `foreshortening`, `overlap` và `depth` tương ứng; không chỉ ghi tên file.
+- prompt của sheet phải gọi rõ `camera-facing side` hoặc `far side` cho từng ô chân, đồng thời mô tả `foreshortening`, `overlap` và `depth`; không chỉ ghi tên file.
 
 Fox production mới bắt buộc có bốn artwork độc lập:
 
@@ -219,12 +225,12 @@ front-far.png
 front-near.png
 ```
 
-Chân trước và sau phải khác anatomy; near/far phải thể hiện perspective ngay trong từng PNG. Không duplicate cùng một chân bốn lần và không dùng `leg.png` chung.
+Chân trước và sau phải khác anatomy; near/far phải thể hiện perspective ngay trong từng ô. Không duplicate cùng một chân bốn lần và không dùng `leg.png` chung.
 
 ## Required, optional và recommended
 
 - `required`: luôn tạo.
-- `optional`: chỉ tồn tại khi design cần; không tạo PNG rỗng.
+- `optional`: chỉ tồn tại khi design cần; không vẽ ô rỗng hay placeholder.
 - `recommended-for-this-design`: optional nhưng ChatGPT có thể tự chọn tạo nếu giúp species/element rõ hơn mà không cần hỏi.
 
 Không tự phát minh anatomy, Combat VFX semantic hoặc filename ngoài executable recipe. Với Fire Wolf, `mane.png` là pet layer optional đáng cân nhắc; Fang Rush dùng `attack-cast.png`, `attack-trail.png`, `impact.png` và không có projectile mặc định.
@@ -246,7 +252,7 @@ Không tự phát minh anatomy, Combat VFX semantic hoặc filename ngoài execu
 | Slime | blob / `blob-base` | `blob`, `face` | `shadow`, `inner-core`, `front-gloss`, `top-effect` | Element Pulse: `attack-cast`, `pulse`, `impact` |
 | Serpent | serpent / `serpent-base` | `tail`, `body-lower`, `body-upper`, `head`, `eyes-open`, `eyes-closed` | `shadow`, `jaw`, `crest` | Element Lance: `attack-cast`, `beam`, `impact` |
 
-Tên trong bảng không có `.png` để dễ đọc; output thực tế luôn thêm `.png` và dùng folder `layers/` hoặc `effects/` đúng như `petCatalog.ts`. Một slot có thể tạo nhiều runtime instances ở species cho phép; không tự suy diễn điều đó cho Fox/Wolf.
+Tên trong bảng không có `.png` để dễ đọc; trên layer sheet dùng đúng filename đó làm caption ô. Sau khi Codex tách, file nằm ở `layers/` hoặc `effects/` đúng như `petCatalog.ts`. Một slot có thể tạo nhiều runtime instances ở species cho phép; không tự suy diễn điều đó cho Fox/Wolf.
 
 RuntimeSize cố định hiện chỉ được khai báo rõ cho Fox baseline: `shadow 320×64`, mỗi layer đuôi đơn hoặc multi-tail `228×220`, mỗi chân `70×123`, `body 308×225`, `head/eyes-open/eyes-closed 302×318`. Các slot không có runtimeSize phải giữ aspect/padding chất lượng cao; không tự stretch.
 
@@ -279,7 +285,7 @@ Manifest mới bind file theo semantic trong `effects.attack`: `cast`, `trail`, 
 
 Rig template phát marker generic `attack-release` tại thời điểm tung đòn; consumer chọn projectile, trail hoặc special binding từ manifest. `pet-base` và manifest cũ có thể vẫn phát marker tên `projectile` để giữ backward compatibility.
 
-Mỗi Combat VFX được sản xuất giống production layer: một PNG trong suốt riêng và một image-generation operation cho đúng một asset. Không contact sheet, không sprite sheet, không ghép nhiều effect vào một ảnh nếu recipe tách chúng. Mỗi effect phải cùng style, palette, element và evolution với pet, có safe padding và đọc rõ ở gameplay size. ChatGPT Web tạo artwork; Codex/Asset Studio tạo binding manifest, preview và cho phép thay từng file độc lập.
+Combat VFX nằm trên cùng layer sheet, mỗi semantic một ô riêng, không gộp cast/trail/projectile/impact vào một bộ phận. Không phải animation sprite sheet. Mỗi effect phải cùng style, palette, element và evolution với pet, có safe padding và đọc rõ ở gameplay size. ChatGPT Web tạo sheet; Codex tách ô, tạo binding manifest, preview và cho phép thay từng file độc lập sau khi đã tách.
 
 Sau khi upload, Asset Studio có thể thêm các optional slot còn thiếu, thay từng PNG, bật/tắt và chỉnh toàn bộ presentation của từng Combat VFX rồi lưu vào manifest của stage; ChatGPT Web không cần tạo code hoặc nhúng timing/position vào artwork.
 
@@ -332,8 +338,8 @@ Expected behavior:
 1. Đọc file này, Pet Catalog, `petCatalog.ts`, `quadruped-base` và reference Wolf/Fire liên quan nếu có.
 2. Resolve `wolf`, `fire`, Level 1; lập design spec Fire Wolf Level 1.
 3. Chọn toàn bộ required slots, optional phù hợp như `mane`, và Combat VFX của Fang Rush: `attack-cast`, `attack-trail`, `impact`; không tạo projectile.
-4. Tạo từng PNG riêng, một operation cho một layer, dùng layer trước làm reference.
-5. Tiếp tục tự động đến khi đủ package; không contact sheet và không yêu cầu user nói “tiếp”.
+4. Tạo **một** PNG layer sheet chứa mọi required slot và optional đã chọn; mỗi slot một ô tách biệt; không lắp full pet.
+5. Không yêu cầu user nói “tiếp”; không xuất từng layer thành file riêng.
 6. Không tạo `asset.json`, không chỉnh code và không tạo preview/master.
-7. Người dùng tải PNG vào **Tạo pet từ layer** của Asset Studio.
-8. Sau khi Phaser ghép preview, nếu một layer chưa đạt, người dùng yêu cầu sửa đúng layer rồi dùng **Thay ảnh pet**.
+7. Người dùng tải `layer-sheet.png` vào `assets/inbox/<lineage>/level-<n>/`; Codex tách ô rồi đưa từng PNG vào Asset Studio.
+8. Sau khi Phaser ghép preview, nếu một layer chưa đạt, người dùng yêu cầu sửa đúng ô trên sheet hoặc thay đúng PNG đã tách bằng **Thay ảnh pet**.

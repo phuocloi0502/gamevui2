@@ -17,8 +17,8 @@
 
 Đây là quy ước bắt buộc của dự án:
 
-- ChatGPT web chịu trách nhiệm tạo hoặc chỉnh sửa artwork raster bằng Image Generation: từng production layer, Pet Visual VFX và Combat VFX của đúng evolution stage, theo factory guide, catalog và executable recipe. Khi người dùng chỉ yêu cầu artwork, ChatGPT Web không chỉnh code.
-- Codex chịu trách nhiệm architecture, manifest, rig, renderer, Asset Studio, animation, validation, integration và tách nền/chuẩn hóa PNG bằng code; preview/master được ghép từ production layers.
+- ChatGPT web chịu trách nhiệm tạo hoặc chỉnh sửa artwork raster bằng Image Generation: **một layer sheet** chứa mọi character layer, Pet Visual VFX và Combat VFX của đúng evolution stage, theo factory guide, catalog và executable recipe. Khi người dùng chỉ yêu cầu artwork, ChatGPT Web không chỉnh code.
+- Codex chịu trách nhiệm architecture, manifest, rig, renderer, Asset Studio, animation, validation, integration, tách ô layer sheet, tách nền/chuẩn hóa PNG bằng code; preview/master được ghép từ production layers.
 - Codex không tự gọi ImageGen cho dự án này. Khi thiếu artwork, hãy viết prompt production-ready và hướng dẫn đặt file vào `assets/inbox/`, rồi tiếp tục xử lý các phần code có thể làm độc lập.
 - Nếu ChatGPT web đọc được repo qua GitHub, đó chỉ là nguồn tham khảo cho prompt và contract. Không giả định ChatGPT web có thể commit/push PNG; kết nối GitHub chuẩn là read-only.
 - Không dùng ảnh placeholder để giả vờ là production asset.
@@ -38,10 +38,10 @@ Người dùng tự kiểm tra trực quan bằng UI Asset Studio. Chỉ chạy 
 Quy trình chuyển giao:
 
 ```text
-ChatGPT web tạo ảnh
+ChatGPT web tạo 1 layer sheet
         ↓ download PNG
-assets/inbox/<lineage-id>/level-<n>/
-        ↓ Codex kiểm tra và xử lý
+assets/inbox/<lineage-id>/level-<n>/layer-sheet.png
+        ↓ Codex tách ô, kiểm tra và xử lý
 public/assets/<kind>/<lineage-id>/level-<n>/
         ↓ manifest + Phaser preview
 Asset Studio tại localhost:3333
@@ -108,7 +108,7 @@ Dùng sprite sheet cho:
 
 Có thể dùng hybrid: body/head/tail chạy tween, hai layer `eyes-open`/`eyes-closed` luân phiên visibility để blink, effect chạy sprite sheet.
 
-Không yêu cầu AI tạo hàng loạt frame gần giống nhau nếu độ nhất quán không đáng tin cậy. Với pet cần animation, ưu tiên tạo trực tiếp các production layer có chủ đích và để Phaser ghép preview rồi sinh chuyển động. Không dùng master artwork để crop/tách và reconstruct layer làm workflow chuẩn cho pet mới. Nếu cần sprite sheet, kiểm tra từng frame về hình dáng, palette, ánh sáng, scale và anchor trước khi dùng.
+Không yêu cầu AI tạo hàng loạt frame gần giống nhau nếu độ nhất quán không đáng tin cậy. Với pet cần animation, ImageGen tạo một layer sheet các bộ phận isolated; Phaser ghép preview rồi sinh chuyển động. Không dùng master artwork đã lắp để crop/tách và reconstruct layer làm workflow chuẩn cho pet mới. Nếu cần sprite sheet animation, kiểm tra từng frame về hình dáng, palette, ánh sáng, scale và anchor trước khi dùng.
 
 ## Quy trình cho một asset mới
 
@@ -144,7 +144,7 @@ Với một dòng asset mới, hoàn thiện một flagship asset trước rồi
 
 ### 3. Tạo production layers
 
-Với pet cần animation, production layers là source of truth và phải được tạo độc lập ngay từ đầu. Không dùng quy trình `master artwork → crop/tách → reconstruct` làm production chuẩn. Mỗi layer phải:
+Với pet cần animation, production layers là source of truth sau khi Codex tách từ layer sheet. ImageGen không xuất từng file layer và không dùng quy trình `master artwork đã lắp → crop/tách → reconstruct`. Mỗi ô trên sheet phải:
 
 - có alpha sạch, không viền nền hoặc halo bẩn;
 - khớp đúng thiết kế chung khi renderer ghép tại anchor mặc định;
@@ -175,7 +175,7 @@ Tên slot mô tả vai trò render, không bắt buộc tên anatomy cụ thể.
 
 Fox sản xuất mới mặc định dùng `shadow`, `effect-back`, `tail`, `rear-far`, `rear-near`, `body`, `front-far`, `front-near`, `head`, `eyes-open`, `eyes-closed`, `effect-front`, `particles`; effect/particles/shadow là optional. `head.png` không chứa mắt. `eyes-open` và `eyes-closed` là hai layer thật, cùng parent `head`, cùng canvas/alignment và lần lượt khai báo `blink: "open"`/`blink: "closed"`. Bốn chân là bốn artwork riêng, không dùng một `leg.png` chung. Level 1/2 dùng `tail` bình thường; Level 3 có thể chọn `tail` đơn hoặc các ID string optional như `tail-left-outer` và `tail-center`. Manifest và clip target trực tiếp các ID đó, renderer không được hard-code số lượng đuôi.
 
-Khi prompt bốn chân Fox, bắt buộc khóa pose `3/4 side view facing right` và mô tả riêng camera-facing/far side, foreshortening, overlap, depth cho từng layer. `front-near` lớn/rõ, gần thẳng đứng và hơi hướng trước/phải; `front-far` hẹp/nhỏ, lùi vào trong/sau thân. `rear-near` có đùi sau lớn, hock/knee curve rõ và nghiêng chéo trước/phải; `rear-far` có đùi hẹp, lùi sau/vào trong và bị thân overlap theo perspective. Near/far không mirror, near có visual weight lớn hơn, bốn bàn chân cùng ground plane, mỗi layer chân chứa phần chân trên/đùi còn `body` không chứa đùi. Cấm frontal leg, side-profile 90°, bốn silhouette giống nhau và elemental pattern làm đổi silhouette chân.
+Khi prompt layer sheet Fox, bắt buộc khóa pose `3/4 side view facing right` và mô tả riêng camera-facing/far side, foreshortening, overlap, depth cho từng ô chân. `front-near` lớn/rõ, gần thẳng đứng và hơi hướng trước/phải; `front-far` hẹp/nhỏ, lùi vào trong/sau thân. `rear-near` có đùi sau lớn, hock/knee curve rõ và nghiêng chéo trước/phải; `rear-far` có đùi hẹp, lùi sau/vào trong và bị thân overlap theo perspective. Near/far không mirror, near có visual weight lớn hơn, bốn bàn chân cùng ground plane, mỗi layer chân chứa phần chân trên/đùi còn `body` không chứa đùi. Cấm frontal leg, side-profile 90°, bốn silhouette giống nhau và elemental pattern làm đổi silhouette chân.
 
 Không tạo closed-head asset, không dùng `closedSrc`, và không gộp hai trạng thái mắt vào một layer. Manifest production phải khai báo riêng layer `eyes-open` và `eyes-closed`.
 
