@@ -23,17 +23,6 @@
       "angle": 1
     },
     {
-      "id": "effect-back",
-      "x": -180,
-      "y": -200,
-      "originX": 0.5,
-      "originY": 0.5,
-      "z": 7,
-      "scale": 0.15,
-      "src": "/assets/pets/light-fox/level-3/effects/effect-back.png",
-      "alpha": 0.8
-    },
-    {
       "id": "tail-left-outer",
       "x": -40,
       "y": -104,
@@ -88,6 +77,17 @@
       "src": "/assets/pets/light-fox/level-3/layers/rear-near.png"
     },
     {
+      "id": "effect-back",
+      "x": -180,
+      "y": -200,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 7,
+      "scale": 0.15,
+      "src": "/assets/pets/light-fox/level-3/effects/effect-back.png",
+      "alpha": 0.8
+    },
+    {
       "id": "front-near",
       "x": 40,
       "y": -80,
@@ -135,6 +135,26 @@
       "src": "/assets/pets/light-fox/level-3/layers/eyes-closed.png",
       "angle": -5,
       "alpha": 0.9
+    },
+    {
+      "id": "effect-front",
+      "x": 90,
+      "y": -145,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 9,
+      "scale": 1,
+      "src": "/assets/pets/light-fox/level-3/effects/effect-front.png"
+    },
+    {
+      "id": "particles",
+      "x": 0,
+      "y": -135,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 10,
+      "scale": 1,
+      "src": "/assets/pets/light-fox/level-3/effects/particles.png"
     }
   ],
   "preview": {
@@ -457,6 +477,84 @@
             ]
           }
         ]
+      }
+    }
+  },
+  "effects": {
+    "attack": {
+      "cast": "/assets/pets/light-fox/level-3/effects/attack-cast.png",
+      "projectile": "/assets/pets/light-fox/level-3/effects/projectile.png",
+      "impact": "/assets/pets/light-fox/level-3/effects/impact.png"
+    },
+    "attackPresentation": {
+      "cast": {
+        "enabled": true,
+        "trigger": "attack-start",
+        "startAnchor": "pet",
+        "endAnchor": "pet",
+        "startX": 75,
+        "startY": -135,
+        "endX": 75,
+        "endY": -135,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.5,
+        "endScale": 0.58,
+        "startAngle": 0,
+        "endAngle": 0,
+        "startAlpha": 0.9,
+        "endAlpha": 0,
+        "depth": 20,
+        "delay": 0,
+        "duration": 450,
+        "ease": "Sine.easeInOut",
+        "mirror": true
+      },
+      "projectile": {
+        "enabled": true,
+        "trigger": "attack-release",
+        "startAnchor": "pet",
+        "endAnchor": "target",
+        "startX": 100,
+        "startY": -150,
+        "endX": 0,
+        "endY": 0,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.55,
+        "endScale": 0.55,
+        "startAngle": 90,
+        "endAngle": 90,
+        "startAlpha": 1,
+        "endAlpha": 0.2,
+        "depth": 20,
+        "delay": 0,
+        "duration": 600,
+        "ease": "Linear",
+        "mirror": true
+      },
+      "impact": {
+        "enabled": true,
+        "trigger": "after-primary",
+        "startAnchor": "target",
+        "endAnchor": "target",
+        "startX": 0,
+        "startY": 0,
+        "endX": 0,
+        "endY": 0,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.65,
+        "endScale": 0.78,
+        "startAngle": 0,
+        "endAngle": 0,
+        "startAlpha": 0.95,
+        "endAlpha": 0,
+        "depth": 21,
+        "delay": 0,
+        "duration": 420,
+        "ease": "Quad.easeOut",
+        "mirror": true
       }
     }
   }
