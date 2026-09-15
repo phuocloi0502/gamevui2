@@ -84,8 +84,7 @@ Các PNG anatomy/state theo recipe, ví dụ:
 - `body`, `head`, `eyes-open`, `eyes-closed`;
 - `rear-far`, `rear-near`, `front-far`, `front-near` với quadruped;
 - `tail` hoặc các tail group ở evolution đặc biệt;
-- wing, ear, horn, mane, jaw, shell và anatomy riêng của species khi recipe có slot;
-- `shadow` khi recipe yêu cầu hoặc cho phép.
+- wing, ear, horn, mane, jaw, shell và anatomy riêng của species khi recipe có slot.
 
 ### B. Pet Visual VFX
 
@@ -119,7 +118,7 @@ Nếu recipe đã quy định Combat VFX, người dùng không cần nhắc ri�
 - không sprite sheet animation, không hàng frame gần giống nhau, không ZIP/README/JSON/code trừ khi người dùng yêu cầu riêng;
 - không dừng giữa chừng và không yêu cầu người dùng nói “tiếp”.
 
-Thứ tự ô trên sheet, trái → phải rồi trên → dưới, theo recipe (không phải z-order): `head → eyes-open → eyes-closed → body → limbs → tail/appendages → species details → pet visual VFX → combat VFX → particles → shadow → assembly-ref`. Bỏ ô trống nếu optional không dùng; không vẽ placeholder. Ô `assembly-ref` luôn có và luôn đứng cuối.
+Thứ tự ô trên sheet, trái → phải rồi trên → dưới, theo recipe (không phải z-order): `head → eyes-open → eyes-closed → body → limbs → tail/appendages → species details → pet visual VFX → combat VFX → particles → assembly-ref`. Bỏ ô trống nếu optional không dùng; không vẽ placeholder. Ô `assembly-ref` luôn có và luôn đứng cuối.
 
 Trước lần tạo, lập một internal design specification và giữ nguyên trên toàn sheet:
 
@@ -250,20 +249,20 @@ Không tự phát minh anatomy, Combat VFX semantic hoặc filename ngoài execu
 
 | Species | Archetype / rig | Required character PNG | Optional character / pet visual VFX | Optional Combat VFX recipe |
 |---|---|---|---|---|
-| Fox | quadruped / `fox-quadruped` | `tail`, `rear-far`, `rear-near`, `body`, `front-far`, `front-near`, `head`, `eyes-open`, `eyes-closed` | `shadow`, `effect-back`, `effect-front`, `particles`; Level 3 tail slots | Element Tail Bolt: `attack-cast`, `projectile`, `impact` |
-| Wolf | quadruped / `quadruped-base` | `tail`, `rear-far`, `front-far`, `body`, `rear-near`, `front-near`, `head`, `eyes-open`, `eyes-closed` | `shadow`, `mane`, `jaw` | Fang Rush: `attack-cast`, `attack-trail`, `impact`; không projectile mặc định |
-| Bunny | hopper / `hopper-base` | `rear-ear`, `body`, `hind-leg`, `front-paw`, `head`, `eyes-open`, `eyes-closed`, `front-ear`, `tail` | `shadow` | Burst Ram: `attack-trail`, `impact` |
-| Turtle | tank / `tank-base` | `rear-feet`, `body`, `shell`, `front-feet`, `head`, `eyes-open`, `eyes-closed` | `shadow`, `shell-runes` | Element Cage: `attack-cast`, `cage`, `impact` |
-| Golem | tank / `tank-base` | `rear-arm`, `rear-leg`, `torso`, `core`, `front-leg`, `front-arm`, `head`, `eyes-open`, `eyes-closed` | `shadow`, `rock-fragments` | Core Quake: `attack-cast`, `ground-wave`, `impact` |
-| Dragon | winged / `winged-base` | `back-wing`, `tail`, `body`, `legs`, `front-wing`, `head`, `eyes-open`, `eyes-closed` | `shadow`, `horns` | Element Meteor: `attack-cast`, `meteor`, `impact` |
-| Owl | winged / `winged-base` | `back-wing`, `tail-feathers`, `body`, `talons`, `front-wing`, `head`, `eyes-open`, `eyes-closed` | `shadow`, `forehead-rune` | Element Orb: `attack-cast`, `projectile`, `impact` |
-| Hawk | winged / `winged-base` | `rear-wing`, `tail-fan`, `body`, `talons`, `front-wing`, `head`, `eyes-open`, `eyes-closed` | `shadow`, `crest` | Cyclone Dive: `attack-trail`, `vortex`, `impact` |
-| Slime | blob / `blob-base` | `blob`, `face` | `shadow`, `inner-core`, `front-gloss`, `top-effect` | Element Pulse: `attack-cast`, `pulse`, `impact` |
-| Serpent | serpent / `serpent-base` | `tail`, `body-lower`, `body-upper`, `head`, `eyes-open`, `eyes-closed` | `shadow`, `jaw`, `crest` | Element Lance: `attack-cast`, `beam`, `impact` |
+| Fox | quadruped / `fox-quadruped` | `tail`, `rear-far`, `rear-near`, `body`, `front-far`, `front-near`, `head`, `eyes-open`, `eyes-closed` | `effect-back`, `effect-front`, `particles`; Level 3 tail slots | Element Tail Bolt: `attack-cast`, `projectile`, `impact` |
+| Wolf | quadruped / `quadruped-base` | `tail`, `rear-far`, `front-far`, `body`, `rear-near`, `front-near`, `head`, `eyes-open`, `eyes-closed` | `mane`, `jaw` | Fang Rush: `attack-cast`, `attack-trail`, `impact`; không projectile mặc định |
+| Bunny | hopper / `hopper-base` | `rear-ear`, `body`, `hind-leg`, `front-paw`, `head`, `eyes-open`, `eyes-closed`, `front-ear`, `tail` | — | Burst Ram: `attack-trail`, `impact` |
+| Turtle | tank / `tank-base` | `rear-feet`, `body`, `shell`, `front-feet`, `head`, `eyes-open`, `eyes-closed` | `shell-runes` | Element Cage: `attack-cast`, `cage`, `impact` |
+| Golem | tank / `tank-base` | `rear-arm`, `rear-leg`, `torso`, `core`, `front-leg`, `front-arm`, `head`, `eyes-open`, `eyes-closed` | `rock-fragments` | Core Quake: `attack-cast`, `ground-wave`, `impact` |
+| Dragon | winged / `winged-base` | `back-wing`, `tail`, `body`, `legs`, `front-wing`, `head`, `eyes-open`, `eyes-closed` | `horns` | Element Meteor: `attack-cast`, `meteor`, `impact` |
+| Owl | winged / `winged-base` | `back-wing`, `tail-feathers`, `body`, `talons`, `front-wing`, `head`, `eyes-open`, `eyes-closed` | `forehead-rune` | Element Orb: `attack-cast`, `projectile`, `impact` |
+| Hawk | winged / `winged-base` | `rear-wing`, `tail-fan`, `body`, `talons`, `front-wing`, `head`, `eyes-open`, `eyes-closed` | `crest` | Cyclone Dive: `attack-trail`, `vortex`, `impact` |
+| Slime | blob / `blob-base` | `blob`, `face` | `inner-core`, `front-gloss`, `top-effect` | Element Pulse: `attack-cast`, `pulse`, `impact` |
+| Serpent | serpent / `serpent-base` | `tail`, `body-lower`, `body-upper`, `head`, `eyes-open`, `eyes-closed` | `jaw`, `crest` | Element Lance: `attack-cast`, `beam`, `impact` |
 
 Tên trong bảng không có `.png` để dễ đọc; trên layer sheet dùng đúng filename đó làm caption ô. Sau khi Codex tách, file nằm ở `layers/` hoặc `effects/` đúng như `petCatalog.ts`. Một slot có thể tạo nhiều runtime instances ở species cho phép; không tự suy diễn điều đó cho Fox/Wolf.
 
-RuntimeSize cố định hiện chỉ được khai báo rõ cho Fox baseline: `shadow 320×64`, mỗi layer đuôi đơn hoặc multi-tail `228×220`, mỗi chân `70×123`, `body 308×225`, `head/eyes-open/eyes-closed 302×318`. Các slot không có runtimeSize phải giữ aspect/padding chất lượng cao; không tự stretch.
+RuntimeSize cố định hiện chỉ được khai báo rõ cho Fox baseline: mỗi layer đuôi đơn hoặc multi-tail `228×220`, mỗi chân `70×123`, `body 308×225`, `head/eyes-open/eyes-closed 302×318`. Các slot không có runtimeSize phải giữ aspect/padding chất lượng cao; không tự stretch.
 
 Z-order do `Layer.z` trong executable recipe quyết định, từ số nhỏ ở sau tới số lớn ở trước. Generation order không thay đổi z-order. Combat VFX không phải layer thường trực và không tham gia z-order của pet.
 

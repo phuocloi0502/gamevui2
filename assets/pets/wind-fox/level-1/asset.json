@@ -16,17 +16,6 @@
   },
   "layers": [
     {
-      "id": "shadow",
-      "src": "/assets/pets/wind-fox/level-1/layers/shadow.png",
-      "x": 0,
-      "y": 0,
-      "originX": 0.5,
-      "originY": 0.5,
-      "z": 0,
-      "scale": 0.85,
-      "visible": true
-    },
-    {
       "id": "tail",
       "src": "/assets/pets/wind-fox/level-1/layers/tail.png",
       "x": -65,

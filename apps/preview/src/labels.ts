@@ -5,7 +5,6 @@ export const propertyLabels: Record<string, string> = {
   x: 'Dịch ngang · pixel', y: 'Dịch dọc · pixel', angle: 'Góc xoay · độ', scaleX: 'Co giãn ngang · hệ số', scaleY: 'Co giãn dọc · hệ số', alpha: 'Độ trong suốt · 0 đến 1',
 };
 const layerLabels: Record<string, string> = {
-  shadow: 'Bóng dưới chân',
   'effect-back': 'Hiệu ứng phía sau',
   tail: 'Đuôi',
   'tail-left-outer': 'Đuôi trái ngoài',
@@ -33,7 +32,7 @@ const LAYER_GROUPS = [
   { id: 'body-tail', label: 'Thân và đuôi', test: (id: string) => /^(body|tail|torso|core|blob|shell|inner-core)(-|$)/.test(id) || /^(tail-feathers|tail-fan|shell-runes)$/.test(id) },
   { id: 'head', label: 'Đầu', test: (id: string) => /^(head|eyes|jaw|mane|horns|crest|face|rear-ear|front-ear|forehead)(-|$)/.test(id) || /ear/.test(id) },
   { id: 'wings-arms', label: 'Cánh và tay', test: (id: string) => /wing/.test(id) || /^(rear-arm|front-arm)(-|$)/.test(id) },
-  { id: 'effects', label: 'Hiệu ứng', test: (id: string) => /^(shadow|effect|particles|rock-fragments|top-effect|front-gloss)/.test(id) || /aura/.test(id) },
+  { id: 'effects', label: 'Hiệu ứng', test: (id: string) => /^(effect|particles|rock-fragments|top-effect|front-gloss)/.test(id) || /aura/.test(id) },
 ] as const;
 
 export function groupPetLayers<T extends { id: string }>(layers: T[]) {

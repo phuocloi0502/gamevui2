@@ -157,7 +157,6 @@ Chỉ tách phần cần z-order, tween/rotation, animation hoặc visibility/st
 Các slot phổ biến, đều là tùy chọn:
 
 ```text
-shadow
 effect-back
 tail_or_appendage
 body
@@ -173,7 +172,7 @@ particles
 
 Tên slot mô tả vai trò render, không bắt buộc tên anatomy cụ thể.
 
-Fox sản xuất mới mặc định dùng `shadow`, `effect-back`, `tail`, `rear-far`, `rear-near`, `body`, `front-far`, `front-near`, `head`, `eyes-open`, `eyes-closed`, `effect-front`, `particles`; effect/particles/shadow là optional. `head.png` không chứa mắt. `eyes-open` và `eyes-closed` là hai layer thật, cùng parent `head`, cùng canvas/alignment và lần lượt khai báo `blink: "open"`/`blink: "closed"`. Bốn chân là bốn artwork riêng, không dùng một `leg.png` chung. Level 1/2 dùng `tail` bình thường; Level 3 có thể chọn `tail` đơn hoặc các ID string optional như `tail-left-outer` và `tail-center`. Manifest và clip target trực tiếp các ID đó, renderer không được hard-code số lượng đuôi.
+Fox sản xuất mới mặc định dùng `effect-back`, `tail`, `rear-far`, `rear-near`, `body`, `front-far`, `front-near`, `head`, `eyes-open`, `eyes-closed`, `effect-front`, `particles`; effect/particles là optional. `head.png` không chứa mắt. `eyes-open` và `eyes-closed` là hai layer thật, cùng parent `head`, cùng canvas/alignment và lần lượt khai báo `blink: "open"`/`blink: "closed"`. Bốn chân là bốn artwork riêng, không dùng một `leg.png` chung. Level 1/2 dùng `tail` bình thường; Level 3 có thể chọn `tail` đơn hoặc các ID string optional như `tail-left-outer` và `tail-center`. Manifest và clip target trực tiếp các ID đó, renderer không được hard-code số lượng đuôi.
 
 Khi prompt layer sheet Fox, bắt buộc khóa pose `3/4 side view facing right` và mô tả riêng camera-facing/far side, foreshortening, overlap, depth cho từng ô chân. `front-near` lớn/rõ, gần thẳng đứng và hơi hướng trước/phải; `front-far` hẹp/nhỏ, lùi vào trong/sau thân. `rear-near` có đùi sau lớn, hock/knee curve rõ và nghiêng chéo trước/phải; `rear-far` có đùi hẹp, lùi sau/vào trong và bị thân overlap theo perspective. Near/far không mirror, near có visual weight lớn hơn, bốn bàn chân cùng ground plane, mỗi layer chân chứa phần chân trên/đùi còn `body` không chứa đùi. Cấm frontal leg, side-profile 90°, bốn silhouette giống nhau và elemental pattern làm đổi silhouette chân.
 

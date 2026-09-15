@@ -12,17 +12,6 @@
   "reference": "/assets/pets/light-fox/level-3/layers/body.png",
   "layers": [
     {
-      "id": "shadow",
-      "x": 0,
-      "y": 0,
-      "originX": 0.5,
-      "originY": 0.5,
-      "z": 0,
-      "scale": 0.85,
-      "src": "/assets/pets/light-fox/level-3/layers/shadow.png",
-      "visible": false
-    },
-    {
       "id": "front-far",
       "x": 59,
       "y": -110,

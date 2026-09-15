@@ -12,16 +12,6 @@
   "reference": "/assets/pets/light-fox/level-2/layers/body.png",
   "layers": [
     {
-      "id": "shadow",
-      "x": 0,
-      "y": 0,
-      "originX": 0.5,
-      "originY": 0.5,
-      "z": 0,
-      "scale": 1,
-      "src": "/assets/pets/light-fox/level-2/layers/shadow.png"
-    },
-    {
       "id": "rear-far",
       "x": -46,
       "y": -115,

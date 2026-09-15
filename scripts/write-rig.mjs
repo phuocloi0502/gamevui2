@@ -11,7 +11,6 @@ writeFileSync('assets/rigs/pet-base.json',JSON.stringify({id:'pet-base',canvas:{
 const root='/assets/pets/fire-fox/level-1/';
 const layer=(id,src,x,y,originX,originY,z,scale,extra={})=>({id,src:root+src+'.png',x,y,originX,originY,z,scale,...extra});
 const pet={id:'fire-fox-level-1',lineageId:'fire-fox',evolutionLevel:1,name:'Fire Fox · Level 1',kind:'pet',species:'fox',archetype:'quadruped',extends:'pet-base',status:'production',element:'fire',reference:'/references/fire-fox/concept-board.png',effects:{projectile:root+'fire.png',color:16751144},layers:[
- layer('shadow','shadow',0,0,.5,.5,0,.85),
  layer('tail','tail',-65,-105,.85,.85,1,.75),
  layer('rear-far','leg',-53,-79,.5,.15,3,.72,{tint:13415840}),
  layer('front-far','leg',59,-81,.5,.15,4,.74,{tint:13415840}),

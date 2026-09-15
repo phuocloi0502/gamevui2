@@ -57,7 +57,6 @@ Fox giữ low quadruped body, oversized chibi head, large triangular ears, short
 Fox bình thường dùng các file sau:
 
 ```text
-layers/shadow.png          # optional
 effects/effect-back.png    # optional
 layers/tail.png
 layers/rear-far.png
@@ -92,7 +91,6 @@ Pivot dự kiến khi tích hợp:
 Z-order mặc định từ sau ra trước:
 
 ```text
-shadow
 effect-back
 tail hoặc tail groups
 rear-far
@@ -163,7 +161,7 @@ OUTPUT — mỗi mục một ô, assembly-ref đứng cuối:
 assembly-ref.png
 
 QUY TẮC Ô TỔNG THỂ:
-- Lắp đúng các character layer và Pet Visual VFX đã vẽ trên sheet (shadow/effect-back/front/particles nếu có).
+- Lắp đúng các character layer và Pet Visual VFX đã vẽ trên sheet (effect-back/front/particles nếu có).
 - Cùng pose, scale, lighting, ground plane với các ô slot.
 - Dùng mắt mở (eyes-open). Không nhắm mắt.
 - Hiện rõ chân far nằm sau, chân near nằm trước, body che đùi, head trên cổ, tail tại gốc.
@@ -204,7 +202,6 @@ Dừng sau một ảnh khi đủ mọi ô trong danh sách.
 
 | Slot | Runtime baseline | Pivot/origin gợi ý |
 |---|---:|---|
-| `shadow` | 320×64 | center |
 | `tail` | 228×220 | gốc đuôi, khoảng `0.85, 0.85` |
 | mỗi chân | 70×123 | khớp trên, khoảng `0.5, 0.15` |
 | `body` | 308×225 | center |

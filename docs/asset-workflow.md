@@ -50,7 +50,6 @@ Fox bình thường dùng thứ tự sau; các layer ghi optional có thể bỏ
 
 | Z gợi ý | Layer ID | Yêu cầu |
 |---:|---|---|
-| 0 | `shadow` | optional |
 | 1 | `effect-back` | optional |
 | 2 | `tail` | mặc định bắt buộc |
 | 3 | `rear-far` | artwork chân độc lập |

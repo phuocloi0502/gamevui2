@@ -16,16 +16,6 @@
   },
   "layers": [
     {
-      "id": "shadow",
-      "src": "/assets/pets/shadow-fox/level-2/layers/shadow.png",
-      "x": 0,
-      "y": 0,
-      "originX": 0.5,
-      "originY": 0.5,
-      "z": 0,
-      "scale": 0.9
-    },
-    {
       "id": "tail-back",
       "src": "/assets/pets/shadow-fox/level-2/layers/tail2.png",
       "x": -60,
