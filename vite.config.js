@@ -29,6 +29,8 @@ function safeChild(root, ...parts) {
   return file;
 }
 
+const petAssetPath = /^(?:(layers|effects)\/)?([a-z0-9]+(?:-[a-z0-9]+)*\.png)$/;
+
 function decodePng(dataUrl, label) {
   const match = /^data:image\/png;base64,([A-Za-z0-9+/=]+)$/.exec(dataUrl ?? "");
   if (!match) throw new Error(`${label} không phải PNG`);
@@ -175,46 +177,112 @@ function assetManifestApi() {
           if (!manifest) throw new Error(`Không tìm thấy pet ${id}`);
           const levelFolder = `level-${manifest.evolutionLevel}`;
           const publicPrefix = `/assets/pets/${manifest.lineageId}/${levelFolder}/`;
-          const referencedSources = new Set([
-            ...manifest.layers.map((layer) => layer.src),
-            manifest.effects?.projectile,
-            ...Object.values(manifest.effects?.attack ?? {}),
-          ].filter(Boolean));
-          const seen = new Set();
+          const parseAsset = (src, label) => {
+            const relativeAsset = typeof src === "string" && src.startsWith(publicPrefix) ? src.slice(publicPrefix.length) : "";
+            const match = petAssetPath.exec(relativeAsset);
+            if (!match) throw new Error(`Đường dẫn ảnh không hợp lệ: ${label}`);
+            return { src, folder: match[1] ?? "", file: match[2], relativeAsset };
+          };
+          const currentFileOf = ({ folder, file }) => safeChild(publicPetRoot, manifest.lineageId, levelFolder, folder, file);
+          const next = structuredClone(manifest);
+          const seenDest = new Set();
           const decoded = [];
           for (const upload of uploads) {
-            const src = typeof upload?.src === "string" ? upload.src : "";
-            const relativeAsset = src.startsWith(publicPrefix) ? src.slice(publicPrefix.length) : "";
-            const match = /^(?:(layers|effects)\/)?([a-z0-9]+(?:-[a-z0-9]+)*\.png)$/.exec(relativeAsset);
-            if (!match || !referencedSources.has(src) || seen.has(src)) throw new Error(`Đường dẫn ảnh không hợp lệ: ${src || "trống"}`);
-            seen.add(src);
-            const source = decodePng(upload.sourceDataUrl, match[2]);
-            const runtime = decodePng(upload.runtimeDataUrl, `${match[2]} runtime`);
-            const folder = match[1] ?? "";
-            const publicFile = safeChild(publicPetRoot, manifest.lineageId, levelFolder, folder, match[2]);
-            if (!await exists(publicFile)) throw new Error(`Không tìm thấy ảnh production ${src}`);
-            const current = decodePng(`data:image/png;base64,${(await readFile(publicFile)).toString("base64")}`, `${match[2]} hiện tại`);
-            if (runtime.width !== current.width || runtime.height !== current.height) {
-              throw new Error(`${match[2]} runtime phải giữ kích thước ${current.width}×${current.height}`);
+            const kind = upload?.kind === "combat" ? "combat" : upload?.kind === "layer" ? "layer" : "";
+            const bindingId = typeof upload?.id === "string" ? upload.id : "";
+            const current = parseAsset(upload?.src, "src hiện tại");
+            const dest = parseAsset(upload?.destSrc ?? upload?.src, "src đích");
+            if (dest.src !== current.src && !dest.folder) throw new Error(`${dest.file} phải nằm trong layers/ hoặc effects/ khi tách file dùng chung`);
+            if (seenDest.has(dest.src)) throw new Error(`Trùng đích ${dest.src}`);
+            seenDest.add(dest.src);
+            if (kind === "layer") {
+              const layer = next.layers.find((item) => item.id === bindingId);
+              if (!layer || layer.src !== current.src) throw new Error(`Layer ${bindingId || "?"} không khớp ảnh hiện tại`);
+              layer.src = dest.src;
+            } else if (kind === "combat") {
+              const attackSrc = next.effects?.attack?.[bindingId];
+              const legacyProjectile = bindingId === "projectile" ? next.effects?.projectile : undefined;
+              if (attackSrc !== current.src && legacyProjectile !== current.src) throw new Error(`Combat VFX ${bindingId || "?"} không khớp ảnh hiện tại`);
+              next.effects ??= {};
+              if (attackSrc === current.src) {
+                next.effects.attack ??= {};
+                next.effects.attack[bindingId] = dest.src;
+              }
+              if (legacyProjectile === current.src) next.effects.projectile = dest.src;
+            } else {
+              throw new Error("Thiếu kind layer hoặc combat khi thay ảnh");
             }
-            decoded.push({ src, folder, file: match[2], publicFile, sourceData: source.data, runtimeData: runtime.data });
+            const currentFile = currentFileOf(current);
+            if (!await exists(currentFile)) throw new Error(`Không tìm thấy ảnh production ${current.src}`);
+            const destFile = currentFileOf(dest);
+            const source = decodePng(upload.sourceDataUrl, dest.file);
+            const runtime = decodePng(upload.runtimeDataUrl, `${dest.file} runtime`);
+            if (await exists(destFile)) {
+              const existing = decodePng(`data:image/png;base64,${(await readFile(destFile)).toString("base64")}`, `${dest.file} hiện tại`);
+              if (runtime.width !== existing.width || runtime.height !== existing.height) {
+                throw new Error(`${dest.file} runtime phải giữ kích thước ${existing.width}×${existing.height}`);
+              }
+            }
+            decoded.push({
+              dest: dest.src,
+              folder: dest.folder,
+              file: dest.file,
+              currentFile,
+              destFile,
+              destExists: await exists(destFile),
+              sourceData: source.data,
+              runtimeData: runtime.data,
+            });
+          }
+          const destCounts = new Map();
+          const bumpDest = (src) => {
+            if (!src) return;
+            destCounts.set(src, (destCounts.get(src) ?? 0) + 1);
+          };
+          for (const layer of next.layers) bumpDest(layer.src);
+          const attack = { ...next.effects?.attack };
+          if (!attack.projectile && next.effects?.projectile) attack.projectile = next.effects.projectile;
+          for (const src of Object.values(attack)) bumpDest(src);
+          for (const upload of decoded) {
+            if ((destCounts.get(upload.dest) ?? 0) !== 1) {
+              throw new Error(`Đích ${upload.dest} đang bị layer hoặc VFX khác dùng`);
+            }
           }
           const revision = new Date().toISOString().replace(/\D/g, "").slice(0, 17);
           const revisionRoot = safeChild(inboxRoot, manifest.lineageId, levelFolder, "replacements", revision);
+          const writtenFiles = [];
           for (const upload of decoded) {
             const revisionFolder = upload.folder || "root";
             const sourceFolder = safeChild(revisionRoot, "source", revisionFolder);
             const previousFolder = safeChild(revisionRoot, "previous-runtime", revisionFolder);
             await mkdir(sourceFolder, { recursive: true });
             await mkdir(previousFolder, { recursive: true });
+            await mkdir(safeChild(publicPetRoot, manifest.lineageId, levelFolder, upload.folder || "."), { recursive: true });
             await writeFile(safeChild(sourceFolder, upload.file), upload.sourceData);
-            await copyFile(upload.publicFile, safeChild(previousFolder, upload.file));
-            server.watcher.unwatch(upload.publicFile);
-            await writeFile(upload.publicFile, upload.runtimeData);
-            server.watcher.add(upload.publicFile);
+            await copyFile(upload.destExists ? upload.destFile : upload.currentFile, safeChild(previousFolder, upload.file));
+            if (!upload.destExists) {
+              const inboxFile = safeChild(inboxRoot, manifest.lineageId, levelFolder, upload.folder, upload.file);
+              if (!await exists(inboxFile)) {
+                await mkdir(safeChild(inboxRoot, manifest.lineageId, levelFolder, upload.folder), { recursive: true });
+                server.watcher.unwatch(inboxFile);
+                await writeFile(inboxFile, upload.sourceData);
+                writtenFiles.push(inboxFile);
+              }
+            }
+            server.watcher.unwatch(upload.destFile);
+            await writeFile(upload.destFile, upload.runtimeData);
+            writtenFiles.push(upload.destFile);
           }
+          const manifestChanged = JSON.stringify(next) !== JSON.stringify(manifest);
+          if (manifestChanged) {
+            const manifestFile = safeChild(manifestRoot, manifest.lineageId, levelFolder, "asset.json");
+            server.watcher.unwatch(manifestFile);
+            await writeFile(manifestFile, JSON.stringify(next, null, 2) + "\n", "utf8");
+            writtenFiles.push(manifestFile);
+          }
+          for (const file of writtenFiles) server.watcher.add(file);
           res.setHeader("Content-Type", "application/json");
-          res.end(JSON.stringify({ ok: true, revision, replaced: decoded.map((item) => item.src) }));
+          res.end(JSON.stringify({ ok: true, revision, replaced: decoded.map((item) => item.dest) }));
         } catch (error) {
           res.statusCode = 400;
           res.end(error instanceof Error ? error.message : "Could not replace pet images");

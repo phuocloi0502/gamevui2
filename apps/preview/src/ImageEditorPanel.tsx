@@ -1,46 +1,119 @@
 import { useMemo, useState } from 'react';
-import { slotsForEvolution, speciesTemplate } from '../../../packages/asset-core/src/petCatalog';
+import { slotsForEvolution, speciesTemplate, type UploadSlot } from '../../../packages/asset-core/src/petCatalog';
 import type { PetDefinition } from '../../../packages/asset-core/src/types';
 import { combatVfxPresentation } from '../../../packages/asset-core/src/resolve';
 import { addPetImages, replacePetImages } from './api';
 import { isPng, readFile, runtimeFile, imageSize } from './files';
-import { combatVfxLabel, selectedPetKey } from './labels';
+import { combatVfxLabel, layerLabel, selectedPetKey } from './labels';
 import type { ResolvedPet } from './studioTypes';
 
-type ReplacementAsset = { src: string; labels: string[] };
+type ReplacementAsset = {
+  key: string;
+  kind: 'layer' | 'combat';
+  id: string;
+  label: string;
+  currentSrc: string;
+  destSrc: string;
+  shared: boolean;
+  runtimeSize?: { width: number; height: number };
+};
+
+function recipeSlots(pet: ResolvedPet) {
+  const template = speciesTemplate(pet.species ?? pet.lineageId.split('-').at(-1) ?? '');
+  return template ? slotsForEvolution(template, pet.evolutionLevel) : [];
+}
+
+function sourceUses(pet: ResolvedPet) {
+  const counts = new Map<string, number>();
+  const bump = (src?: string) => {
+    if (!src) return;
+    counts.set(src, (counts.get(src) ?? 0) + 1);
+  };
+  for (const layer of pet.layers) bump(layer.src);
+  bump(pet.effects?.projectile);
+  for (const src of Object.values(pet.effects?.attack ?? {})) bump(src);
+  return counts;
+}
+
+function canonicalSrc(pet: ResolvedPet, slot: UploadSlot | undefined, id: string, folder: 'layers' | 'effects') {
+  const file = slot?.file ?? `${id}.png`;
+  const destFolder = slot?.folder ?? folder;
+  return `/assets/pets/${pet.lineageId}/level-${pet.evolutionLevel}/${destFolder}/${file}`;
+}
+
+function replacementAssetsFor(pet: ResolvedPet): ReplacementAsset[] {
+  const slots = recipeSlots(pet);
+  const layersById = new Map(pet.layers.map(layer => [layer.id, layer]));
+  const slotByLayerId = new Map<string, UploadSlot>();
+  for (const slot of slots) {
+    for (const instance of slot.instances ?? []) slotByLayerId.set(instance.id, slot);
+  }
+  const uses = sourceUses(pet);
+  const items: ReplacementAsset[] = [];
+  const seenLayers = new Set<string>();
+
+  const pushLayer = (layerId: string) => {
+    const layer = layersById.get(layerId);
+    if (!layer || seenLayers.has(layer.id)) return;
+    seenLayers.add(layer.id);
+    const slot = slotByLayerId.get(layer.id);
+    const shared = (uses.get(layer.src) ?? 0) > 1;
+    const destSrc = shared ? canonicalSrc(pet, slot, layer.id, 'layers') : layer.src;
+    items.push({
+      key: `layer:${layer.id}`,
+      kind: 'layer',
+      id: layer.id,
+      label: slot?.label ?? layerLabel(layer.id),
+      currentSrc: layer.src,
+      destSrc,
+      shared,
+      runtimeSize: shared ? slot?.runtimeSize : undefined,
+    });
+  };
+
+  for (const slot of slots) {
+    for (const instance of slot.instances ?? []) pushLayer(instance.id);
+  }
+  for (const layer of [...pet.layers].sort((a, b) => a.z - b.z)) pushLayer(layer.id);
+
+  for (const [semantic, src] of Object.entries(pet.effects?.attack ?? {})) {
+    if (!src) continue;
+    const slot = slots.find(item => item.combatVfx === semantic);
+    const shared = (uses.get(src) ?? 0) > 1;
+    items.push({
+      key: `combat:${semantic}`,
+      kind: 'combat',
+      id: semantic,
+      label: slot?.label ?? combatVfxLabel(semantic),
+      currentSrc: src,
+      destSrc: shared ? canonicalSrc(pet, slot, semantic, 'effects') : src,
+      shared,
+      runtimeSize: shared ? slot?.runtimeSize : undefined,
+    });
+  }
+  return items;
+}
 
 export function ImageEditorPanel({ pet, manifest, onClose }: { pet: ResolvedPet; manifest: PetDefinition; onClose: () => void }) {
-  const [replaceFiles, setReplaceFiles] = useState<Record<number, File | undefined>>({});
+  const [replaceFiles, setReplaceFiles] = useState<Record<string, File | undefined>>({});
   const [addFiles, setAddFiles] = useState<Record<string, File | undefined>>({});
   const [replaceStatus, setReplaceStatus] = useState('');
   const [addStatus, setAddStatus] = useState('');
   const [replaceBusy, setReplaceBusy] = useState(false);
   const [addBusy, setAddBusy] = useState(false);
 
-  const replacementAssets = useMemo(() => {
-    const bySource = new Map<string, Set<string>>();
-    const add = (src: string | undefined, label: string) => {
-      if (!src) return;
-      const labels = bySource.get(src) ?? new Set<string>();
-      labels.add(label); bySource.set(src, labels);
-    };
-    for (const layer of pet.layers) add(layer.src, layer.id);
-    for (const [semantic, src] of Object.entries(pet.effects?.attack ?? {})) add(src, combatVfxLabel(semantic));
-    return [...bySource].map(([src, labels]) => ({ src, labels: [...labels] })) as ReplacementAsset[];
-  }, [pet]);
-
+  const replacementAssets = useMemo(() => replacementAssetsFor(pet), [pet]);
   const additionSlots = useMemo(() => {
-    const template = speciesTemplate(pet.species ?? pet.lineageId.split('-').at(-1) ?? '');
     const layerIds = new Set(pet.layers.map(layer => layer.id));
-    return template ? slotsForEvolution(template, pet.evolutionLevel).filter(slot => {
+    return recipeSlots(pet).filter(slot => {
       if (slot.combatVfx) return !pet.effects?.attack?.[slot.combatVfx];
       return !!slot.instances?.length && slot.instances.every(instance => !layerIds.has(instance.id));
-    }) : [];
+    });
   }, [pet]);
 
   async function onReplace() {
-    const chosen = replacementAssets.flatMap((asset, index) => {
-      const file = replaceFiles[index];
+    const chosen = replacementAssets.flatMap(asset => {
+      const file = replaceFiles[asset.key];
       return file ? [{ file, asset }] : [];
     });
     if (!chosen.length) { setReplaceStatus('Hãy chọn ít nhất một ảnh PNG cần thay.'); return; }
@@ -51,8 +124,15 @@ export function ImageEditorPanel({ pet, manifest, onClose }: { pet: ResolvedPet;
     try {
       const uploads = [];
       for (const { file, asset } of chosen) {
-        const size = await imageSize(asset.src);
-        uploads.push({ src: asset.src, sourceDataUrl: await readFile(file), runtimeDataUrl: await runtimeFile(file, size) });
+        const size = asset.runtimeSize ?? await imageSize(asset.currentSrc);
+        uploads.push({
+          kind: asset.kind,
+          id: asset.id,
+          src: asset.currentSrc,
+          destSrc: asset.destSrc,
+          sourceDataUrl: await readFile(file),
+          runtimeDataUrl: await runtimeFile(file, size),
+        });
       }
       const result = await replacePetImages(pet.id, uploads);
       setReplaceStatus(`Đã thay ${uploads.length} ảnh · revision ${result.revision}. Đang tải lại preview…`);
@@ -107,20 +187,26 @@ export function ImageEditorPanel({ pet, manifest, onClose }: { pet: ResolvedPet;
         <div>
           <p className="label">QUẢN LÝ PNG</p>
           <h2>Ảnh của pet đang chọn</h2>
-          <p className="muted">Thay ảnh hiện có hoặc bổ sung optional layer/VFX còn thiếu theo đúng recipe. Source upload và runtime cũ được giữ trong assets/inbox.</p>
+          <p className="muted">Mỗi layer/recipe slot là một PNG riêng. Pet cũ đang dùng chung một file cho nhiều chân hoặc mắt sẽ được tách sang layers/id.png khi bạn thay ảnh đó. Source upload được giữ trong assets/inbox.</p>
         </div>
         <button type="button" aria-label="Đóng" onClick={onClose}>×</button>
       </div>
       <h3>Thay ảnh hiện có</h3>
+      <p className="editor-help">Thứ tự và nhãn theo executable recipe. Không gộp nhiều layer vào một ô vì chúng đang trỏ cùng file.</p>
       <div className="upload-slots">
-        {replacementAssets.map((asset, index) => {
-          const fileName = asset.src.split('/').at(-1) ?? asset.src;
+        {replacementAssets.map(asset => {
+          const currentName = asset.currentSrc.split('/').at(-1) ?? asset.currentSrc;
+          const destPath = asset.destSrc.replace(`/assets/pets/${pet.lineageId}/level-${pet.evolutionLevel}/`, '');
           return (
-            <label key={asset.src} className="upload-slot replacement-slot">
-              <span>{asset.labels.join(', ')}</span>
-              <code>{fileName}</code>
-              <small>{asset.src}</small>
-              <input type="file" accept="image/png" onChange={event => setReplaceFiles(current => ({ ...current, [index]: event.target.files?.[0] }))} />
+            <label key={asset.key} className="upload-slot replacement-slot">
+              <span>{asset.label}</span>
+              <code>{destPath}</code>
+              <small>
+                {asset.shared
+                  ? `Đang dùng chung ${currentName}. Lưu sẽ tách thành ${destPath}.`
+                  : asset.currentSrc}
+              </small>
+              <input type="file" accept="image/png" onChange={event => setReplaceFiles(current => ({ ...current, [asset.key]: event.target.files?.[0] }))} />
             </label>
           );
         })}
@@ -132,7 +218,7 @@ export function ImageEditorPanel({ pet, manifest, onClose }: { pet: ResolvedPet;
       {additionSlots.length > 0 && (
         <div className="image-addition">
           <h3>Thêm asset còn thiếu</h3>
-          <p className="editor-help">Chỉ hiện các slot được executable recipe hỗ trợ nhưng pet chưa khai báo.</p>
+          <p className="editor-help">Slot recipe chưa có trên pet này, gồm mắt mở/nhắm nếu pet cũ chưa tách khỏi đầu.</p>
           <div className="upload-slots">
             {additionSlots.map(slot => (
               <label key={slot.id} className="upload-slot">

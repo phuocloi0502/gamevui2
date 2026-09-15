@@ -44,13 +44,13 @@
     },
     {
       "id": "rear-far",
-      "x": -53,
-      "y": -79,
+      "x": -30,
+      "y": -90,
       "originX": 0.5,
       "originY": 0.15,
-      "z": 3,
+      "z": 0,
       "scale": 0.76,
-      "src": "/assets/pets/light-fox/level-2/layers/leg.png"
+      "src": "/assets/pets/light-fox/level-2/layers/rear-far.png"
     },
     {
       "id": "front-far",
@@ -60,7 +60,7 @@
       "originY": 0.15,
       "z": 4,
       "scale": 0.74,
-      "src": "/assets/pets/light-fox/level-2/layers/leg.png"
+      "src": "/assets/pets/light-fox/level-2/layers/front-far.png"
     },
     {
       "id": "body",
@@ -74,13 +74,13 @@
     },
     {
       "id": "rear-near",
-      "x": -74,
+      "x": -76,
       "y": -87,
       "originX": 0.5,
       "originY": 0.15,
       "z": 6,
       "scale": 0.9,
-      "src": "/assets/pets/light-fox/level-2/layers/leg.png"
+      "src": "/assets/pets/light-fox/level-2/layers/rear-near.png"
     },
     {
       "id": "front-near",
@@ -90,7 +90,7 @@
       "originY": 0.15,
       "z": 7,
       "scale": 0.86,
-      "src": "/assets/pets/light-fox/level-2/layers/leg.png"
+      "src": "/assets/pets/light-fox/level-2/layers/front-near.png"
     },
     {
       "id": "head",
