@@ -10,7 +10,7 @@ import { LibraryTree } from './LibraryTree';
 import { PhaserStage } from './PhaserStage';
 import { StudioEditors } from './StudioEditors';
 import { libraryPath, petAtLevel, petSpeciesId } from './library';
-import { selectedPetKey, stateLabels } from './labels';
+import { attackPatternLabels, selectedPetKey, stateLabels } from './labels';
 
 export function App({ petDefinitions, rigs }: { petDefinitions: PetDefinition[]; rigs: Record<string, Rig> }) {
   const pets = useMemo(() => petDefinitions.map(pet => resolvePet(pet, rigs)), [petDefinitions, rigs]);
@@ -202,7 +202,7 @@ export function App({ petDefinitions, rigs }: { petDefinitions: PetDefinition[];
             <article className="asset-inspector">
               <span className="label">ASSET</span>
               <strong>{pet.name}</strong>
-              <span className="muted">{pet.lineageId} · Lv{pet.evolutionLevel} · {species || '—'} · {pet.element} · {group?.name ?? 'Legacy'} · {pet.layers.length} layer · {pet.extends}</span>
+              <span className="muted">{pet.lineageId} · Lv{pet.evolutionLevel} · {species || '—'} · {pet.element} · {group?.name ?? 'Legacy'} · {attackPatternLabels[pet.effects?.attackMeta?.pattern ?? 'single']} · {pet.layers.length} layer · {pet.extends}</span>
             </article>
           )}
         </section>

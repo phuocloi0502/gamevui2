@@ -9,7 +9,8 @@ export class PetView extends Phaser.GameObjects.Container {
   speed = 1;
   private elapsed = 0;
   private lifetime = 0;
-  private fired = false;
+  /** Indices of already-fired events. -1 = singular legacy clip.event. */
+  private firedEvents = new Set<number>();
   private nodes = new Map<string, Phaser.GameObjects.Container>();
   private images = new Map<string, Phaser.GameObjects.Sprite>();
   private bases = new Map<string, {x:number;y:number;scale:number;angle:number;alpha:number}>();
@@ -36,7 +37,7 @@ export class PetView extends Phaser.GameObjects.Container {
   play(state:State) {
     this.blendFrom.clear();
     for(const [id,n] of this.nodes) this.blendFrom.set(id,[n.x,n.y,n.angle,n.scaleX,n.scaleY,n.alpha]);
-    this.blendTime=0; this.state=state; this.elapsed=0; this.fired=false; this.tick(0); this.emit('state-start',state);
+    this.blendTime=0; this.state=state; this.elapsed=0; this.firedEvents.clear(); this.tick(0); this.emit('state-start',state);
   }
   setLayerVisible(id:string,visible:boolean) { this.nodes.get(id)?.setVisible(visible); }
   setLayerTint(id:string,tint?:number) {
@@ -75,7 +76,13 @@ export class PetView extends Phaser.GameObjects.Container {
     this.elapsed+=Math.min(delta,60)*this.speed; this.lifetime+=Math.min(delta,60)*this.speed;
     let clip=this.pet.rig.clips?.[this.state];
     if(!clip) return;
-    if(clip.event && !this.fired && this.elapsed>=clip.event.at) { this.fired=true; this.emit('marker',clip.event.name); }
+    const markers = clip.events?.length ? clip.events : (clip.event ? [clip.event] : []);
+    for(let i=0;i<markers.length;i++) {
+      if(!this.firedEvents.has(i) && this.elapsed>=markers[i].at) {
+        this.firedEvents.add(i);
+        this.emit('marker', markers[i].name, i, markers.length);
+      }
+    }
     if(!clip.loop && this.elapsed>=clip.duration) { this.play('idle'); return; }
     const t=(this.elapsed%clip.duration)/clip.duration;
     for(const [id,node] of this.nodes) {

@@ -1,4 +1,4 @@
-import type { CombatAttackVfx, CombatVfxPresentation, PetDefinition, PetEffects, Rig } from './types';
+import type { AttackMeta, CombatAttackVfx, CombatVfxPresentation, EvolutionLevel, PetDefinition, PetEffects, Rig } from './types';
 
 export function combatVfxPresentation(semantic: string, override?: Partial<CombatVfxPresentation>): CombatVfxPresentation {
   const base: CombatVfxPresentation = semantic === 'cast' ? {
@@ -25,6 +25,18 @@ export function combatVfxPresentation(semantic: string, override?: Partial<Comba
     originX: .5, originY: .5, startScale: .65, endScale: .78,
     startAngle: 0, endAngle: 0, startAlpha: .95, endAlpha: 0,
     depth: 21, delay: 0, duration: 420, ease: 'Quad.easeOut', mirror: true,
+  } : semantic === 'splash' ? {
+    enabled: true, trigger: 'after-primary', startAnchor: 'aoe-center', endAnchor: 'aoe-center',
+    startX: 0, startY: 0, endX: 0, endY: 0,
+    originX: .5, originY: .5, startScale: .08, endScale: .65,
+    startAngle: 0, endAngle: 20, startAlpha: 1, endAlpha: 0,
+    depth: 22, delay: 80, duration: 400, ease: 'Quad.easeOut', mirror: false,
+  } : semantic === 'nova' ? {
+    enabled: true, trigger: 'attack-release', startAnchor: 'pet', endAnchor: 'pet',
+    startX: 75, startY: -135, endX: 75, endY: -135,
+    originX: .5, originY: .5, startScale: .3, endScale: 1.4,
+    startAngle: 0, endAngle: 45, startAlpha: 1, endAlpha: 0,
+    depth: 25, delay: 0, duration: 480, ease: 'Quad.easeOut', mirror: false,
   } : {
     enabled: true, trigger: 'attack-release', startAnchor: 'target', endAnchor: 'target',
     startX: 0, startY: 0, endX: 0, endY: 0,
@@ -35,6 +47,22 @@ export function combatVfxPresentation(semantic: string, override?: Partial<Comba
   return { ...base, ...override };
 }
 
+export function defaultAttackMeta(level: EvolutionLevel): AttackMeta {
+  if (level === 2) return { pattern: 'splash', radius: 65 };
+  if (level === 3) return { pattern: 'volley', volleyCount: 3, volleySpread: 30 };
+  return { pattern: 'single' };
+}
+
+/** Angles (degrees) for one attack-release. Sequential markers use one angle each; a single marker fans the whole volley. */
+export function volleyShotAngles(meta: AttackMeta | undefined, shotIndex: number, sequentialCount: number): number[] {
+  if (meta?.pattern !== 'volley') return [0];
+  const count = Math.max(1, meta.volleyCount ?? 1);
+  const spread = meta.volleySpread ?? 30;
+  const offsets = count === 1 ? [0] : Array.from({ length: count }, (_, i) => -spread / 2 + i * (spread / (count - 1)));
+  if (sequentialCount > 1) return [offsets[Math.min(Math.max(0, shotIndex), offsets.length - 1)]];
+  return offsets;
+}
+
 export function resolvePetEffects(effects?: PetEffects): PetEffects | undefined {
   if (!effects) return undefined;
   const attack: CombatAttackVfx = { ...effects.attack };
@@ -43,6 +71,7 @@ export function resolvePetEffects(effects?: PetEffects): PetEffects | undefined 
     ...(effects.color !== undefined ? { color: effects.color } : {}),
     ...(Object.keys(attack).length ? { attack } : {}),
     ...(effects.attackPresentation ? { attackPresentation: effects.attackPresentation } : {}),
+    ...(effects.attackMeta ? { attackMeta: effects.attackMeta } : {}),
   };
 }
 

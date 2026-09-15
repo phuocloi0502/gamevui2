@@ -196,6 +196,9 @@
         "ease": "Quad.easeOut",
         "mirror": true
       }
+    },
+    "attackMeta": {
+      "pattern": "single"
     }
   }
 }

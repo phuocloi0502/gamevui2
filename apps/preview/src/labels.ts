@@ -1,4 +1,4 @@
-import type { CombatVfxTrigger, State } from '../../../packages/asset-core/src/types';
+import type { AttackPattern, CombatVfxTrigger, State } from '../../../packages/asset-core/src/types';
 
 export const stateLabels: Record<State, string> = { idle: 'Đứng yên', walk: 'Di chuyển', attack: 'Tấn công' };
 export const propertyLabels: Record<string, string> = {
@@ -64,12 +64,27 @@ const combatVfxLabels: Record<string, string> = {
   cage: 'Combat VFX · lồng khống chế',
   pulse: 'Combat VFX · vòng xung kích',
   beam: 'Combat VFX · tia xuyên',
+  splash: 'Combat VFX · vòng splash',
+  nova: 'Combat VFX · bùng nổ tung đòn',
 };
 export const combatVfxLabel = (semantic: string) => combatVfxLabels[semantic] ?? `Combat VFX · ${semantic}`;
+export const attackPatternLabels: Record<AttackPattern, string> = {
+  single: 'Đơn mục tiêu',
+  splash: 'Đơn + splash quanh impact',
+  chain: 'Nảy sang mục tiêu kế',
+  volley: 'Volley / nhiều đạn',
+  aoe: 'Vùng AoE',
+};
 export const combatTriggerLabels: Record<CombatVfxTrigger, string> = {
   'attack-start': 'Bắt đầu tấn công',
   'attack-release': 'Thời điểm tung đòn',
   'after-primary': 'Sau hiệu ứng chính',
+  'after-impact': 'Sau va chạm',
+};
+export const combatAnchorLabels: Record<string, string> = {
+  pet: 'Pet',
+  target: 'Mục tiêu',
+  'aoe-center': 'Tâm AoE',
 };
 export function keyframeLabel(index: number, count: number) {
   const percent = Math.round(index / Math.max(1, count - 1) * 100);

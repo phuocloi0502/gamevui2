@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { PET_ARCHETYPES, PET_ELEMENTS, archetypeFor, slotsForEvolution, speciesTemplate, type PetElement, type PetSpeciesId } from '../../../packages/asset-core/src/petCatalog';
 import type { CombatVfxPresentation, Layer, PetDefinition } from '../../../packages/asset-core/src/types';
-import { combatVfxPresentation } from '../../../packages/asset-core/src/resolve';
+import { combatVfxPresentation, defaultAttackMeta } from '../../../packages/asset-core/src/resolve';
 import { createPet } from './api';
 import { isPng, readFile, runtimeFile } from './files';
 import { groupByPetPart, selectedPetKey } from './labels';
@@ -59,7 +59,7 @@ export function CreatorPanel({ onClose }: { onClose: () => void }) {
         status: 'production', element: element.id,
         reference: layers.find(item => item.id === 'body')?.src ?? layers[0].src,
         layers, preview: { x: 420, y: 440, scale: 1 },
-        ...(Object.keys(attack).length ? { effects: { color: element.color, attack, attackPresentation } } : {}),
+        ...(Object.keys(attack).length ? { effects: { color: element.color, attack, attackPresentation, attackMeta: defaultAttackMeta(level) } } : {}),
       };
       await createPet(manifest.id, manifest, uploads);
       setStatus('Đã tạo pet. Đang tải lại catalog…');
