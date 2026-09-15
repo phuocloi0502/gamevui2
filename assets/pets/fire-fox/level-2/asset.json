@@ -12,17 +12,6 @@
   "reference": "/assets/pets/fire-fox/level-2/layers/body.png",
   "layers": [
     {
-      "id": "effect-back",
-      "x": 0,
-      "y": -106,
-      "originX": 0.5,
-      "originY": 0.5,
-      "z": 1,
-      "scale": 1.6,
-      "src": "/assets/pets/fire-fox/level-2/effects/effect-back.png",
-      "visible": true
-    },
-    {
       "id": "tail",
       "x": -55,
       "y": -90,
@@ -42,7 +31,8 @@
       "z": 3,
       "scale": 1,
       "src": "/assets/pets/fire-fox/level-2/layers/rear-far.png",
-      "angle": -4
+      "angle": -4,
+      "alpha": 0.7
     },
     {
       "id": "rear-near",
@@ -74,7 +64,7 @@
       "scale": 0.8,
       "src": "/assets/pets/fire-fox/level-2/layers/front-far.png",
       "angle": -2,
-      "alpha": 1
+      "alpha": 0.9
     },
     {
       "id": "front-near",
@@ -94,7 +84,7 @@
       "originX": 0.5,
       "originY": 0.88,
       "z": 8,
-      "scale": 0.78,
+      "scale": 0.88,
       "src": "/assets/pets/fire-fox/level-2/layers/head.png"
     },
     {
@@ -122,18 +112,6 @@
       "blink": "closed",
       "src": "/assets/pets/fire-fox/level-2/layers/eyes-closed.png",
       "angle": -7
-    },
-    {
-      "id": "effect-front",
-      "x": 11,
-      "y": -80,
-      "originX": 0.5,
-      "originY": 0.5,
-      "z": 9,
-      "scale": 0.6,
-      "src": "/assets/pets/fire-fox/level-2/effects/effect-front.png",
-      "visible": true,
-      "alpha": 1
     }
   ],
   "preview": {

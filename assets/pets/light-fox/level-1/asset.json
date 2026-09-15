@@ -142,10 +142,11 @@
     "scale": 1
   },
   "effects": {
-    "projectile": "/assets/pets/light-fox/level-1/effects/elemental-effect.png",
     "color": 16770202,
+    "attackMeta": { "pattern": "single" },
     "attack": {
       "cast": "/assets/pets/light-fox/level-1/effects/attack-cast.png",
+      "projectile": "/assets/pets/light-fox/level-1/effects/elemental-effect.png",
       "impact": "/assets/pets/light-fox/level-1/effects/impact.png"
     },
     "attackPresentation": {
@@ -172,6 +173,29 @@
         "ease": "Sine.easeInOut",
         "mirror": true
       },
+      "projectile": {
+        "enabled": true,
+        "trigger": "attack-release",
+        "startAnchor": "pet",
+        "endAnchor": "target",
+        "startX": 100,
+        "startY": -150,
+        "endX": 0,
+        "endY": 0,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.3,
+        "endScale": 0.3,
+        "startAngle": 0,
+        "endAngle": 0,
+        "startAlpha": 1,
+        "endAlpha": 0.15,
+        "depth": 20,
+        "delay": 0,
+        "duration": 580,
+        "ease": "Linear",
+        "mirror": true
+      },
       "impact": {
         "enabled": true,
         "trigger": "after-primary",
@@ -183,15 +207,15 @@
         "endY": 0,
         "originX": 0.5,
         "originY": 0.5,
-        "startScale": 0.65,
-        "endScale": 0.78,
+        "startScale": 0.3,
+        "endScale": 0.22,
         "startAngle": 0,
         "endAngle": 0,
-        "startAlpha": 0.95,
+        "startAlpha": 0.9,
         "endAlpha": 0,
         "depth": 21,
         "delay": 0,
-        "duration": 420,
+        "duration": 380,
         "ease": "Quad.easeOut",
         "mirror": true
       }

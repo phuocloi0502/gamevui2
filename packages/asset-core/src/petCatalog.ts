@@ -75,6 +75,12 @@ export const SPECIES_TEMPLATES: SpeciesTemplate[] = [
       combat('impact', 'Combat VFX · va chạm'),
     ],
     evolutionSlots: {
+      2: {
+        replace: [],
+        slots: [
+          combat('splash', 'Combat VFX · vòng splash tại impact', 'splash'),
+        ],
+      },
       3: {
         replace: ['tail'],
         slots: [

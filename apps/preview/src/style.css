@@ -176,6 +176,41 @@ select { padding: 8px 16px; border: 1px solid #424958; border-radius: 6px; backg
 .level-switch button.is-active { background: #59402b; }
 .level-switch button:disabled { cursor: not-allowed; opacity: .45; }
 
+.element-nav {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: #131720;
+  border-bottom: 1px solid #1e2535;
+}
+.element-nav-label { color: #606879; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+.element-nav-divider { display: block; width: 1px; height: 20px; margin: 0 4px; background: #252d3e; flex-shrink: 0; }
+
+.element-tab {
+  padding: 5px 14px;
+  border: 1px solid #2a3246;
+  border-radius: 20px;
+  background: transparent;
+  color: #7d8799;
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background .12s, color .12s, border-color .12s;
+}
+.element-tab:hover { background: #1c2333; color: #b0baca; }
+.element-tab:disabled { cursor: not-allowed; opacity: .35; }
+
+.level-tab { min-width: 32px; padding: 5px 10px; text-align: center; }
+.level-tab.is-active { border-color: #5a7aaa; color: #a8c4f0; background: #1a2540; }
+
+.element-tab--fire.is-active   { border-color: #e8892a; color: #ff9a28; background: #281c12; }
+.element-tab--water.is-active  { border-color: #2faee8; color: #5ad0ff; background: #111e2e; }
+.element-tab--wind.is-active   { border-color: #5dbf9e; color: #aae8cf; background: #12231d; }
+.element-tab--light.is-active  { border-color: #c4ad40; color: #ffe49a; background: #221e10; }
+.element-tab--shadow.is-active { border-color: #7a70d8; color: #c0b4ff; background: #1a1830; }
+
 #controls-slot { min-width: 0; min-height: 0; }
 .controls {
   height: 100%;

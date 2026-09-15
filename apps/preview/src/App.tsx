@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
-import { PET_ARCHETYPES, PET_ELEMENTS, archetypeFor, speciesTemplate, slotsForEvolution } from '../../../packages/asset-core/src/petCatalog';
+import { PET_ELEMENTS, archetypeFor, speciesTemplate, slotsForEvolution } from '../../../packages/asset-core/src/petCatalog';
 import type { EvolutionLevel, PetDefinition, Rig, State } from '../../../packages/asset-core/src/types';
 import { resolvePet } from '../../../packages/asset-core/src/resolve';
 import { PetView } from '../../../packages/pet-runtime/src/PetView';
@@ -9,7 +9,7 @@ import { ImageEditorPanel } from './ImageEditorPanel';
 import { LibraryTree } from './LibraryTree';
 import { PhaserStage } from './PhaserStage';
 import { StudioEditors } from './StudioEditors';
-import { libraryPath, petAtLevel, petsInFolder } from './library';
+import { libraryPath, petAtLevel, petSpeciesId } from './library';
 import { selectedPetKey, stateLabels } from './labels';
 
 export function App({ petDefinitions, rigs }: { petDefinitions: PetDefinition[]; rigs: Record<string, Rig> }) {
@@ -73,11 +73,17 @@ export function App({ petDefinitions, rigs }: { petDefinitions: PetDefinition[];
   }
 
   const path = pet ? libraryPath(pet) : undefined;
-  const selectGroups = PET_ELEMENTS.flatMap(element => [1, 2, 3].flatMap(level => PET_ARCHETYPES.map(groupItem => {
-    const groupPets = petsInFolder(pets, element.id, level as 1 | 2 | 3, groupItem.id)
-      .sort((a, b) => a.lineageId.localeCompare(b.lineageId));
-    return { element, level, group: groupItem, pets: groupPets };
-  }))).filter(item => item.pets.length);
+
+  function selectElement(elementId: string) {
+    if (!pet) return;
+    const species = petSpeciesId(pet);
+    const level = pet.evolutionLevel;
+    const target =
+      pets.find(p => petSpeciesId(p) === species && p.element === elementId && p.evolutionLevel === level) ??
+      pets.find(p => petSpeciesId(p) === species && p.element === elementId) ??
+      pets.find(p => p.element === elementId);
+    if (target) selectPet(target.id);
+  }
 
   return (
     <>
@@ -99,38 +105,42 @@ export function App({ petDefinitions, rigs }: { petDefinitions: PetDefinition[];
         <section className="layout">
           <div className="studio-panel">
             <div className="toolbar">
-              <select className="library-select" aria-label="Chọn pet" value={pet?.id ?? ''} onChange={event => selectPet(event.target.value)}>
-                {selectGroups.map(({ element, level, group: groupItem, pets: groupPets }) => (
-                  <optgroup key={`${element.id}-${level}-${groupItem.id}`} label={`${element.name} / Level ${level} / ${groupItem.name}`}>
-                    {groupPets.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
-                  </optgroup>
-                ))}
-              </select>
               <div className="toolbar-actions">
                 <div className="toolbar-cluster">
-                  {pet && (
-                    <div className="level-switch" role="group" aria-label="Chọn cấp tiến hóa">
-                      {([1, 2, 3] as EvolutionLevel[]).map(level => {
-                        const target = petAtLevel(pets, pet, level);
-                        return (
-                          <button
-                            key={level}
-                            type="button"
-                            className={pet.evolutionLevel === level ? 'is-active' : undefined}
-                            disabled={!target}
-                            onClick={() => { if (target && target.id !== pet.id) selectPet(target.id); }}
-                          >
-                            Level {level}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
                   <button type="button" disabled={!canEditImages} onClick={() => { setImageEditorOpen(true); setCreatorOpen(false); }}>Quản lý ảnh pet</button>
                 </div>
                 <button type="button" onClick={() => { setCreatorOpen(true); setImageEditorOpen(false); }}>+ Tạo pet từ layer</button>
                 <span>{pet?.layers.length ? 'LIVE RIG / PNG + MOTION' : 'ART REFERENCE'}</span>
               </div>
+            </div>
+            <div className="element-nav" aria-label="Chọn hệ và cấp tiến hóa">
+              <span className="element-nav-label">Hệ</span>
+              {PET_ELEMENTS.map(element => (
+                <button
+                  key={element.id}
+                  type="button"
+                  className={`element-tab element-tab--${element.id}${pet?.element === element.id ? ' is-active' : ''}`}
+                  onClick={() => selectElement(element.id)}
+                >
+                  {element.name}
+                </button>
+              ))}
+              <span className="element-nav-divider" aria-hidden />
+              <span className="element-nav-label">Level</span>
+              {pet && ([1, 2, 3] as EvolutionLevel[]).map(level => {
+                const target = petAtLevel(pets, pet, level);
+                return (
+                  <button
+                    key={level}
+                    type="button"
+                    className={`element-tab level-tab${pet.evolutionLevel === level ? ' is-active' : ''}`}
+                    disabled={!target}
+                    onClick={() => { if (target && target.id !== pet.id) selectPet(target.id); }}
+                  >
+                    {level}
+                  </button>
+                );
+              })}
             </div>
             {creatorOpen && <CreatorPanel onClose={() => setCreatorOpen(false)} />}
             {imageEditorOpen && pet && manifest && <ImageEditorPanel pet={pet} manifest={manifest} onClose={() => setImageEditorOpen(false)} />}

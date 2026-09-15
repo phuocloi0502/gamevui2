@@ -11,11 +11,13 @@
   "element": "water",
   "reference": "/assets/pets/water-fox/level-2/preview.png",
   "effects": {
-    "projectile": "/assets/pets/water-fox/level-2/effects/elemental-effect.png",
     "color": 5953791,
+    "attackMeta": { "pattern": "splash", "radius": 65 },
     "attack": {
       "cast": "/assets/pets/water-fox/level-2/effects/attack-cast.png",
-      "impact": "/assets/pets/water-fox/level-2/effects/impact.png"
+      "projectile": "/assets/pets/water-fox/level-2/effects/elemental-effect.png",
+      "impact": "/assets/pets/water-fox/level-2/effects/impact.png",
+      "splash": "/assets/pets/water-fox/level-2/effects/splash.png"
     },
     "attackPresentation": {
       "cast": {
@@ -29,16 +31,39 @@
         "endY": -135,
         "originX": 0.5,
         "originY": 0.5,
-        "startScale": 0.5,
-        "endScale": 0.58,
+        "startScale": 0.55,
+        "endScale": 0.72,
         "startAngle": 0,
         "endAngle": 0,
-        "startAlpha": 0.9,
+        "startAlpha": 0.95,
         "endAlpha": 0,
         "depth": 20,
         "delay": 0,
-        "duration": 450,
+        "duration": 500,
         "ease": "Sine.easeInOut",
+        "mirror": true
+      },
+      "projectile": {
+        "enabled": true,
+        "trigger": "attack-release",
+        "startAnchor": "pet",
+        "endAnchor": "target",
+        "startX": 100,
+        "startY": -150,
+        "endX": 0,
+        "endY": 0,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.45,
+        "endScale": 0.45,
+        "startAngle": 90,
+        "endAngle": 90,
+        "startAlpha": 1,
+        "endAlpha": 0.2,
+        "depth": 20,
+        "delay": 0,
+        "duration": 560,
+        "ease": "Linear",
         "mirror": true
       },
       "impact": {
@@ -52,8 +77,8 @@
         "endY": 0,
         "originX": 0.5,
         "originY": 0.5,
-        "startScale": 0.65,
-        "endScale": 0.78,
+        "startScale": 0.55,
+        "endScale": 0.85,
         "startAngle": 0,
         "endAngle": 0,
         "startAlpha": 0.95,
@@ -63,6 +88,45 @@
         "duration": 420,
         "ease": "Quad.easeOut",
         "mirror": true
+      },
+      "splash": {
+        "enabled": true,
+        "trigger": "after-primary",
+        "startAnchor": "aoe-center",
+        "endAnchor": "aoe-center",
+        "startX": 0,
+        "startY": 0,
+        "endX": 0,
+        "endY": 0,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.08,
+        "endScale": 0.65,
+        "startAngle": 0,
+        "endAngle": 20,
+        "startAlpha": 1,
+        "endAlpha": 0,
+        "depth": 22,
+        "delay": 80,
+        "duration": 400,
+        "ease": "Quad.easeOut",
+        "mirror": false
+      }
+    }
+  },
+  "overrides": {
+    "clips": {
+      "attack": {
+        "duration": 1050,
+        "loop": false,
+        "event": { "at": 460, "name": "attack-release" },
+        "tracks": [
+          { "target": "tail", "property": "angle", "values": [0, 30, 5, -10, 0] },
+          { "target": "tail", "property": "scaleX", "values": [1, 1.15, 0.9, 1, 1] },
+          { "target": "head", "property": "x", "values": [0, -7, 13, 3, 0] },
+          { "target": "head", "property": "angle", "values": [0, -10, 8, 2, 0] },
+          { "target": "body", "property": "scaleX", "values": [1, 0.9, 1.09, 1, 1] }
+        ]
       }
     }
   },

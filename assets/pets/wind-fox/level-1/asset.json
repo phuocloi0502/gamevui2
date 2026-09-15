@@ -11,10 +11,11 @@
   "element": "wind",
   "reference": "/assets/pets/wind-fox/level-1/preview.png",
   "effects": {
-    "projectile": "/assets/pets/wind-fox/level-1/effects/elemental-effect.png",
     "color": 11141071,
+    "attackMeta": { "pattern": "single" },
     "attack": {
       "cast": "/assets/pets/wind-fox/level-1/effects/attack-cast.png",
+      "projectile": "/assets/pets/wind-fox/level-1/effects/elemental-effect.png",
       "impact": "/assets/pets/wind-fox/level-1/effects/impact.png"
     },
     "attackPresentation": {
@@ -41,6 +42,29 @@
         "ease": "Sine.easeInOut",
         "mirror": true
       },
+      "projectile": {
+        "enabled": true,
+        "trigger": "attack-release",
+        "startAnchor": "pet",
+        "endAnchor": "target",
+        "startX": 100,
+        "startY": -150,
+        "endX": 0,
+        "endY": 0,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.3,
+        "endScale": 0.3,
+        "startAngle": 0,
+        "endAngle": 0,
+        "startAlpha": 1,
+        "endAlpha": 0.15,
+        "depth": 20,
+        "delay": 0,
+        "duration": 580,
+        "ease": "Linear",
+        "mirror": true
+      },
       "impact": {
         "enabled": true,
         "trigger": "after-primary",
@@ -52,17 +76,32 @@
         "endY": 0,
         "originX": 0.5,
         "originY": 0.5,
-        "startScale": 0.65,
-        "endScale": 0.78,
+        "startScale": 0.3,
+        "endScale": 0.22,
         "startAngle": 0,
         "endAngle": 0,
-        "startAlpha": 0.95,
+        "startAlpha": 0.9,
         "endAlpha": 0,
         "depth": 21,
         "delay": 0,
-        "duration": 420,
+        "duration": 380,
         "ease": "Quad.easeOut",
         "mirror": true
+      }
+    }
+  },
+  "overrides": {
+    "clips": {
+      "attack": {
+        "duration": 900,
+        "loop": false,
+        "event": { "at": 380, "name": "attack-release" },
+        "tracks": [
+          { "target": "tail", "property": "angle", "values": [0, 22, -8, 0] },
+          { "target": "head", "property": "x", "values": [0, -4, 10, 0] },
+          { "target": "head", "property": "angle", "values": [0, -8, 7, 0] },
+          { "target": "body", "property": "scaleX", "values": [1, 0.93, 1.06, 1] }
+        ]
       }
     }
   },
