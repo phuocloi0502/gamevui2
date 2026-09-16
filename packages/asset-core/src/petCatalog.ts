@@ -113,6 +113,7 @@ export const SPECIES_TEMPLATES: SpeciesTemplate[] = [
   {
     id: 'bunny', name: 'Bunny', archetype: 'hopper', rig: 'hopper-base', validated: false,
     slots: [
+      upload('shadow', 'Bóng tiếp đất', [layer('shadow', 8, -22, .5, .85, 0, .8)], true),
       upload('rear-ear', 'Tai sau', [layer('rear-ear', 8, -210, .5, .9, 1, .8)]),
       upload('body', 'Thân', [layer('body', 0, -105, .5, .5, 2, .8)]),
       upload('hind-leg', 'Chân sau dùng lại', [layer('hind-leg-far', -45, -72, .5, .25, 3, .78), layer('hind-leg-near', -58, -76, .5, .25, 5, .9)]),

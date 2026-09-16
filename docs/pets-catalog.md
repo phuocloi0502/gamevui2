@@ -99,7 +99,7 @@ The table below supplies species routing and artwork identity. Exact required/op
 |---|---|---|---|---|
 | `fox` / Fox | quadruped / `fox-quadruped` | `tail.png`, `rear-far.png`, `rear-near.png`, `body.png`, `front-far.png`, `front-near.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `effect-back.png`, `effect-front.png`, `particles.png`; Level 3 tail variants | Element Tail Bolt: `attack-cast.png`, `projectile.png`, `impact.png` |
 | `wolf` / Wolf | quadruped / `quadruped-base` | `tail.png`, `rear-far.png`, `front-far.png`, `body.png`, `rear-near.png`, `front-near.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `mane.png`, `jaw.png` | Fang Rush: `attack-cast.png`, `attack-trail.png`, `impact.png`; no projectile by default |
-| `bunny` / Bunny | hopper / `hopper-base` | `rear-ear.png`, `body.png`, `hind-leg.png`, `front-paw.png`, `head.png`, `eyes-open.png`, `eyes-closed.png`, `front-ear.png`, `tail.png` | — | Burst Ram: `attack-trail.png`, `impact.png` |
+| `bunny` / Bunny | hopper / `hopper-base` | `rear-ear.png`, `body.png`, `hind-leg.png`, `front-paw.png`, `head.png`, `eyes-open.png`, `eyes-closed.png`, `front-ear.png`, `tail.png` | `shadow.png` | Burst Ram: `attack-trail.png`, `impact.png`; không projectile. Production sheet: `docs/pet-production/bunny-production-spec.md` |
 | `turtle` / Turtle | tank / `tank-base` | `rear-feet.png`, `body.png`, `shell.png`, `front-feet.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shell-runes.png` | Element Cage: `attack-cast.png`, `cage.png`, `impact.png` |
 | `dragon` / Dragon | winged / `winged-base` | `back-wing.png`, `tail.png`, `body.png`, `legs.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `horns.png` | Element Meteor: `attack-cast.png`, `meteor.png`, `impact.png` |
 | `owl` / Owl | winged / `winged-base` | `back-wing.png`, `tail-feathers.png`, `body.png`, `talons.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `forehead-rune.png` | Element Orb: `attack-cast.png`, `projectile.png`, `impact.png` |
@@ -627,9 +627,12 @@ Shadow:
 
 ### Suggested production package
 
+Gói production Bunny (sheet 3×4, 12 ô, không projectile) nằm ở `docs/pet-production/bunny-production-spec.md`. `hind-leg.png` và `front-paw.png` mỗi file một artwork; runtime nhân bản near/far. Không tách bốn chân kiểu Fox.
+
 ```text
 Character layers:
-rear-ear, body, hind-leg, front-paw, head, eyes-open, eyes-closed, front-ear, tail
+shadow (optional runtime), rear-ear, body, hind-leg, front-paw,
+head, eyes-open, eyes-closed, front-ear, tail
 
 Combat VFX — Burst Ram:
 attack-trail, impact

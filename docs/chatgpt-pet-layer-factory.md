@@ -251,7 +251,7 @@ Không tự phát minh anatomy, Combat VFX semantic hoặc filename ngoài execu
 |---|---|---|---|---|
 | Fox | quadruped / `fox-quadruped` | `tail`, `rear-far`, `rear-near`, `body`, `front-far`, `front-near`, `head`, `eyes-open`, `eyes-closed` | `effect-back`, `effect-front`, `particles`; Level 3 tail slots | Element Tail Bolt: `attack-cast`, `projectile`, `impact` |
 | Wolf | quadruped / `quadruped-base` | `tail`, `rear-far`, `front-far`, `body`, `rear-near`, `front-near`, `head`, `eyes-open`, `eyes-closed` | `mane`, `jaw` | Fang Rush: `attack-cast`, `attack-trail`, `impact`; không projectile mặc định |
-| Bunny | hopper / `hopper-base` | `rear-ear`, `body`, `hind-leg`, `front-paw`, `head`, `eyes-open`, `eyes-closed`, `front-ear`, `tail` | — | Burst Ram: `attack-trail`, `impact` |
+| Bunny | hopper / `hopper-base` | `rear-ear`, `body`, `hind-leg`, `front-paw`, `head`, `eyes-open`, `eyes-closed`, `front-ear`, `tail` | `shadow` | Burst Ram: `attack-trail`, `impact`; **không projectile**. Sheet 12 ô: `docs/pet-production/bunny-production-spec.md` |
 | Turtle | tank / `tank-base` | `rear-feet`, `body`, `shell`, `front-feet`, `head`, `eyes-open`, `eyes-closed` | `shell-runes` | Element Cage: `attack-cast`, `cage`, `impact` |
 | Golem | tank / `tank-base` | `rear-arm`, `rear-leg`, `torso`, `core`, `front-leg`, `front-arm`, `head`, `eyes-open`, `eyes-closed` | `rock-fragments` | Core Quake: `attack-cast`, `ground-wave`, `impact` |
 | Dragon | winged / `winged-base` | `back-wing`, `tail`, `body`, `legs`, `front-wing`, `head`, `eyes-open`, `eyes-closed` | `horns` | Element Meteor: `attack-cast`, `meteor`, `impact` |
@@ -260,7 +260,7 @@ Không tự phát minh anatomy, Combat VFX semantic hoặc filename ngoài execu
 | Slime | blob / `blob-base` | `blob`, `face` | `inner-core`, `front-gloss`, `top-effect` | Element Pulse: `attack-cast`, `pulse`, `impact` |
 | Serpent | serpent / `serpent-base` | `tail`, `body-lower`, `body-upper`, `head`, `eyes-open`, `eyes-closed` | `jaw`, `crest` | Element Lance: `attack-cast`, `beam`, `impact` |
 
-Tên trong bảng không có `.png` để dễ đọc; trên layer sheet dùng đúng filename đó làm caption ô. Sau khi Codex tách, file nằm ở `layers/` hoặc `effects/` đúng như `petCatalog.ts`. Một slot có thể tạo nhiều runtime instances ở species cho phép; không tự suy diễn điều đó cho Fox/Wolf.
+Tên trong bảng không có `.png` để dễ đọc; trên layer sheet dùng đúng filename đó làm caption ô, **trừ Bunny**. Bunny dùng sheet 3×4 đúng 12 ô, không text/grid, không nhét `assembly-ref` vào cùng lưới; đọc `docs/pet-production/bunny-production-spec.md`. Sau khi Codex tách, file nằm ở `layers/` hoặc `effects/` đúng như `petCatalog.ts`. Một slot có thể tạo nhiều runtime instances ở species cho phép; không tự suy diễn điều đó cho Fox/Wolf. Bunny `hind-leg` / `front-paw` mỗi slot một PNG, runtime tạo hai instance near/far.
 
 Không có runtimeSize bắt buộc. Mọi species giữ nguyên kích thước và padding của PNG đã upload. Các con số baseline cũ của Fox chỉ có thể dùng làm tham khảo khi chuẩn bị artwork thủ công, không phải kích thước mà Asset Studio ép ảnh về.
 
