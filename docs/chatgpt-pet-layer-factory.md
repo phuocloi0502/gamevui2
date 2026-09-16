@@ -87,6 +87,10 @@ Các PNG anatomy/state theo recipe, ví dụ:
 - `tail` hoặc các tail group ở evolution đặc biệt;
 - wing, ear, horn, mane, jaw, shell và anatomy riêng của species khi recipe có slot.
 
+### Quy tắc bất biến cho `body.png`
+
+Với mọi species có slot đúng tên `body`, `body.png` **chỉ chứa khối thân, bụng và ngực**. Không vẽ đầu, cổ thuộc head layer, tay, cánh, chân, bàn chân, móng, đùi trước, đùi sau, hông/haunch có silhouette như đùi, đuôi hoặc effect vào ô body. Mọi chi và toàn bộ phần chân trên/đùi phải nằm trong slot limb tương ứng, kể cả vùng sẽ bị body che khi lắp. Body phải phục hồi bề mặt thân/bụng/ngực hoàn chỉnh phía sau các limb để khi limb xoay hoặc ẩn không lộ lỗ, mặt cắt hay anatomy bị trùng.
+
 ### B. Pet Visual VFX
 
 Các layer visual luôn gắn hoặc presentation quanh pet, ví dụ:
@@ -174,7 +178,8 @@ Mỗi ô slot:
 - không chứa shadow/effect/body part thuộc slot khác;
 - không crop anatomy, fur, glow hoặc particle của chính slot; có safe padding trong ô;
 - anatomy hoàn chỉnh cả vùng sẽ bị layer khác che khi Phaser ghép;
-- body có đủ vùng dưới head/chân/tail; leg có đủ phần trên tới joint; tail có đủ gốc; head có đủ vùng cổ/lông nối.
+- `body.png` chỉ có thân/bụng/ngực, không có bất kỳ chân, bàn chân hoặc khối đùi nào; body có đủ bề mặt phía sau head/limb/tail;
+- leg có đủ phần chân trên/đùi tới joint; tail có đủ gốc; head có đủ vùng cổ/lông nối.
 
 Ô cuối `assembly-ref.png`:
 
@@ -255,7 +260,7 @@ Không tự phát minh anatomy, Combat VFX semantic hoặc filename ngoài execu
 | Bunny | hopper / `hopper-base` | `rear-ear`, `body`, `hind-leg`, `front-paw`, `head`, `eyes-open`, `eyes-closed`, `front-ear`, `tail` | `shadow` | Burst Ram: `attack-trail`, `impact`; **không projectile**. Spec: `docs/pet-production/bunny-production-spec.md` |
 | Turtle | tank / `tank-base` | `rear-feet`, `body`, `shell`, `front-feet`, `head`, `eyes-open`, `eyes-closed` | `shadow`, `shell-runes` | Element Cage: `attack-cast`, `cage`, `impact`. Spec: `docs/pet-production/turtle-production-spec.md` |
 | Golem | tank / `tank-base` | `rear-arm`, `rear-leg`, `torso`, `core`, `front-leg`, `front-arm`, `head`, `eyes-open`, `eyes-closed` | `shadow`, `rock-fragments` | Core Quake: `attack-cast`, `ground-wave`, `impact`. Spec: `docs/pet-production/golem-production-spec.md` |
-| Dragon | winged / `winged-base` | `back-wing`, `tail`, `body`, `legs`, `front-wing`, `head`, `eyes-open`, `eyes-closed` | `horns` | Element Meteor: `attack-cast`, `meteor`, `impact`. Spec: `docs/pet-production/dragon-production-spec.md` |
+| Dragon | winged / `winged-base` | `back-wing`, `tail`, `leg-far`, `body`, `leg-near`, `front-wing`, `head`, `eyes-open`, `eyes-closed` | `horns` | Element Meteor: `attack-cast`, `meteor`, `impact`. Spec: `docs/pet-production/dragon-production-spec.md` |
 | Owl | winged / `winged-base` | `back-wing`, `tail-feathers`, `body`, `talons`, `front-wing`, `head`, `eyes-open`, `eyes-closed` | `forehead-rune` | Element Orb: `attack-cast`, `projectile`, `impact`. Spec: `docs/pet-production/owl-production-spec.md` |
 | Hawk | winged / `winged-base` | `rear-wing`, `tail-fan`, `body`, `talons`, `front-wing`, `head`, `eyes-open`, `eyes-closed` | `crest` | Cyclone Dive: `attack-trail`, `vortex`, `impact`. Spec: `docs/pet-production/hawk-production-spec.md` |
 | Slime | blob / `blob-base` | `blob`, `face` | `inner-core`, `front-gloss`, `top-effect` | Element Pulse: `attack-cast`, `pulse`, `impact`. Spec: `docs/pet-production/slime-production-spec.md` |

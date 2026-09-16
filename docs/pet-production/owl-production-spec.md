@@ -62,6 +62,7 @@ Luật sheet chung (no text/grid; 45–55% / 40–50%; no overlap; assembly-ref 
 - **head:** face disc tròn; không mắt; chỗ rune trán.
 - **eyes-*:** mắt owl lớn; cùng canvas; overlay chính xác.
 - **wings:** back nhỏ/lùi; front lớn; không mirror cứng.
+- **body:** chỉ thân, bụng và ngực; không đầu, cánh, tail-feathers, talons, bàn chân, đùi hoặc effect. Body có bề mặt hoàn chỉnh phía sau wing/talons.
 - **talons:** móng nhỏ, một ô.
 - **tail-feathers:** quạt ngắn; không đuôi rồng.
 - **forehead-rune:** chỉ rune/glow trán.

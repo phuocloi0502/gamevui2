@@ -64,7 +64,7 @@ Luật sheet chung. Không `assembly-ref` trên lưới.
 
 - **rear-wing / front-wing:** dài, aerodynamic; front nặng hơn; không mirror cứng.
 - **tail-fan:** quạt đuôi; không lông owl ngắn tròn.
-- **body:** dài hơn Owl; không đầu/cánh.
+- **body:** chỉ thân dài, bụng và ngực; không đầu, cánh, tail-fan, talons, bàn chân, đùi hoặc effect. Body có bề mặt hoàn chỉnh phía sau wing/talons.
 - **head:** nhỏ sắc; chỗ gắn crest.
 - **crest:** mào nhọn; chỉ crest.
 - **attack-trail:** vệt bổ nhào / dive streak.

@@ -93,4 +93,10 @@ const wolfTemplate=speciesTemplate('wolf');
 assert.ok(wolfTemplate.slots.some(slot=>slot.combatVfx==='trail'),'Wolf recipe must expose melee trail');
 assert.ok(wolfTemplate.slots.some(slot=>slot.combatVfx==='impact'),'Wolf recipe must expose independent impact');
 assert.ok(!wolfTemplate.slots.some(slot=>slot.combatVfx==='projectile'),'Wolf melee recipe must not require projectile');
-console.log('PASS: inheritance, legacy effects, generic ranged/melee Combat VFX, rig targets, dynamic multi-tail IDs, independent Fox legs, optional anatomy, loop seams');
+const dragonTemplate=speciesTemplate('dragon');
+for(const id of ['leg-far','leg-near']) {
+ const slot=dragonTemplate.slots.find(candidate=>candidate.id===id);
+ assert.equal(slot.file,`${id}.png`,`${id} must use independent Dragon artwork`);
+}
+assert.ok(!dragonTemplate.slots.some(slot=>slot.file==='legs.png'),'Dragon template must not reuse combined legs.png');
+console.log('PASS: inheritance, legacy effects, generic ranged/melee Combat VFX, rig targets, dynamic multi-tail IDs, independent Fox/Dragon legs, optional anatomy, loop seams');

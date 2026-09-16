@@ -13,25 +13,37 @@
   "layers": [
     {
       "id": "back-wing",
-      "x": -45,
-      "y": -145,
+      "x": -38,
+      "y": -253,
       "originX": 0.65,
       "originY": 0.65,
       "z": 1,
-      "scale": 0.8,
+      "scale": 0.5,
       "src": "/assets/pets/fire-dragon/level-1/layers/back-wing.png",
-      "visible": false
+      "visible": true,
+      "angle": 44
     },
     {
       "id": "tail",
-      "x": 6,
-      "y": -243,
+      "x": -56,
+      "y": -294,
       "originX": 0.82,
       "originY": 0.7,
       "z": 2,
-      "scale": 0.8,
+      "scale": 0.5,
       "src": "/assets/pets/fire-dragon/level-1/layers/tail.png",
-      "angle": -21
+      "angle": -89
+    },
+    {
+      "id": "leg-far",
+      "x": 71.177,
+      "y": -160.603,
+      "originX": 0.5,
+      "originY": 0.2,
+      "z": 2.5,
+      "scale": 0.6,
+      "src": "/assets/pets/fire-dragon/level-1/layers/leg-far.png",
+      "angle": 3
     },
     {
       "id": "body",
@@ -40,39 +52,39 @@
       "originX": 0.5,
       "originY": 0.5,
       "z": 3,
-      "scale": 0.7,
+      "scale": 0.5,
       "src": "/assets/pets/fire-dragon/level-1/layers/body.png"
     },
     {
-      "id": "legs",
-      "x": 37,
-      "y": -225,
+      "id": "leg-near",
+      "x": -35.339,
+      "y": -168.829,
       "originX": 0.5,
       "originY": 0.2,
       "z": 4,
       "scale": 0.6,
-      "src": "/assets/pets/fire-dragon/level-1/layers/legs.png",
+      "src": "/assets/pets/fire-dragon/level-1/layers/leg-near.png",
       "angle": 3
     },
     {
       "id": "front-wing",
-      "x": 25,
-      "y": -145,
+      "x": -114,
+      "y": -228,
       "originX": 0.35,
       "originY": 0.65,
-      "z": 5,
-      "scale": 0.85,
+      "z": 3,
+      "scale": 0.5,
       "src": "/assets/pets/fire-dragon/level-1/layers/front-wing.png",
-      "visible": false
+      "visible": true
     },
     {
       "id": "head",
-      "x": 82,
-      "y": -256,
+      "x": 62,
+      "y": -272,
       "originX": 0.5,
       "originY": 0.82,
       "z": 6,
-      "scale": 0.5,
+      "scale": 0.45,
       "src": "/assets/pets/fire-dragon/level-1/layers/head.png"
     },
     {

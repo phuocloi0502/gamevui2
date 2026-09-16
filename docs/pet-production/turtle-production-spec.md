@@ -121,7 +121,7 @@ Ellipse mềm sát đất, oval theo thân 3/4; không vẽ pet.
 Hai chân sau trong **một ô**, 3/4 facing right. Chân near lớn hơn chân far trong cùng artwork (không mirror cứng). Không mai, không đầu. Phần trên đủ giấu dưới body/shell.
 
 ### 3. `body.png`
-Thân dưới / bụng / hông. **Không** mai, đầu, chân, bóng. Có chỗ khớp nối chân và cổ.
+Chỉ thân dưới / bụng / ngực mềm bên trong mai. **Không** mai, đầu, chân, bàn chân, đùi, khối hông có silhouette như chân, bóng hoặc effect. Có bề mặt thân hoàn chỉnh phía sau các chân và chỗ khớp nối chân/cổ.
 
 ### 4. `shell.png`
 Mai rộng, khối chính của silhouette. Không đầu, chân, rune overlay (rune là ô riêng). Đủ mép dưới để overlap body.

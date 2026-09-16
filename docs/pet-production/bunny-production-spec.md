@@ -170,10 +170,10 @@ Mọi anatomy cell phải vẽ **đủ phần sẽ bị layer khác che** (khớ
 
 ### 3. `body.png`
 
-- Thân hopper compact, ngực hơi về **phải** (facing right).
-- **Không** đầu, tai, mắt, chân, paw, đuôi, bóng.
+- Chỉ thân hopper compact, bụng và ngực; ngực hơi về **phải** (facing right).
+- **Không** đầu, tai, mắt, chân, paw, đùi sau, khối hông có silhouette như đùi, đuôi, bóng hoặc effect.
 - Có “nắp” lông đầy đủ chỗ cổ, khớp đùi, khớp paw, gốc đuôi để layer khác cắm vào khi xoay.
-- Không chứa đùi sau hay paw.
+- Toàn bộ đùi sau nằm trong `hind-leg.png`; body phục hồi bề mặt thân phía sau chân, không chứa đùi hay paw.
 
 ### 4. `hind-leg.png` — source dùng lại near/far
 

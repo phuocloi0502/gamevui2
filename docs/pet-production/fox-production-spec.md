@@ -80,7 +80,8 @@ Không text/grid; transparent/cyan; subject 45–55% / VFX 40–50%; không over
 - `front-far`: hẹp, lùi vào/sau
 - `rear-near`: đùi lớn, hock rõ, chéo trước/phải
 - `rear-far`: đùi hẹp, overlap thân
-- Không mirror near/far; cùng ground plane; body không chứa đùi
+- Không mirror near/far; cùng ground plane
+- `body.png` chỉ chứa thân/bụng/ngực; không đầu, đuôi, chân, bàn chân, đùi trước hoặc đùi sau. Toàn bộ đùi nằm trong bốn PNG chân tương ứng.
 
 ---
 

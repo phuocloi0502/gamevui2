@@ -90,7 +90,7 @@ Không text/grid; transparent hoặc cyan `#00FFFF`; subject 45–55% / VFX 40�
 ## 4. Luật layer (rút gọn bắt buộc)
 
 - **Chân:** bốn ô perspective riêng — `front-near` lớn/rõ hơi trước-phải; `front-far` hẹp/lùi; `rear-near` đùi lớn hock rõ; `rear-far` hẹp, overlap thân. Cấm frontal / 90° profile / cùng silhouette.
-- **body:** thân dài; không đầu/chân/đuôi/mane.
+- **body:** chỉ thân dài, bụng và ngực; không đầu, mane, đuôi, chân, bàn chân, đùi trước hoặc đùi sau. Toàn bộ phần chân trên/đùi thuộc bốn PNG chân.
 - **mane:** khối bờm quanh cổ/vai; không vẽ lại cả đầu.
 - **head:** không mắt, không jaw; mõm wolf hẹp.
 - **jaw:** hàm dưới; parent head; đủ khớp để tween cắn.

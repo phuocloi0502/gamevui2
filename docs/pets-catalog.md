@@ -93,6 +93,8 @@ different species merely because it shares a rig group.
 
 Default view for new pet artwork is 3/4 facing right. `front` means the head/chest side, `rear` means the tail side, `near` is closer to the viewer and `far` is farther from the viewer. Near/far must read through perspective; Fox and Wolf use four independently drawn limb PNGs.
 
+Global body rule: với mọi recipe có file `body.png`, ô này chỉ chứa thân, bụng và ngực. Cấm bake đầu, tay, cánh, chân, bàn chân, móng, đùi trước/sau, khối haunch có silhouette như đùi, đuôi hoặc effect vào body. Toàn bộ phần chân trên/đùi thuộc artwork chân tương ứng; body phải có bề mặt hoàn chỉnh phía sau limb để tránh hở hoặc trùng anatomy khi ghép và animate.
+
 The table below supplies species routing and artwork identity. Exact required/optional flags, filenames, transforms and z values are executable data in `packages/asset-core/src/petCatalog.ts`; if this summary differs, the TypeScript file wins.
 
 | Species ID / name | Archetype / rig | Required character files | Optional character / pet visual VFX | Optional Combat VFX |
@@ -101,7 +103,7 @@ The table below supplies species routing and artwork identity. Exact required/op
 | `wolf` / Wolf | quadruped / `quadruped-base` | `tail.png`, `rear-far.png`, `front-far.png`, `body.png`, `rear-near.png`, `front-near.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `mane.png`, `jaw.png` | Fang Rush: `attack-cast.png`, `attack-trail.png`, `impact.png`; no projectile. Spec: `docs/pet-production/wolf-production-spec.md` |
 | `bunny` / Bunny | hopper / `hopper-base` | `rear-ear.png`, `body.png`, `hind-leg.png`, `front-paw.png`, `head.png`, `eyes-open.png`, `eyes-closed.png`, `front-ear.png`, `tail.png` | `shadow.png` | Burst Ram: `attack-trail.png`, `impact.png`; không projectile. Spec: `docs/pet-production/bunny-production-spec.md` |
 | `turtle` / Turtle | tank / `tank-base` | `rear-feet.png`, `body.png`, `shell.png`, `front-feet.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `shell-runes.png` | Element Cage: `attack-cast.png`, `cage.png`, `impact.png`. Spec: `docs/pet-production/turtle-production-spec.md` |
-| `dragon` / Dragon | winged / `winged-base` | `back-wing.png`, `tail.png`, `body.png`, `legs.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `horns.png` | Element Meteor: `attack-cast.png`, `meteor.png`, `impact.png`. Spec: `docs/pet-production/dragon-production-spec.md` |
+| `dragon` / Dragon | winged / `winged-base` | `back-wing.png`, `tail.png`, `leg-far.png`, `body.png`, `leg-near.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `horns.png` | Element Meteor: `attack-cast.png`, `meteor.png`, `impact.png`. Spec: `docs/pet-production/dragon-production-spec.md` |
 | `owl` / Owl | winged / `winged-base` | `back-wing.png`, `tail-feathers.png`, `body.png`, `talons.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `forehead-rune.png` | Element Orb: `attack-cast.png`, `projectile.png`, `impact.png`. Spec: `docs/pet-production/owl-production-spec.md` |
 | `golem` / Golem | tank / `tank-base` | `rear-arm.png`, `rear-leg.png`, `torso.png`, `core.png`, `front-leg.png`, `front-arm.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `rock-fragments.png` | Core Quake: `attack-cast.png`, `ground-wave.png`, `impact.png`. Spec: `docs/pet-production/golem-production-spec.md` |
 | `slime` / Slime | blob / `blob-base` | `blob.png`, `face.png` | `inner-core.png`, `front-gloss.png`, `top-effect.png` | Element Pulse: `attack-cast.png`, `pulse.png`, `impact.png`. Spec: `docs/pet-production/slime-production-spec.md` |
@@ -832,7 +834,8 @@ Keep consistent:
 - jaw if needed;
 - back wing;
 - front wing;
-- legs;
+- leg-far;
+- leg-near;
 - tail;
 - horns;
 - mouth / cast effect.
@@ -893,7 +896,7 @@ Sheet cố định: `docs/pet-production/dragon-production-spec.md`.
 
 ```text
 Character / Pet Visual VFX:
-back-wing, tail, body, legs, front-wing, head,
+back-wing, tail, leg-far, body, leg-near, front-wing, head,
 eyes-open, eyes-closed, horns
 
 Combat VFX — Element Meteor:

@@ -9,7 +9,7 @@ Production contracts theo từng species. Mỗi file khóa sheet cố định, l
 | Bunny | [bunny-production-spec.md](./bunny-production-spec.md) | 3×4 / 12 ô | Burst Ram |
 | Turtle | [turtle-production-spec.md](./turtle-production-spec.md) | 3×4 / 12 ô | Element Cage |
 | Golem | [golem-production-spec.md](./golem-production-spec.md) | 4×4 / 14 ô (+2 trống cấm) | Core Quake |
-| Dragon | [dragon-production-spec.md](./dragon-production-spec.md) | 3×4 / 12 ô | Element Meteor |
+| Dragon | [dragon-production-spec.md](./dragon-production-spec.md) | 4×4 / 13 ô (+3 trống cấm) | Element Meteor |
 | Owl | [owl-production-spec.md](./owl-production-spec.md) | 3×4 / 12 ô | Element Orb |
 | Hawk | [hawk-production-spec.md](./hawk-production-spec.md) | 3×4 / 12 ô | Cyclone Dive |
 | Slime | [slime-production-spec.md](./slime-production-spec.md) | 2×4 / 8 ô | Element Pulse |

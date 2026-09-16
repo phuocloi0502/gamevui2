@@ -46,6 +46,7 @@ Level 1 gọn và tiết chế; Level 2 phát triển anatomy accent/element; Le
 - Không crop silhouette, fur, glow, smoke hoặc particle thuộc chính slot.
 - Safe padding đủ trong từng ô cho filtering và chuyển động.
 - Mỗi anatomy cell phải hoàn chỉnh cả vùng thấy được và vùng sẽ bị che; khớp nối cần đủ hình để rotate/tween không hở.
+- Với mọi slot `body.png`: chỉ vẽ thân, bụng và ngực hoàn chỉnh. Không vẽ đầu, tay, cánh, chân, bàn chân, móng, đùi trước, đùi sau, khối hông có silhouette như đùi, đuôi hoặc effect. Toàn bộ đùi/phần chân trên thuộc PNG chân tương ứng, kể cả vùng bị body che.
 - Mọi ô phải nhất quán về camera 3/4, hướng nhìn, tỷ lệ, palette, ánh sáng, rendering và ground pose.
 - Không tạo animation frame, sprite sheet chuyển động, GIF, video, code, JSON, ZIP, `master.png` hoặc `preview.png`.
 - Không phát minh slot ngoài executable recipe. Có thể tự chọn optional slot được recipe hỗ trợ; bỏ ô đó nếu không dùng, không vẽ placeholder.

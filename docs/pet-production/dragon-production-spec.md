@@ -2,7 +2,7 @@
 
 > Status: Production contract cho mọi lineage Dragon (`*-dragon`, Level 1/2/3).
 >
-> Sheet 12 ô, Element Meteor. **Không** đổi thành Hawk/Owl. Giữ `winged-base`.
+> Sheet 4×4 / 13 ô artwork (+3 ô trống cấm), Element Meteor. **Không** đổi thành Hawk/Owl. Giữ `winged-base`.
 
 ## Source of truth
 
@@ -38,36 +38,38 @@ L1 cánh/đuôi đơn giản → L2 ornament rõ → L3 mạnh nhất. Meteor: l
 |---|---|---:|---|
 | `back-wing` | `layers/back-wing.png` | 1 | Far / sau |
 | `tail` | `layers/tail.png` | 2 | |
+| `leg-far` | `layers/leg-far.png` | 2.5 | Chân xa người xem; sau thân |
 | `body` | `layers/body.png` | 3 | |
-| `legs` | `layers/legs.png` | 4 | **Một PNG** cặp chân nhỏ |
+| `leg-near` | `layers/leg-near.png` | 4 | Chân gần người xem; trước thân |
 | `front-wing` | `layers/front-wing.png` | 5 | Near / trước |
 | `head` | `layers/head.png` | 6 | Không mắt; không sừng nếu tách horns |
 | `eyes-open` / `eyes-closed` | `layers/eyes-*.png` | 6.1+ | Parent head |
 | `horns` | `layers/horns.png` | 7 | Optional recipe; **bắt buộc sheet**; parent head |
 | `attack-cast` / `meteor` / `impact` | `effects/*.png` | — | |
 
-Không tách bốn chân. Wings near/far là hai artwork, không mirror cứng.
+Dragon có hai chân nhỏ và dùng hai artwork độc lập: near/far không mirror hoặc dùng chung texture. Wings near/far cũng là hai artwork, không mirror cứng.
 
 ---
 
-## 3. Sheet — 3×4 / 12 ô
+## 3. Sheet — 4×4 / 13 ô artwork (+3 ô trống cấm)
 
 ```text
-  1 back-wing     2 tail          3 body
-  4 legs          5 front-wing    6 head
-  7 eyes-open     8 eyes-closed   9 horns
- 10 attack-cast  11 meteor       12 impact
+  1 back-wing     2 tail          3 leg-far       4 body
+  5 leg-near      6 front-wing    7 head          8 eyes-open
+  9 eyes-closed  10 horns        11 attack-cast  12 meteor
+ 13 impact       14 (trống)      15 (trống)      16 (trống)
 ```
 
-Luật sheet: không text/grid; transparent/cyan; 45–55% / VFX 40–50%; không overlap; `assembly-ref` file riêng.
+Luật sheet: không text/grid; transparent/cyan; 45–55% / VFX 40–50%; không overlap; ô 14–16 để trống trong suốt; `assembly-ref` file riêng.
 
 ---
 
 ## 4. Luật layer
 
 - **back-wing / front-wing:** membrane + xương cánh; front lớn hơn; gốc gần thân; đủ vùng che.
-- **body:** thân + ngực; không đầu/cánh/đuôi/chân.
-- **legs:** hai chân nhỏ trong một ô; không người.
+- **body:** chỉ thân, bụng và ngực; không đầu, cánh, đuôi, chân, bàn chân, đùi hoặc hai khối haunch phía sau. Body phải có bề mặt hoàn chỉnh phía sau `leg-far`/`leg-near`; toàn bộ đùi nằm trong hai PNG chân.
+- **leg-far:** một chân nhỏ ở phía xa người xem, hẹp/nhỏ hơn và có foreshortening; phần gốc đầy đủ để thân che; không mirror từ chân near.
+- **leg-near:** một chân nhỏ ở phía gần người xem, lớn/rõ hơn; phần gốc đầy đủ để che dưới thân; không mirror từ chân far.
 - **tail:** dài, gốc rõ; không cánh.
 - **head:** không mắt; chỗ gắn horns.
 - **horns:** chỉ sừng; khớp đỉnh đầu.
