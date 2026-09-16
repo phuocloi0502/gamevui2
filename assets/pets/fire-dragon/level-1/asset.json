@@ -25,14 +25,14 @@
     },
     {
       "id": "tail",
-      "x": -56,
-      "y": -264,
+      "x": -21,
+      "y": -215,
       "originX": 0.82,
       "originY": 0.7,
       "z": 2,
       "scale": 0.5,
       "src": "/assets/pets/fire-dragon/level-1/layers/tail.png",
-      "angle": -89
+      "angle": -44
     },
     {
       "id": "leg-far",

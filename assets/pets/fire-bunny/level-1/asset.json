@@ -1,0 +1,219 @@
+{
+  "id": "fire-bunny-level-1",
+  "lineageId": "fire-bunny",
+  "evolutionLevel": 1,
+  "name": "Fire Bunny · Level 1",
+  "kind": "pet",
+  "species": "bunny",
+  "archetype": "hopper",
+  "extends": "hopper-base",
+  "status": "production",
+  "element": "fire",
+  "reference": "/assets/pets/fire-bunny/level-1/layers/body.png",
+  "layers": [
+    {
+      "id": "front-paw-near",
+      "x": 81,
+      "y": -94,
+      "originX": 0.5,
+      "originY": 0.2,
+      "z": 0,
+      "scale": 0.3,
+      "src": "/assets/pets/fire-bunny/level-1/layers/front-paw.png",
+      "visible": true,
+      "angle": -12
+    },
+    {
+      "id": "shadow",
+      "x": -51,
+      "y": 108,
+      "originX": 0.5,
+      "originY": 0.85,
+      "z": 0,
+      "scale": 1,
+      "src": "/assets/pets/fire-bunny/level-1/layers/shadow.png"
+    },
+    {
+      "id": "rear-ear",
+      "x": 48,
+      "y": -230,
+      "originX": 0.5,
+      "originY": 0.9,
+      "z": 1,
+      "scale": 0.5,
+      "src": "/assets/pets/fire-bunny/level-1/layers/rear-ear.png",
+      "visible": true
+    },
+    {
+      "id": "hind-leg-near",
+      "x": -5,
+      "y": -45,
+      "originX": 0.5,
+      "originY": 0.25,
+      "z": 1,
+      "scale": 0.37,
+      "src": "/assets/pets/fire-bunny/level-1/layers/hind-leg.png",
+      "visible": true,
+      "angle": -6
+    },
+    {
+      "id": "tail",
+      "x": -108,
+      "y": -82,
+      "originX": 0.7,
+      "originY": 0.7,
+      "z": 1,
+      "scale": 0.4,
+      "src": "/assets/pets/fire-bunny/level-1/layers/tail.png",
+      "visible": true
+    },
+    {
+      "id": "body",
+      "x": -12,
+      "y": -75,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 2,
+      "scale": 0.175,
+      "src": "/assets/pets/fire-bunny/level-1/layers/body.png",
+      "visible": true,
+      "angle": -6
+    },
+    {
+      "id": "hind-leg-far",
+      "x": -71,
+      "y": -24,
+      "originX": 0.5,
+      "originY": 0.25,
+      "z": 3,
+      "scale": 0.4,
+      "src": "/assets/pets/fire-bunny/level-1/layers/hind-leg.png",
+      "visible": true,
+      "angle": -7
+    },
+    {
+      "id": "front-paw-far",
+      "x": 39,
+      "y": -88,
+      "originX": 0.5,
+      "originY": 0.2,
+      "z": 4,
+      "scale": 0.35,
+      "src": "/assets/pets/fire-bunny/level-1/layers/front-paw.png",
+      "visible": true,
+      "angle": 1
+    },
+    {
+      "id": "front-ear",
+      "x": -4,
+      "y": -227,
+      "originX": 0.5,
+      "originY": 0.9,
+      "z": 5,
+      "scale": 0.5,
+      "src": "/assets/pets/fire-bunny/level-1/layers/front-ear.png",
+      "visible": true,
+      "angle": -36
+    },
+    {
+      "id": "head",
+      "x": 36,
+      "y": -145,
+      "originX": 0.5,
+      "originY": 0.78,
+      "z": 6,
+      "scale": 0.5,
+      "src": "/assets/pets/fire-bunny/level-1/layers/head.png",
+      "visible": true
+    },
+    {
+      "id": "eyes-open",
+      "x": 82,
+      "y": -40,
+      "originX": 0.5,
+      "originY": 0.78,
+      "z": 6.1,
+      "scale": 0.5,
+      "parent": "head",
+      "blink": "open",
+      "src": "/assets/pets/fire-bunny/level-1/layers/eyes-open.png",
+      "angle": -10
+    },
+    {
+      "id": "eyes-closed",
+      "x": 82,
+      "y": -40,
+      "originX": 0.5,
+      "originY": 0.78,
+      "z": 6.109999999999999,
+      "scale": 0.5,
+      "parent": "head",
+      "blink": "closed",
+      "src": "/assets/pets/fire-bunny/level-1/layers/eyes-closed.png",
+      "angle": -10
+    }
+  ],
+  "preview": {
+    "x": 420,
+    "y": 440,
+    "scale": 1
+  },
+  "effects": {
+    "color": 16751144,
+    "attack": {
+      "trail": "/assets/pets/fire-bunny/level-1/effects/attack-trail.png",
+      "impact": "/assets/pets/fire-bunny/level-1/effects/impact.png"
+    },
+    "attackPresentation": {
+      "trail": {
+        "enabled": true,
+        "trigger": "attack-release",
+        "startAnchor": "pet",
+        "endAnchor": "target",
+        "startX": 100,
+        "startY": -150,
+        "endX": 0,
+        "endY": 0,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.7,
+        "endScale": 0.7,
+        "startAngle": 0,
+        "endAngle": 0,
+        "startAlpha": 1,
+        "endAlpha": 0,
+        "depth": 20,
+        "delay": 0,
+        "duration": 360,
+        "ease": "Quad.easeOut",
+        "mirror": true
+      },
+      "impact": {
+        "enabled": true,
+        "trigger": "after-primary",
+        "startAnchor": "target",
+        "endAnchor": "target",
+        "startX": 0,
+        "startY": 0,
+        "endX": 0,
+        "endY": 0,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.65,
+        "endScale": 0.78,
+        "startAngle": 0,
+        "endAngle": 0,
+        "startAlpha": 0.95,
+        "endAlpha": 0,
+        "depth": 21,
+        "delay": 0,
+        "duration": 420,
+        "ease": "Quad.easeOut",
+        "mirror": true
+      }
+    },
+    "attackMeta": {
+      "pattern": "single"
+    }
+  }
+}

@@ -14,63 +14,67 @@
     {
       "id": "rear-feet",
       "src": "/assets/pets/fire-turtle/level-1/layers/rear-feet.png",
-      "x": -35,
-      "y": -58,
+      "x": -48,
+      "y": -88,
       "originX": 0.5,
       "originY": 0.2,
       "z": 1,
-      "scale": 0.8
+      "scale": 0.5,
+      "visible": true,
+      "angle": 10
     },
     {
       "id": "body",
       "src": "/assets/pets/fire-turtle/level-1/layers/body.png",
       "x": 0,
-      "y": -75,
+      "y": -115,
       "originX": 0.5,
       "originY": 0.5,
       "z": 2,
-      "scale": 0.8
+      "scale": 0.7
     },
     {
       "id": "shell",
       "src": "/assets/pets/fire-turtle/level-1/layers/shell.png",
-      "x": -10,
-      "y": -105,
+      "x": 13,
+      "y": -122,
       "originX": 0.5,
       "originY": 0.6,
       "z": 3,
-      "scale": 0.85
+      "scale": 0.55,
+      "visible": true
     },
     {
       "id": "front-feet",
       "src": "/assets/pets/fire-turtle/level-1/layers/front-feet.png",
-      "x": 42,
-      "y": -58,
+      "x": 63,
+      "y": -82,
       "originX": 0.5,
       "originY": 0.2,
-      "z": 4,
-      "scale": 0.8
+      "z": 2,
+      "scale": 0.4,
+      "angle": 3
     },
     {
       "id": "head",
       "src": "/assets/pets/fire-turtle/level-1/layers/head.png",
-      "x": 44,
-      "y": -78,
+      "x": 96,
+      "y": -118,
       "originX": 0.16,
       "originY": 0.62,
       "z": 2.5,
-      "scale": 0.18,
-      "angle": 8
+      "scale": 0.06,
+      "angle": -2
     },
     {
       "id": "eyes-open",
       "src": "/assets/pets/fire-turtle/level-1/layers/eyes-open.png",
-      "x": 72,
-      "y": -55,
+      "x": 422,
+      "y": -175,
       "originX": 0.3,
       "originY": 0.65,
       "z": 5.1,
-      "scale": 0.28,
+      "scale": 4.5,
       "parent": "head",
       "blink": "open",
       "angle": -16
@@ -78,12 +82,12 @@
     {
       "id": "eyes-closed",
       "src": "/assets/pets/fire-turtle/level-1/layers/eyes-closed.png",
-      "x": 72,
-      "y": -55,
+      "x": 422,
+      "y": -175,
       "originX": 0.3,
       "originY": 0.65,
       "z": 5.11,
-      "scale": 0.28,
+      "scale": 4.5,
       "parent": "head",
       "blink": "closed",
       "angle": -16
@@ -200,7 +204,7 @@
             "property": "scaleY",
             "values": [
               1,
-              1.012,
+              1.052,
               1
             ]
           },
@@ -209,7 +213,7 @@
             "property": "y",
             "values": [
               0,
-              -2,
+              -5,
               0
             ]
           },
@@ -218,7 +222,16 @@
             "property": "y",
             "values": [
               0,
-              -2,
+              5,
+              0
+            ]
+          },
+          {
+            "target": "head",
+            "property": "angle",
+            "values": [
+              0,
+              5,
               0
             ]
           }
