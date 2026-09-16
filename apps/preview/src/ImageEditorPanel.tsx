@@ -3,7 +3,7 @@ import { slotsForEvolution, speciesTemplate, type UploadSlot } from '../../../pa
 import type { PetDefinition } from '../../../packages/asset-core/src/types';
 import { combatVfxPresentation } from '../../../packages/asset-core/src/resolve';
 import { addPetImages, replacePetImages } from './api';
-import { isPng, readFile, runtimeFile, imageSize } from './files';
+import { isPng, readFile } from './files';
 import { combatVfxLabel, groupByPetPart, layerLabel, selectedPetKey } from './labels';
 import type { ResolvedPet } from './studioTypes';
 
@@ -15,7 +15,6 @@ type ReplacementAsset = {
   currentSrc: string;
   destSrc: string;
   shared: boolean;
-  runtimeSize?: { width: number; height: number };
 };
 
 function recipeSlots(pet: ResolvedPet) {
@@ -67,7 +66,6 @@ function replacementAssetsFor(pet: ResolvedPet): ReplacementAsset[] {
       currentSrc: layer.src,
       destSrc,
       shared,
-      runtimeSize: shared ? slot?.runtimeSize : undefined,
     });
   };
 
@@ -88,7 +86,6 @@ function replacementAssetsFor(pet: ResolvedPet): ReplacementAsset[] {
       currentSrc: src,
       destSrc: shared ? canonicalSrc(pet, slot, semantic, 'effects') : src,
       shared,
-      runtimeSize: shared ? slot?.runtimeSize : undefined,
     });
   }
   return items;
@@ -120,18 +117,16 @@ export function ImageEditorPanel({ pet, manifest, onClose }: { pet: ResolvedPet;
     const invalid = chosen.find(({ file }) => !isPng(file));
     if (invalid) { setReplaceStatus(`${invalid.file.name} không phải PNG`); return; }
     setReplaceBusy(true);
-    setReplaceStatus('Đang kiểm tra kích thước và lưu revision…');
+    setReplaceStatus('Đang giữ nguyên PNG và lưu revision…');
     try {
       const uploads = [];
       for (const { file, asset } of chosen) {
-        const size = asset.runtimeSize ?? await imageSize(asset.currentSrc);
         uploads.push({
           kind: asset.kind,
           id: asset.id,
           src: asset.currentSrc,
           destSrc: asset.destSrc,
           sourceDataUrl: await readFile(file),
-          runtimeDataUrl: await runtimeFile(file, size),
         });
       }
       const result = await replacePetImages(pet.id, uploads);
@@ -156,10 +151,10 @@ export function ImageEditorPanel({ pet, manifest, onClose }: { pet: ResolvedPet;
     setAddStatus('Đang thêm asset và cập nhật manifest…');
     try {
       const next = structuredClone(manifest) as PetDefinition;
-      const uploads: Array<{ file: string; folder: 'layers' | 'effects'; sourceDataUrl: string; runtimeDataUrl: string }> = [];
+      const uploads: Array<{ file: string; folder: 'layers' | 'effects'; sourceDataUrl: string }> = [];
       for (const { file, slot } of chosen) {
         const src = `/assets/pets/${next.lineageId}/level-${next.evolutionLevel}/${slot.folder}/${slot.file}`;
-        uploads.push({ file: slot.file, folder: slot.folder, sourceDataUrl: await readFile(file), runtimeDataUrl: await runtimeFile(file, slot.runtimeSize) });
+        uploads.push({ file: slot.file, folder: slot.folder, sourceDataUrl: await readFile(file) });
         if (slot.combatVfx) {
           next.effects ??= {};
           next.effects.attack ??= {};
@@ -187,7 +182,7 @@ export function ImageEditorPanel({ pet, manifest, onClose }: { pet: ResolvedPet;
         <div>
           <p className="label">QUẢN LÝ PNG</p>
           <h2>Ảnh của pet đang chọn</h2>
-          <p className="muted">Mỗi layer/recipe slot là một PNG riêng. Pet cũ đang dùng chung một file cho nhiều chân hoặc mắt sẽ được tách sang layers/id.png khi bạn thay ảnh đó. Source upload được giữ trong assets/inbox.</p>
+          <p className="muted">Mỗi layer/recipe slot là một PNG riêng. Ảnh thay thế giữ nguyên kích thước, alpha, transparent padding và artwork offset; source upload được giữ trong assets/inbox.</p>
         </div>
         <button type="button" aria-label="Đóng" onClick={onClose}>×</button>
       </div>

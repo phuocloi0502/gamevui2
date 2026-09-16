@@ -1,6 +1,6 @@
 # Pet production prompt template — GameVui Asset Studio
 
-Đây là companion template chuyên cho Fox. Trước khi dùng, phải đọc `docs/chatgpt-pet-layer-factory.md`; species semantics nằm ở `docs/pets-catalog.md`, còn slot/filename/required/optional/runtimeSize cuối cùng do `packages/asset-core/src/petCatalog.ts` quyết định.
+Đây là companion template chuyên cho Fox. Trước khi dùng, phải đọc `docs/chatgpt-pet-layer-factory.md`; species semantics nằm ở `docs/pets-catalog.md`, còn slot/filename/required/optional cuối cùng do `packages/asset-core/src/petCatalog.ts` quyết định.
 
 ## Workflow bắt buộc
 
@@ -196,9 +196,9 @@ QUY TẮC FILE:
 Dừng sau một ảnh khi đủ mọi ô trong danh sách.
 ```
 
-## Baseline runtime cho Fox bình thường
+## Kích thước tham khảo cho Fox bình thường
 
-Đây là kích thước khởi đầu của template Asset Studio, không phải yêu cầu ép méo source. Codex có thể điều chỉnh theo anatomy sau khi kiểm tra.
+Các số dưới đây chỉ là kích thước tham khảo khi chuẩn bị artwork thủ công. Asset Studio không resize ảnh upload về các kích thước này; PNG runtime giữ nguyên canvas, transparent padding và artwork offset, còn vị trí/tỷ lệ/pivot được chỉnh bằng manifest/UI.
 
 | Slot | Runtime baseline | Pivot/origin gợi ý |
 |---|---:|---|
@@ -207,7 +207,7 @@ Dừng sau một ảnh khi đủ mọi ô trong danh sách.
 | `body` | 308×225 | center |
 | `head`, `eyes-open`, `eyes-closed` | 302×318 | gần cổ, khoảng `0.5, 0.88` |
 
-Mỗi layer multi-tail dùng runtime canvas 228×220 như tail đơn; effect không có kích thước cứng nên cần canvas đủ padding và transform trong `asset.json`.
+Layer multi-tail và effect có thể dùng canvas khác các số tham khảo miễn có padding phù hợp. Giữ hai layer mắt cùng canvas/alignment để blink không nhảy.
 
 ## Handoff cho Codex
 

@@ -89,7 +89,7 @@ Renderer không biết khái niệm “9 tails”. Clip override của pet targe
 2. Tạo một layer sheet rồi để Codex tách vào `assets/inbox/<lineage-id>/level-<n>/layers/` hoặc `effects/`. Không tạo chúng bằng cách cắt master đã lắp.
 3. Kiểm tra alpha, padding, kích thước và phần anatomy bị che của từng layer.
 4. Tạo `assets/pets/<lineage-id>/level-<n>/asset.json`; đường dẫn runtime bắt đầu `/assets/pets/<lineage-id>/level-<n>/`.
-5. Chuẩn hóa/copy PNG sang `public/assets/pets/<lineage-id>/level-<n>/` mà không ghi đè source trong inbox.
+5. Sau khi tiền xử lý/tách sheet hoàn tất, copy PNG cuối sang `public/assets/pets/<lineage-id>/level-<n>/` nguyên kích thước, alpha, padding và artwork offset; không ghi đè source trong inbox.
 6. Phaser dựng preview từ manifest. Sau khi ghép đúng mới export `master.png`/`preview.png` làm bằng chứng kiểm chứng.
 7. Kiểm tra animation ở kích thước gameplay, loop, blink, flip, transform và layer visibility. Chỉ đổi status thành `ready` sau khi kiểm tra.
 

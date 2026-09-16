@@ -4,7 +4,7 @@
 >
 > This is the semantic/art-direction catalog: it describes species identity, anatomy, role, combat identity, evolution direction and VFX language. It is not the executable slot source of truth. The 50 IDs below are lineage IDs; each lineage supports three evolution asset forms.
 >
-> Before creating production PNG assets, ChatGPT Web must also read `docs/chatgpt-pet-layer-factory.md`. `packages/asset-core/src/petCatalog.ts` makes the final executable decision for slots, filenames, required/optional flags, runtime sizes and upload recipes; if this document differs, the TypeScript recipe wins.
+> Before creating production PNG assets, ChatGPT Web must also read `docs/chatgpt-pet-layer-factory.md`. `packages/asset-core/src/petCatalog.ts` makes the final executable decision for slots, filenames, required/optional flags, initial transforms and upload recipes; if this document differs, the TypeScript recipe wins.
 > Do not modify Git history, commit, or push unless explicitly requested.
 
 ---
@@ -93,7 +93,7 @@ different species merely because it shares a rig group.
 
 Default view for new pet artwork is 3/4 facing right. `front` means the head/chest side, `rear` means the tail side, `near` is closer to the viewer and `far` is farther from the viewer. Near/far must read through perspective; Fox and Wolf use four independently drawn limb PNGs.
 
-The table below supplies species routing and artwork identity. Exact required/optional flags, filenames, transforms, z values and runtimeSize are executable data in `packages/asset-core/src/petCatalog.ts`; if this summary differs, the TypeScript file wins.
+The table below supplies species routing and artwork identity. Exact required/optional flags, filenames, transforms and z values are executable data in `packages/asset-core/src/petCatalog.ts`; if this summary differs, the TypeScript file wins.
 
 | Species ID / name | Archetype / rig | Required character files | Optional character / pet visual VFX | Optional Combat VFX |
 |---|---|---|---|---|
@@ -108,7 +108,7 @@ The table below supplies species routing and artwork identity. Exact required/op
 | `serpent` / Serpent | serpent / `serpent-base` | `tail.png`, `body-lower.png`, `body-upper.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `jaw.png`, `crest.png` | Element Lance: `attack-cast.png`, `beam.png`, `impact.png` |
 | `hawk` / Hawk | winged / `winged-base` | `rear-wing.png`, `tail-fan.png`, `body.png`, `talons.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `crest.png` | Cyclone Dive: `attack-trail.png`, `vortex.png`, `impact.png` |
 
-Fox runtimeSize targets currently defined by code are: every single-tail or multi-tail layer 228×220, each independent leg 70×123, body 308×225 and head/eyes-open/eyes-closed 302×318. Other species currently have no fixed runtimeSize in the executable catalog; keep high-quality source aspect ratio and let Asset Studio/Codex normalize without stretching.
+Asset Studio does not impose a runtime size. It preserves every uploaded PNG's original dimensions, alpha, transparent padding and artwork offset. Use manifest transforms in the UI to set position, scale and pivot. Keep `eyes-open` and `eyes-closed` on matching canvases so blink does not jump.
 
 Z-order is the numeric `z` in `petCatalog.ts`: smaller is farther back, larger is farther front. `head.png` không chứa mắt. `eyes-open.png` và `eyes-closed.png` là hai layer thật cùng parent `head`, lần lượt có `blink: "open"` và `blink: "closed"`; chúng phải cùng canvas và overlay chính xác trên head. Không tạo closed-head asset hoặc dùng `closedSrc`. Element effects should use only filenames allowed by the species recipe. Optional does not mean “always omit”: create a suitable optional file when it materially strengthens the chosen element/species identity.
 
@@ -122,7 +122,7 @@ Stage folders scope filenames, so every evolution may use `attack-cast.png`, `pr
 
 New reusable rigs emit `attack-release` as a transport-neutral marker. The preview/gameplay consumer decides whether that moment activates a projectile, melee trail or special attack asset. Legacy `pet-base` keeps its existing marker name.
 
-All species share the evolution rules below. Never change species identity between levels. ImageGen uses one layer sheet of isolated parts plus a final assembled `assembly-ref` cell for composition reference. Never crop production layers from that assembled cell, invent filenames, obscure anatomy with VFX or stretch art to runtimeSize.
+All species share the evolution rules below. Never change species identity between levels. ImageGen uses one layer sheet of isolated parts plus a final assembled `assembly-ref` cell for composition reference. Never crop production layers from that assembled cell, invent filenames, obscure anatomy with VFX or automatically resize/stretch uploaded art.
 
 Creation workflow in Asset Studio:
 
