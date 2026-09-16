@@ -4,7 +4,7 @@
 >
 > This is the semantic/art-direction catalog: it describes species identity, anatomy, role, combat identity, evolution direction and VFX language. It is not the executable slot source of truth. The 50 IDs below are lineage IDs; each lineage supports three evolution asset forms.
 >
-> Before creating production PNG assets, ChatGPT Web must also read `docs/chatgpt-pet-layer-factory.md`. `packages/asset-core/src/petCatalog.ts` makes the final executable decision for slots, filenames, required/optional flags, initial transforms and upload recipes; if this document differs, the TypeScript recipe wins.
+> Before creating production PNG assets, ChatGPT Web must also read `docs/chatgpt-pet-layer-factory.md` and the matching file in `docs/pet-production/` (see `docs/pet-production/README.md`). `packages/asset-core/src/petCatalog.ts` makes the final executable decision for slots, filenames, required/optional flags, initial transforms and upload recipes; if this document differs, the TypeScript recipe wins.
 > Do not modify Git history, commit, or push unless explicitly requested.
 
 ---
@@ -97,16 +97,16 @@ The table below supplies species routing and artwork identity. Exact required/op
 
 | Species ID / name | Archetype / rig | Required character files | Optional character / pet visual VFX | Optional Combat VFX |
 |---|---|---|---|---|
-| `fox` / Fox | quadruped / `fox-quadruped` | `tail.png`, `rear-far.png`, `rear-near.png`, `body.png`, `front-far.png`, `front-near.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `effect-back.png`, `effect-front.png`, `particles.png`; Level 3 tail variants | Element Tail Bolt: `attack-cast.png`, `projectile.png`, `impact.png` |
-| `wolf` / Wolf | quadruped / `quadruped-base` | `tail.png`, `rear-far.png`, `front-far.png`, `body.png`, `rear-near.png`, `front-near.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `mane.png`, `jaw.png` | Fang Rush: `attack-cast.png`, `attack-trail.png`, `impact.png`; no projectile by default |
-| `bunny` / Bunny | hopper / `hopper-base` | `rear-ear.png`, `body.png`, `hind-leg.png`, `front-paw.png`, `head.png`, `eyes-open.png`, `eyes-closed.png`, `front-ear.png`, `tail.png` | `shadow.png` | Burst Ram: `attack-trail.png`, `impact.png`; không projectile. Production sheet: `docs/pet-production/bunny-production-spec.md` |
-| `turtle` / Turtle | tank / `tank-base` | `rear-feet.png`, `body.png`, `shell.png`, `front-feet.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shell-runes.png` | Element Cage: `attack-cast.png`, `cage.png`, `impact.png` |
-| `dragon` / Dragon | winged / `winged-base` | `back-wing.png`, `tail.png`, `body.png`, `legs.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `horns.png` | Element Meteor: `attack-cast.png`, `meteor.png`, `impact.png` |
-| `owl` / Owl | winged / `winged-base` | `back-wing.png`, `tail-feathers.png`, `body.png`, `talons.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `forehead-rune.png` | Element Orb: `attack-cast.png`, `projectile.png`, `impact.png` |
-| `golem` / Golem | tank / `tank-base` | `rear-arm.png`, `rear-leg.png`, `torso.png`, `core.png`, `front-leg.png`, `front-arm.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `rock-fragments.png` | Core Quake: `attack-cast.png`, `ground-wave.png`, `impact.png` |
-| `slime` / Slime | blob / `blob-base` | `blob.png`, `face.png` | `inner-core.png`, `front-gloss.png`, `top-effect.png` | Element Pulse: `attack-cast.png`, `pulse.png`, `impact.png` |
-| `serpent` / Serpent | serpent / `serpent-base` | `tail.png`, `body-lower.png`, `body-upper.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `jaw.png`, `crest.png` | Element Lance: `attack-cast.png`, `beam.png`, `impact.png` |
-| `hawk` / Hawk | winged / `winged-base` | `rear-wing.png`, `tail-fan.png`, `body.png`, `talons.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `crest.png` | Cyclone Dive: `attack-trail.png`, `vortex.png`, `impact.png` |
+| `fox` / Fox | quadruped / `fox-quadruped` | `tail.png`, `rear-far.png`, `rear-near.png`, `body.png`, `front-far.png`, `front-near.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `effect-back.png`, `effect-front.png`, `particles.png`; Level 3 tail variants | Element Tail Bolt: `attack-cast.png`, `projectile.png`, `impact.png`. Spec: `docs/pet-production/fox-production-spec.md` |
+| `wolf` / Wolf | quadruped / `quadruped-base` | `tail.png`, `rear-far.png`, `front-far.png`, `body.png`, `rear-near.png`, `front-near.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `mane.png`, `jaw.png` | Fang Rush: `attack-cast.png`, `attack-trail.png`, `impact.png`; no projectile. Spec: `docs/pet-production/wolf-production-spec.md` |
+| `bunny` / Bunny | hopper / `hopper-base` | `rear-ear.png`, `body.png`, `hind-leg.png`, `front-paw.png`, `head.png`, `eyes-open.png`, `eyes-closed.png`, `front-ear.png`, `tail.png` | `shadow.png` | Burst Ram: `attack-trail.png`, `impact.png`; không projectile. Spec: `docs/pet-production/bunny-production-spec.md` |
+| `turtle` / Turtle | tank / `tank-base` | `rear-feet.png`, `body.png`, `shell.png`, `front-feet.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `shell-runes.png` | Element Cage: `attack-cast.png`, `cage.png`, `impact.png`. Spec: `docs/pet-production/turtle-production-spec.md` |
+| `dragon` / Dragon | winged / `winged-base` | `back-wing.png`, `tail.png`, `body.png`, `legs.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `horns.png` | Element Meteor: `attack-cast.png`, `meteor.png`, `impact.png`. Spec: `docs/pet-production/dragon-production-spec.md` |
+| `owl` / Owl | winged / `winged-base` | `back-wing.png`, `tail-feathers.png`, `body.png`, `talons.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `forehead-rune.png` | Element Orb: `attack-cast.png`, `projectile.png`, `impact.png`. Spec: `docs/pet-production/owl-production-spec.md` |
+| `golem` / Golem | tank / `tank-base` | `rear-arm.png`, `rear-leg.png`, `torso.png`, `core.png`, `front-leg.png`, `front-arm.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `rock-fragments.png` | Core Quake: `attack-cast.png`, `ground-wave.png`, `impact.png`. Spec: `docs/pet-production/golem-production-spec.md` |
+| `slime` / Slime | blob / `blob-base` | `blob.png`, `face.png` | `inner-core.png`, `front-gloss.png`, `top-effect.png` | Element Pulse: `attack-cast.png`, `pulse.png`, `impact.png`. Spec: `docs/pet-production/slime-production-spec.md` |
+| `serpent` / Serpent | serpent / `serpent-base` | `tail.png`, `body-lower.png`, `body-upper.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `jaw.png`, `crest.png` | Element Lance: `attack-cast.png`, `beam.png`, `impact.png`. Spec: `docs/pet-production/serpent-production-spec.md` |
+| `hawk` / Hawk | winged / `winged-base` | `rear-wing.png`, `tail-fan.png`, `body.png`, `talons.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `crest.png` | Cyclone Dive: `attack-trail.png`, `vortex.png`, `impact.png`. Spec: `docs/pet-production/hawk-production-spec.md` |
 
 Asset Studio does not impose a runtime size. It preserves every uploaded PNG's original dimensions, alpha, transparent padding and artwork offset. Use manifest transforms in the UI to set position, scale and pivot. Keep `eyes-open` and `eyes-closed` on matching canvases so blink does not jump.
 
@@ -503,6 +503,8 @@ Shadow:
 
 ### Suggested production package
 
+Sheet cố định và luật ô: `docs/pet-production/fox-production-spec.md`.
+
 ```text
 Character / Pet Visual VFX:
 effect-back, tail, rear-far, rear-near, body,
@@ -749,9 +751,11 @@ Shadow:
 
 ### Suggested production package
 
+Sheet cố định: `docs/pet-production/turtle-production-spec.md`. `rear-feet` / `front-feet` mỗi file một cặp; không bốn chân Fox.
+
 ```text
 Character layers:
-rear-feet, body, shell, front-feet, head, eyes-open, eyes-closed, shell-runes
+shadow, rear-feet, body, shell, front-feet, head, eyes-open, eyes-closed, shell-runes
 
 Combat VFX — Element Cage:
 attack-cast, cage, impact
@@ -885,6 +889,8 @@ Shadow:
 
 ### Suggested production package
 
+Sheet cố định: `docs/pet-production/dragon-production-spec.md`.
+
 ```text
 Character / Pet Visual VFX:
 back-wing, tail, body, legs, front-wing, head,
@@ -1007,6 +1013,8 @@ Shadow:
 
 ### Suggested production package
 
+Sheet cố định: `docs/pet-production/owl-production-spec.md`. Phân biệt Hawk (Owl = tròn).
+
 ```text
 Character layers:
 back-wing, tail-feathers, body, talons, front-wing,
@@ -1125,9 +1133,11 @@ Shadow:
 
 ### Suggested production package
 
+Sheet cố định: `docs/pet-production/wolf-production-spec.md`. Bốn chân độc lập; không projectile mặc định.
+
 ```text
 Character layers:
-tail, rear-far, front-far, body, mane,
+shadow, tail, rear-far, front-far, body, mane,
 rear-near, front-near, head, eyes-open, eyes-closed, jaw
 
 Combat VFX — Fang Rush:
@@ -1251,9 +1261,11 @@ Shadow:
 
 ### Suggested production package
 
+Sheet cố định: `docs/pet-production/golem-production-spec.md`.
+
 ```text
 Character / Pet Visual VFX:
-rear-arm, rear-leg, torso, core, front-leg, front-arm,
+shadow, rear-arm, rear-leg, torso, core, front-leg, front-arm,
 head, eyes-open, eyes-closed, rock-fragments
 
 Combat VFX — Core Quake:
@@ -1365,6 +1377,8 @@ Shadow:
 - smoke leakage.
 
 ### Suggested production package
+
+Sheet cố định: `docs/pet-production/slime-production-spec.md`. Không dùng head/eyes recipe; mặt ở `face.png`.
 
 ```text
 Character / Pet Visual VFX:
@@ -1487,9 +1501,11 @@ Shadow:
 
 ### Suggested production package
 
+Sheet cố định: `docs/pet-production/serpent-production-spec.md`. Không chân; combat là `beam` không orb.
+
 ```text
 Character layers:
-tail, body-lower, body-upper, head, eyes-open, eyes-closed, jaw, crest
+shadow, tail, body-lower, body-upper, head, eyes-open, eyes-closed, jaw, crest
 
 Combat VFX — Element Lance:
 attack-cast, beam, impact
@@ -1599,6 +1615,8 @@ Shadow:
 - void vortex.
 
 ### Suggested production package
+
+Sheet cố định: `docs/pet-production/hawk-production-spec.md`. Phân biệt Owl (Hawk = dài). Filename cánh: `rear-wing`.
 
 ```text
 Character layers:
