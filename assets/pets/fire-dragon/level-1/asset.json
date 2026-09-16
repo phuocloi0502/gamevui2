@@ -14,7 +14,7 @@
     {
       "id": "back-wing",
       "x": -38,
-      "y": -253,
+      "y": -178,
       "originX": 0.65,
       "originY": 0.65,
       "z": 1,
@@ -26,7 +26,7 @@
     {
       "id": "tail",
       "x": -56,
-      "y": -294,
+      "y": -264,
       "originX": 0.82,
       "originY": 0.7,
       "z": 2,
@@ -36,23 +36,23 @@
     },
     {
       "id": "leg-far",
-      "x": 71.177,
-      "y": -160.603,
+      "x": 63.177,
+      "y": -156.603,
       "originX": 0.5,
       "originY": 0.2,
       "z": 2.5,
-      "scale": 0.6,
+      "scale": 0.5,
       "src": "/assets/pets/fire-dragon/level-1/layers/leg-far.png",
       "angle": 3
     },
     {
       "id": "body",
-      "x": 0,
-      "y": -248,
+      "x": 24,
+      "y": -177,
       "originX": 0.5,
       "originY": 0.5,
       "z": 3,
-      "scale": 0.5,
+      "scale": 0.15,
       "src": "/assets/pets/fire-dragon/level-1/layers/body.png"
     },
     {
@@ -62,29 +62,29 @@
       "originX": 0.5,
       "originY": 0.2,
       "z": 4,
-      "scale": 0.6,
+      "scale": 0.5,
       "src": "/assets/pets/fire-dragon/level-1/layers/leg-near.png",
       "angle": 3
     },
     {
       "id": "front-wing",
       "x": -114,
-      "y": -228,
+      "y": -171,
       "originX": 0.35,
       "originY": 0.65,
-      "z": 3,
+      "z": 2,
       "scale": 0.5,
       "src": "/assets/pets/fire-dragon/level-1/layers/front-wing.png",
       "visible": true
     },
     {
       "id": "head",
-      "x": 62,
-      "y": -272,
+      "x": 87,
+      "y": -217,
       "originX": 0.5,
       "originY": 0.82,
       "z": 6,
-      "scale": 0.45,
+      "scale": 0.4,
       "src": "/assets/pets/fire-dragon/level-1/layers/head.png"
     },
     {
@@ -143,21 +143,21 @@
         "trigger": "attack-start",
         "startAnchor": "pet",
         "endAnchor": "pet",
-        "startX": 75,
-        "startY": -135,
-        "endX": 75,
-        "endY": -135,
+        "startX": 127,
+        "startY": -222,
+        "endX": 127,
+        "endY": -222,
         "originX": 0.5,
         "originY": 0.5,
-        "startScale": 0.5,
-        "endScale": 0.58,
+        "startScale": 0.1,
+        "endScale": 0.3,
         "startAngle": 0,
         "endAngle": 0,
         "startAlpha": 0.9,
         "endAlpha": 0,
         "depth": 20,
         "delay": 0,
-        "duration": 450,
+        "duration": 650,
         "ease": "Sine.easeInOut",
         "mirror": true
       },
@@ -172,16 +172,16 @@
         "endY": 0,
         "originX": 0.5,
         "originY": 0.5,
-        "startScale": 0.7,
-        "endScale": 0.78,
-        "startAngle": 0,
-        "endAngle": 0,
+        "startScale": 0.3,
+        "endScale": 0.4,
+        "startAngle": -30,
+        "endAngle": -30,
         "startAlpha": 0.95,
         "endAlpha": 0,
         "depth": 20,
         "delay": 0,
         "duration": 520,
-        "ease": "Quad.easeOut",
+        "ease": "Linear",
         "mirror": true
       },
       "impact": {
@@ -195,8 +195,8 @@
         "endY": 0,
         "originX": 0.5,
         "originY": 0.5,
-        "startScale": 0.65,
-        "endScale": 0.78,
+        "startScale": 0.2,
+        "endScale": 0.3,
         "startAngle": 0,
         "endAngle": 0,
         "startAlpha": 0.95,
@@ -210,6 +210,81 @@
     },
     "attackMeta": {
       "pattern": "single"
+    }
+  },
+  "overrides": {
+    "clips": {
+      "idle": {
+        "duration": 1500,
+        "loop": true,
+        "tracks": [
+          {
+            "target": "body",
+            "property": "y",
+            "values": [
+              0,
+              -5,
+              0
+            ]
+          },
+          {
+            "target": "back-wing",
+            "property": "angle",
+            "values": [
+              -5,
+              7,
+              -5
+            ]
+          },
+          {
+            "target": "tail",
+            "property": "angle",
+            "values": [
+              -5,
+              5,
+              -5
+            ]
+          },
+          {
+            "target": "head",
+            "property": "angle",
+            "values": [
+              -5,
+              5,
+              -5
+            ]
+          },
+          {
+            "target": "front-wing",
+            "property": "angle",
+            "values": [
+              5,
+              -7,
+              5
+            ]
+          }
+        ]
+      },
+      "attack": {
+        "duration": 900,
+        "loop": false,
+        "event": {
+          "at": 730,
+          "name": "attack-release"
+        },
+        "tracks": [
+          {
+            "target": "head",
+            "property": "angle",
+            "values": [
+              0,
+              -24,
+              6,
+              0
+            ]
+          }
+        ]
+      }
     }
   }
 }
