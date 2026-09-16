@@ -1,0 +1,14 @@
+{
+  "assets": [
+    {
+      "asset_id": "7aa9aeb9-84c8-4c8b-b19c-d22053bcf985",
+      "sha12": "5568d1bf2b8f",
+      "label": "Fire Fox Level 1 master"
+    },
+    {
+      "asset_id": "6b7a2d83-33bd-4c83-b63a-1f1eba7322c0",
+      "sha12": "60e0e2414fb0",
+      "label": "Fire Fox Level 1 run spritesheet — 8 frames"
+    }
+  ]
+}
