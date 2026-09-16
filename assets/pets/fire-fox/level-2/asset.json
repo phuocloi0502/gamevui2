@@ -12,17 +12,6 @@
   "reference": "/assets/pets/fire-fox/level-2/layers/body.png",
   "layers": [
     {
-      "id": "effect-back",
-      "x": 0,
-      "y": -106,
-      "originX": 0.5,
-      "originY": 0.5,
-      "z": 1,
-      "scale": 1.6,
-      "src": "/assets/pets/fire-fox/level-2/effects/effect-back.png",
-      "visible": true
-    },
-    {
       "id": "tail",
       "x": -55,
       "y": -90,
@@ -42,7 +31,8 @@
       "z": 3,
       "scale": 1,
       "src": "/assets/pets/fire-fox/level-2/layers/rear-far.png",
-      "angle": -4
+      "angle": -4,
+      "alpha": 0.7
     },
     {
       "id": "rear-near",
@@ -74,7 +64,7 @@
       "scale": 0.8,
       "src": "/assets/pets/fire-fox/level-2/layers/front-far.png",
       "angle": -2,
-      "alpha": 1
+      "alpha": 0.9
     },
     {
       "id": "front-near",
@@ -94,7 +84,7 @@
       "originX": 0.5,
       "originY": 0.88,
       "z": 8,
-      "scale": 0.78,
+      "scale": 0.8,
       "src": "/assets/pets/fire-fox/level-2/layers/head.png"
     },
     {
@@ -122,22 +112,10 @@
       "blink": "closed",
       "src": "/assets/pets/fire-fox/level-2/layers/eyes-closed.png",
       "angle": -7
-    },
-    {
-      "id": "effect-front",
-      "x": 11,
-      "y": -80,
-      "originX": 0.5,
-      "originY": 0.5,
-      "z": 9,
-      "scale": 0.6,
-      "src": "/assets/pets/fire-fox/level-2/effects/effect-front.png",
-      "visible": true,
-      "alpha": 1
     }
   ],
   "preview": {
-    "x": 420,
+    "x": 311,
     "y": 440,
     "scale": 1
   },
@@ -146,7 +124,8 @@
     "attack": {
       "cast": "/assets/pets/fire-fox/level-2/effects/attack-cast.png",
       "projectile": "/assets/pets/fire-fox/level-2/effects/projectile.png",
-      "impact": "/assets/pets/fire-fox/level-2/effects/impact.png"
+      "impact": "/assets/pets/fire-fox/level-2/effects/impact.png",
+      "splash": "/assets/pets/fire-fox/level-2/effects/splash.png"
     },
     "attackPresentation": {
       "cast": {
@@ -217,7 +196,34 @@
         "duration": 420,
         "ease": "Quad.easeOut",
         "mirror": true
+      },
+      "splash": {
+        "enabled": true,
+        "trigger": "after-primary",
+        "startAnchor": "aoe-center",
+        "endAnchor": "aoe-center",
+        "startX": 0,
+        "startY": 0,
+        "endX": 0,
+        "endY": 0,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.08,
+        "endScale": 0.65,
+        "startAngle": 0,
+        "endAngle": 20,
+        "startAlpha": 1,
+        "endAlpha": 0,
+        "depth": 22,
+        "delay": 80,
+        "duration": 400,
+        "ease": "Quad.easeOut",
+        "mirror": false
       }
+    },
+    "attackMeta": {
+      "pattern": "chain",
+      "chainCount": 2
     }
   }
 }

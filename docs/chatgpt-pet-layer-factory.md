@@ -15,7 +15,7 @@ Tài liệu này dành cho ChatGPT Web có quyền đọc repository. Mục tiê
 5. Executable recipe: `packages/asset-core/src/petCatalog.ts`.
 6. Rig, manifest và reference liên quan để lấy technical context.
 
-Nếu slot, filename, required/optional hoặc runtimeSize trong Markdown mâu thuẫn với code, `packages/asset-core/src/petCatalog.ts` là nguồn thực thi cuối cùng. Nếu art identity mâu thuẫn, approved user reference thắng mô tả generic trong catalog, trừ khi người dùng yêu cầu redesign.
+Nếu slot, filename hoặc required/optional trong Markdown mâu thuẫn với code, `packages/asset-core/src/petCatalog.ts` là nguồn thực thi cuối cùng. Nếu art identity mâu thuẫn, approved user reference thắng mô tả generic trong catalog, trừ khi người dùng yêu cầu redesign.
 
 Không yêu cầu người dùng nhắc lại workflow hoặc thông tin đã có trong repo.
 
@@ -186,7 +186,7 @@ Mỗi ô slot:
 
 Cho phép caption nhỏ **dưới** ô, đúng filename recipe (`front-near.png`, `assembly-ref.png`); caption không đè lên artwork. Không watermark, UI hoặc frame cảnh.
 
-Không stretch từng bộ phận để ép runtimeSize. Codex/Asset Studio tách từng ô slot rồi normalize về runtime target; giữ `assembly-ref` làm reference, không đưa vào `layers/` runtime.
+Không resize, stretch, crop, căn giữa lại hoặc nén PNG tự động. Codex/Asset Studio giữ nguyên kích thước pixel, alpha, transparent padding và artwork offset của từng layer; việc căn vị trí, tỷ lệ và pivot thuộc transform trong manifest/UI. Giữ `assembly-ref` làm reference, không đưa vào `layers/` runtime.
 
 Output ImageGen: một file, ví dụ `layer-sheet.png`. Filename từng slot trên caption phải khớp executable recipe.
 
@@ -262,7 +262,7 @@ Không tự phát minh anatomy, Combat VFX semantic hoặc filename ngoài execu
 
 Tên trong bảng không có `.png` để dễ đọc; trên layer sheet dùng đúng filename đó làm caption ô. Sau khi Codex tách, file nằm ở `layers/` hoặc `effects/` đúng như `petCatalog.ts`. Một slot có thể tạo nhiều runtime instances ở species cho phép; không tự suy diễn điều đó cho Fox/Wolf.
 
-RuntimeSize cố định hiện chỉ được khai báo rõ cho Fox baseline: mỗi layer đuôi đơn hoặc multi-tail `228×220`, mỗi chân `70×123`, `body 308×225`, `head/eyes-open/eyes-closed 302×318`. Các slot không có runtimeSize phải giữ aspect/padding chất lượng cao; không tự stretch.
+Không có runtimeSize bắt buộc. Mọi species giữ nguyên kích thước và padding của PNG đã upload. Các con số baseline cũ của Fox chỉ có thể dùng làm tham khảo khi chuẩn bị artwork thủ công, không phải kích thước mà Asset Studio ép ảnh về.
 
 Z-order do `Layer.z` trong executable recipe quyết định, từ số nhỏ ở sau tới số lớn ở trước. Generation order không thay đổi z-order. Combat VFX không phải layer thường trực và không tham gia z-order của pet.
 

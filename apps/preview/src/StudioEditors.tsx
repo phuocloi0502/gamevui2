@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import type { Clip, CombatVfxAnchor, CombatVfxEase, CombatVfxPresentation, CombatVfxTrigger, Layer, PetDefinition, State } from '../../../packages/asset-core/src/types';
+import type { AttackMeta, AttackPattern, Clip, ClipEvent, CombatVfxAnchor, CombatVfxEase, CombatVfxPresentation, CombatVfxTrigger, Layer, PetDefinition, State } from '../../../packages/asset-core/src/types';
 import { combatVfxPresentation } from '../../../packages/asset-core/src/resolve';
 import { PetView } from '../../../packages/pet-runtime/src/PetView';
 import { CheckboxField, NumberField, SelectField, TintField } from './fields';
-import { combatTriggerLabels, combatVfxLabel, groupPetLayers, keyframeLabel, layerLabel, propertyLabels, stateLabels } from './labels';
+import { attackPatternLabels, combatAnchorLabels, combatTriggerLabels, combatVfxLabel, groupPetLayers, keyframeLabel, layerLabel, propertyLabels, stateLabels } from './labels';
 import type { ResolvedPet } from './studioTypes';
 
 const NUDGE_STEPS = [0.1, 1, 10, 100] as const;
@@ -97,7 +97,8 @@ export function StudioEditors({ pet, manifest, view, onSave, onRebuild, onPlay }
 
       <div className="combat-editor">
         <p className="label">CHỈNH COMBAT VFX</p>
-        <p className="editor-help">Mọi thông số được lưu theo pet và level trong asset.json. Điểm đầu/cuối dùng neo Pet hoặc Mục tiêu; X tự lật theo hướng pet khi bật “Lật theo hướng”.</p>
+        <p className="editor-help">Pattern quyết định preview: đơn, splash (vòng quanh mục tiêu), volley (nhiều đạn), chain hoặc AoE. Neo gồm Pet, Mục tiêu và Tâm AoE. X tự lật theo hướng pet khi bật “Lật theo hướng”.</p>
+        <AttackMetaEditor pet={pet} manifest={manifest} step={nudgeStep} onSave={onSave} />
         {!combatEntries.length && <p className="editor-empty">Pet này chưa khai báo Combat VFX.</p>}
         {combatEntries.map(([semantic]) => (
           <CombatVfxEditor key={semantic} semantic={semantic} pet={pet} manifest={manifest} step={nudgeStep} onSave={onSave} onPlay={() => onPlay('attack')} />
@@ -121,11 +122,7 @@ export function StudioEditors({ pet, manifest, view, onSave, onRebuild, onPlay }
                 <label>
                   <input type="checkbox" checked={clip.loop} onChange={event => commitClip(state, { ...pet.rig.clips![state], loop: event.target.checked })} /> Lặp liên tục
                 </label>
-                {clip.event && (
-                  <NumberField label="Thời điểm phát effect (ms)" step={nudgeStep} value={clip.event.at} onChange={value => {
-                    commitClip(state, { ...pet.rig.clips![state], event: { ...pet.rig.clips![state].event!, at: Math.max(0, value) } });
-                  }} />
-                )}
+                <ClipMarkersEditor state={state} clip={clip} step={nudgeStep} commitClip={commitClip} />
                 <button type="button" onClick={() => onPlay(state)}>Chạy thử</button>
                 {pet.layers.length > 0 && (
                   <button type="button" onClick={() => {
@@ -291,9 +288,12 @@ function CombatVfxEditor({ semantic, pet, manifest, step, onSave, onPlay }: {
     { value: 'attack-start', label: combatTriggerLabels['attack-start'] },
     { value: 'attack-release', label: combatTriggerLabels['attack-release'] },
     { value: 'after-primary', label: combatTriggerLabels['after-primary'] },
+    { value: 'after-impact', label: combatTriggerLabels['after-impact'] },
   ];
   const anchorOptions: Array<{ value: CombatVfxAnchor; label: string }> = [
-    { value: 'pet', label: 'Pet' }, { value: 'target', label: 'Mục tiêu' },
+    { value: 'pet', label: combatAnchorLabels.pet },
+    { value: 'target', label: combatAnchorLabels.target },
+    { value: 'aoe-center', label: combatAnchorLabels['aoe-center'] },
   ];
   const easeOptions: Array<{ value: CombatVfxEase; label: string }> = [
     { value: 'Linear', label: 'Đều' },
@@ -341,5 +341,80 @@ function CombatVfxEditor({ semantic, pet, manifest, step, onSave, onPlay }: {
       </fieldset>
       <button type="button" onClick={onPlay}>Chạy thử toàn bộ đòn</button>
     </details>
+  );
+}
+
+function AttackMetaEditor({ pet, manifest, step, onSave }: {
+  pet: ResolvedPet;
+  manifest: PetDefinition;
+  step: number;
+  onSave: () => void;
+}) {
+  const meta = pet.effects?.attackMeta ?? { pattern: 'single' as const };
+  const commit = (next: AttackMeta) => {
+    manifest.effects ??= {};
+    manifest.effects.attackMeta = next;
+    pet.effects ??= {};
+    pet.effects.attackMeta = next;
+    onSave();
+  };
+  const patternOptions: Array<{ value: AttackPattern; label: string }> = (
+    ['single', 'splash', 'chain', 'volley', 'aoe'] as AttackPattern[]
+  ).map(value => ({ value, label: attackPatternLabels[value] }));
+  return (
+    <div className="attack-meta-editor">
+      <SelectField label="Pattern đòn" value={meta.pattern} options={patternOptions} onChange={value => {
+        if (value === 'splash') commit({ pattern: 'splash', radius: meta.radius ?? 65 });
+        else if (value === 'aoe') commit({ pattern: 'aoe', radius: meta.radius ?? 100 });
+        else if (value === 'chain') commit({ pattern: 'chain', chainCount: meta.chainCount ?? 2 });
+        else if (value === 'volley') commit({ pattern: 'volley', volleyCount: meta.volleyCount ?? 3, volleySpread: meta.volleySpread ?? 30 });
+        else commit({ pattern: 'single' });
+      }} />
+      {(meta.pattern === 'splash' || meta.pattern === 'aoe') && (
+        <NumberField label="Bán kính splash / AoE" step={step} value={meta.radius ?? 65} onChange={value => commit({ ...meta, radius: Math.max(0, value) })} />
+      )}
+      {meta.pattern === 'chain' && (
+        <NumberField label="Số lần nảy thêm" step={step} value={meta.chainCount ?? 2} onChange={value => commit({ ...meta, chainCount: Math.max(0, Math.round(value)) })} />
+      )}
+      {meta.pattern === 'volley' && (
+        <>
+          <NumberField label="Số đạn volley" step={step} value={meta.volleyCount ?? 3} onChange={value => commit({ ...meta, volleyCount: Math.max(1, Math.round(value)) })} />
+          <NumberField label="Góc spread (độ)" step={step} value={meta.volleySpread ?? 30} onChange={value => commit({ ...meta, volleySpread: Math.max(0, value) })} />
+        </>
+      )}
+    </div>
+  );
+}
+
+function ClipMarkersEditor({ state, clip, step, commitClip }: {
+  state: State;
+  clip: Clip;
+  step: number;
+  commitClip: (state: State, next: Clip, rebuild?: boolean) => void;
+}) {
+  const markers: ClipEvent[] = clip.events?.length ? clip.events : (clip.event ? [clip.event] : []);
+  const write = (nextMarkers: ClipEvent[]) => {
+    const sorted = [...nextMarkers].sort((a, b) => a.at - b.at);
+    if (!sorted.length) commitClip(state, { ...clip, event: undefined, events: undefined });
+    else if (sorted.length === 1) commitClip(state, { ...clip, event: sorted[0], events: undefined });
+    else commitClip(state, { ...clip, event: undefined, events: sorted });
+  };
+  return (
+    <div className="clip-markers">
+      {markers.map((marker, index) => (
+          <div key={index} className="clip-marker-row">
+          <NumberField label={markers.length > 1 ? `Mốc ${index + 1} (ms)` : 'Thời điểm phát effect (ms)'} step={step} value={marker.at} onChange={value => {
+            write(markers.map((item, i) => i === index ? { ...item, at: Math.max(0, value) } : item));
+          }} />
+          {markers.length > 1 && (
+            <button type="button" onClick={() => write(markers.filter((_, i) => i !== index))}>Xóa mốc</button>
+          )}
+        </div>
+      ))}
+      <button type="button" onClick={() => {
+        const last = markers.at(-1);
+        write([...markers, { at: Math.max(0, (last?.at ?? 400) + 250), name: last?.name ?? 'attack-release' }]);
+      }}>+ Thêm mốc tung đòn</button>
+    </div>
   );
 }

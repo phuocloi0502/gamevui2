@@ -19,7 +19,16 @@ export interface Layer {
 export type State = 'idle' | 'walk' | 'attack';
 export type EvolutionLevel = 1 | 2 | 3;
 export interface Track { target: string; property: 'x'|'y'|'angle'|'scaleX'|'scaleY'|'alpha'; values: number[] }
-export interface Clip { duration: number; loop: boolean; tracks: Track[]; event?: { at: number; name: string } }
+export interface ClipEvent { at: number; name: string }
+export interface Clip {
+  duration: number;
+  loop: boolean;
+  tracks: Track[];
+  /** Single event marker — kept for backward compatibility. */
+  event?: ClipEvent;
+  /** Multiple ordered event markers for multi-phase attacks (e.g. volley ×3). */
+  events?: ClipEvent[];
+}
 export interface Rig {
   id: string;
   canvas: { width: number; height: number };
@@ -35,8 +44,8 @@ export interface CombatAttackVfx {
   /** Recipe-defined visual semantic such as meteor, vortex, cage or beam. */
   [semantic: string]: string | undefined;
 }
-export type CombatVfxTrigger = 'attack-start' | 'attack-release' | 'after-primary';
-export type CombatVfxAnchor = 'pet' | 'target';
+export type CombatVfxTrigger = 'attack-start' | 'attack-release' | 'after-primary' | 'after-impact';
+export type CombatVfxAnchor = 'pet' | 'target' | 'aoe-center';
 export type CombatVfxEase = 'Linear' | 'Sine.easeInOut' | 'Quad.easeOut' | 'Back.easeOut';
 export interface CombatVfxPresentation {
   enabled: boolean;
@@ -61,11 +70,28 @@ export interface CombatVfxPresentation {
   ease: CombatVfxEase;
   mirror: boolean;
 }
+/** Describes the attack targeting pattern for gameplay target selection and renderer VFX spawning. */
+export type AttackPattern = 'single' | 'splash' | 'chain' | 'volley' | 'aoe';
+
+export interface AttackMeta {
+  pattern: AttackPattern;
+  /** splash / aoe: approximate display-pixel radius at scale 1. */
+  radius?: number;
+  /** chain: number of additional bounce targets after the first. */
+  chainCount?: number;
+  /** volley: number of simultaneous projectile instances. */
+  volleyCount?: number;
+  /** volley: total spread angle in degrees, symmetrically distributed around the base trajectory. */
+  volleySpread?: number;
+}
+
 export interface PetEffects {
   color?: number;
   /** Visual bindings only. Damage, collision and target reactions belong to gameplay. */
   attack?: CombatAttackVfx;
   attackPresentation?: Record<string, Partial<CombatVfxPresentation>>;
+  /** Describes the attack pattern for gameplay and renderer. Defaults to single if absent. */
+  attackMeta?: AttackMeta;
   /** Legacy manifest binding. Resolved as attack.projectile. */
   projectile?: string;
 }

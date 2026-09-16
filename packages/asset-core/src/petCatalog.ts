@@ -11,7 +11,6 @@ export interface UploadSlot {
   folder: 'layers' | 'effects';
   optional?: boolean;
   combatVfx?: string;
-  runtimeSize?: { width: number; height: number };
   instances?: Array<Omit<Layer, 'src'>>;
 }
 
@@ -27,15 +26,15 @@ export interface SpeciesTemplate {
 
 const layer = (id: string, x: number, y: number, originX: number, originY: number, z: number, scale = 1, parent?: string) =>
   ({ id, x, y, originX, originY, z, scale, ...(parent ? { parent } : {}) });
-const upload = (id: string, label: string, instances: Array<Omit<Layer, 'src'>>, optional = false, runtimeSize?: { width: number; height: number }): UploadSlot =>
-  ({ id, label, file: `${id}.png`, folder: 'layers', instances, optional, ...(runtimeSize ? { runtimeSize } : {}) });
-const effect = (id: string, label: string, instance: Omit<Layer, 'src'>, runtimeSize?: { width: number; height: number }): UploadSlot =>
-  ({ id, label, file: `${id}.png`, folder: 'effects', instances: [instance], optional: true, ...(runtimeSize ? { runtimeSize } : {}) });
-const combat = (id: string, label: string, semantic = id, runtimeSize?: { width: number; height: number }): UploadSlot =>
-  ({ id, label, file: `${id}.png`, folder: 'effects', optional: true, combatVfx: semantic, ...(runtimeSize ? { runtimeSize } : {}) });
-const eyeStates = (originX: number, originY: number, z: number, runtimeSize?: { width: number; height: number }): UploadSlot[] => [
-  upload('eyes-open', 'Đôi mắt mở', [{ ...layer('eyes-open', 0, 0, originX, originY, z, 1, 'head'), blink: 'open' }], false, runtimeSize),
-  upload('eyes-closed', 'Đôi mắt nhắm', [{ ...layer('eyes-closed', 0, 0, originX, originY, z + .01, 1, 'head'), blink: 'closed' }], false, runtimeSize),
+const upload = (id: string, label: string, instances: Array<Omit<Layer, 'src'>>, optional = false): UploadSlot =>
+  ({ id, label, file: `${id}.png`, folder: 'layers', instances, optional });
+const effect = (id: string, label: string, instance: Omit<Layer, 'src'>): UploadSlot =>
+  ({ id, label, file: `${id}.png`, folder: 'effects', instances: [instance], optional: true });
+const combat = (id: string, label: string, semantic = id): UploadSlot =>
+  ({ id, label, file: `${id}.png`, folder: 'effects', optional: true, combatVfx: semantic });
+const eyeStates = (originX: number, originY: number, z: number): UploadSlot[] => [
+  upload('eyes-open', 'Đôi mắt mở', [{ ...layer('eyes-open', 0, 0, originX, originY, z, 1, 'head'), blink: 'open' }]),
+  upload('eyes-closed', 'Đôi mắt nhắm', [{ ...layer('eyes-closed', 0, 0, originX, originY, z + .01, 1, 'head'), blink: 'closed' }]),
 ];
 
 export const PET_ARCHETYPES = [
@@ -60,14 +59,14 @@ export const SPECIES_TEMPLATES: SpeciesTemplate[] = [
     id: 'fox', name: 'Fox', archetype: 'quadruped', rig: 'fox-quadruped', validated: true,
     slots: [
       effect('effect-back', 'Effect phía sau', layer('effect-back', 0, -120, .5, .5, 1)),
-      upload('tail', 'Đuôi', [layer('tail', -65, -105, .85, .85, 2, .75)], false, { width: 228, height: 220 }),
-      upload('rear-far', 'Chân sau · phía đuôi · xa người xem', [layer('rear-far', -53, -79, .5, .15, 3, .72)], false, { width: 70, height: 123 }),
-      upload('rear-near', 'Chân sau · phía đuôi · gần người xem', [layer('rear-near', -74, -87, .5, .15, 4, .84)], false, { width: 70, height: 123 }),
-      upload('body', 'Thân', [layer('body', 0, -117, .5, .5, 5, .68)], false, { width: 308, height: 225 }),
-      upload('front-far', 'Chân trước · phía đầu · xa người xem', [layer('front-far', 59, -81, .5, .15, 6, .74)], false, { width: 70, height: 123 }),
-      upload('front-near', 'Chân trước · phía đầu · gần người xem', [layer('front-near', 28, -90, .5, .15, 7, .86)], false, { width: 70, height: 123 }),
-      upload('head', 'Đầu (không chứa mắt)', [layer('head', 39, -151, .5, .88, 8, .78)], false, { width: 302, height: 318 }),
-      ...eyeStates(.5, .88, 8.1, { width: 302, height: 318 }),
+      upload('tail', 'Đuôi', [layer('tail', -65, -105, .85, .85, 2, .75)]),
+      upload('rear-far', 'Chân sau · phía đuôi · xa người xem', [layer('rear-far', -53, -79, .5, .15, 3, .72)]),
+      upload('rear-near', 'Chân sau · phía đuôi · gần người xem', [layer('rear-near', -74, -87, .5, .15, 4, .84)]),
+      upload('body', 'Thân', [layer('body', 0, -117, .5, .5, 5, .68)]),
+      upload('front-far', 'Chân trước · phía đầu · xa người xem', [layer('front-far', 59, -81, .5, .15, 6, .74)]),
+      upload('front-near', 'Chân trước · phía đầu · gần người xem', [layer('front-near', 28, -90, .5, .15, 7, .86)]),
+      upload('head', 'Đầu (không chứa mắt)', [layer('head', 39, -151, .5, .88, 8, .78)]),
+      ...eyeStates(.5, .88, 8.1),
       effect('effect-front', 'Effect visual phía trước', layer('effect-front', 90, -145, .5, .5, 9)),
       effect('particles', 'Particles', layer('particles', 0, -135, .5, .5, 10)),
       combat('attack-cast', 'Combat VFX · tích năng ở đuôi', 'cast'),
@@ -75,15 +74,21 @@ export const SPECIES_TEMPLATES: SpeciesTemplate[] = [
       combat('impact', 'Combat VFX · va chạm'),
     ],
     evolutionSlots: {
+      2: {
+        replace: [],
+        slots: [
+          combat('splash', 'Combat VFX · vòng splash tại impact', 'splash'),
+        ],
+      },
       3: {
         replace: ['tail'],
         slots: [
-          upload('tail', 'Đuôi đơn (chọn đuôi đơn hoặc multi-tail)', [layer('tail', -65, -105, .85, .85, 2, .75)], true, { width: 228, height: 220 }),
-          upload('tail-left-outer', 'Đuôi trái ngoài', [layer('tail-left-outer', -102, -104, .88, .86, 2, .75)], true, { width: 228, height: 220 }),
-          upload('tail-left-inner', 'Đuôi trái trong', [layer('tail-left-inner', -84, -106, .87, .86, 2.1, .75)], true, { width: 228, height: 220 }),
-          upload('tail-center', 'Đuôi giữa', [layer('tail-center', -65, -108, .85, .86, 2.2, .75)], true, { width: 228, height: 220 }),
-          upload('tail-right-inner', 'Đuôi phải trong', [layer('tail-right-inner', -46, -106, .83, .86, 2.3, .75)], true, { width: 228, height: 220 }),
-          upload('tail-right-outer', 'Đuôi phải ngoài', [layer('tail-right-outer', -28, -104, .82, .86, 2.4, .75)], true, { width: 228, height: 220 }),
+          upload('tail', 'Đuôi đơn (chọn đuôi đơn hoặc multi-tail)', [layer('tail', -65, -105, .85, .85, 2, .75)], true),
+          upload('tail-left-outer', 'Đuôi trái ngoài', [layer('tail-left-outer', -102, -104, .88, .86, 2, .75)], true),
+          upload('tail-left-inner', 'Đuôi trái trong', [layer('tail-left-inner', -84, -106, .87, .86, 2.1, .75)], true),
+          upload('tail-center', 'Đuôi giữa', [layer('tail-center', -65, -108, .85, .86, 2.2, .75)], true),
+          upload('tail-right-inner', 'Đuôi phải trong', [layer('tail-right-inner', -46, -106, .83, .86, 2.3, .75)], true),
+          upload('tail-right-outer', 'Đuôi phải ngoài', [layer('tail-right-outer', -28, -104, .82, .86, 2.4, .75)], true),
         ],
       },
     },

@@ -43,12 +43,12 @@ Không dùng `master/full artwork đã lắp → tách/crop layer` cho pet produ
 3. Tải `layer-sheet.png` xuống máy.
 4. Đặt ảnh vào `assets/inbox/<lineage-id>/level-<n>/layer-sheet.png`.
 5. Nhắn cho Codex: `Xử lý Fire Fox Level 1 trong assets/inbox/fire-fox/level-1 và tích hợp vào preview.`
-6. Codex tách từng ô, kiểm tra mode RGBA, alpha, kích thước, crop, naming, anchors và độ khớp với manifest; sau đó copy kết quả đã chuẩn hóa sang `public/assets/`.
+6. Codex tách từng ô, kiểm tra mode RGBA, alpha, kích thước, crop, naming, anchors và độ khớp với manifest; PNG cuối được copy nguyên kích thước, padding và artwork offset sang `public/assets/`.
 7. Codex cập nhật config/animation và để renderer ghép preview; không tạo lại artwork bằng ImageGen. `master.png`/`preview.png` chỉ được export sau bước ghép này.
 
 ## Gói bàn giao cho Codex
 
-Đối với pet production mới, không dùng file này làm danh sách slot hoặc prompt recipe. Đọc `docs/chatgpt-pet-layer-factory.md`, sau đó lấy species semantics từ `docs/pets-catalog.md` và lấy filename/required/optional/runtimeSize cuối cùng từ `packages/asset-core/src/petCatalog.ts`.
+Đối với pet production mới, không dùng file này làm danh sách slot hoặc prompt recipe. Đọc `docs/chatgpt-pet-layer-factory.md`, sau đó lấy species semantics từ `docs/pets-catalog.md` và lấy filename/required/optional cuối cùng từ `packages/asset-core/src/petCatalog.ts`.
 
 Gói bàn giao của mỗi evolution stage là **một layer sheet** gồm character layers, Pet Visual VFX, Combat VFX được recipe hỗ trợ, và ô cuối `assembly-ref` để đối chiếu ghép. Một image-generation operation tạo đúng một PNG đó; sau khi Codex tách các ô slot (bỏ qua assembly-ref), production layers mới là source of truth runtime. Combat VFX có thể dùng cùng filename giữa các level vì stage folder xác định version.
 
@@ -71,7 +71,7 @@ Codex có thể và nên thực hiện:
 
 - tách ô slot từ layer sheet thành từng PNG; bỏ qua ô `assembly-ref`;
 - tách nền, chuẩn hóa alpha và padding;
-- resize, crop và kiểm tra edge halo;
+- kiểm tra kích thước/crop/edge halo nhưng giữ nguyên kích thước pixel, padding và artwork offset của PNG đã upload;
 - tạo atlas/sprite sheet từ file đã có;
 - tạo manifest và schema;
 - viết renderer Phaser dùng chung;

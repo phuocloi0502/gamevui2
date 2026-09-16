@@ -98,7 +98,7 @@
       "originX": 0.85,
       "originY": 0.85,
       "z": 1,
-      "scale": 0.75
+      "scale": 0.6
     },
     {
       "id": "effect-back",
@@ -109,7 +109,7 @@
       "z": 1,
       "scale": 1.3,
       "src": "/assets/pets/fire-fox/level-1/effects/effect-back.png",
-      "visible": true,
+      "visible": false,
       "alpha": 0.7
     },
     {
@@ -173,7 +173,7 @@
       "originX": 0.5,
       "originY": 0.88,
       "z": 8,
-      "scale": 0.78,
+      "scale": 0.7,
       "angle": -1
     },
     {
@@ -204,7 +204,7 @@
     }
   ],
   "preview": {
-    "x": 420,
+    "x": 300,
     "y": 440,
     "scale": 0.7
   },

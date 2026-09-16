@@ -135,7 +135,8 @@ function assetManifestApi() {
           }
           const decoded = uploads.map((upload) => {
             if (!/^[a-z0-9]+(?:-[a-z0-9]+)*\.png$/.test(upload?.file) || !["layers", "effects"].includes(upload?.folder)) throw new Error("Tên file upload không hợp lệ");
-            return { file: upload.file, folder: upload.folder, sourceData: decodePng(upload.sourceDataUrl, upload.file).data, runtimeData: decodePng(upload.runtimeDataUrl, `${upload.file} runtime`).data };
+            const sourceData = decodePng(upload.sourceDataUrl, upload.file).data;
+            return { file: upload.file, folder: upload.folder, sourceData };
           });
           const publicPrefix = `/assets/pets/${lineageId}/${levelFolder}/`;
           if (manifest.layers.some((item) => typeof item?.src !== "string" || !item.src.startsWith(publicPrefix))) throw new Error("Manifest chứa đường dẫn layer ngoài pet");
@@ -155,7 +156,7 @@ function assetManifestApi() {
             server.watcher.unwatch(inboxFile);
             server.watcher.unwatch(publicFile);
             await writeFile(inboxFile, upload.sourceData);
-            await writeFile(publicFile, upload.runtimeData);
+            await writeFile(publicFile, upload.sourceData);
           }
           server.watcher.unwatch(manifestFile);
           await writeFile(manifestFile, JSON.stringify(manifest, null, 2) + "\n", "utf8");
@@ -222,13 +223,6 @@ function assetManifestApi() {
             if (!await exists(currentFile)) throw new Error(`Không tìm thấy ảnh production ${current.src}`);
             const destFile = currentFileOf(dest);
             const source = decodePng(upload.sourceDataUrl, dest.file);
-            const runtime = decodePng(upload.runtimeDataUrl, `${dest.file} runtime`);
-            if (await exists(destFile)) {
-              const existing = decodePng(`data:image/png;base64,${(await readFile(destFile)).toString("base64")}`, `${dest.file} hiện tại`);
-              if (runtime.width !== existing.width || runtime.height !== existing.height) {
-                throw new Error(`${dest.file} runtime phải giữ kích thước ${existing.width}×${existing.height}`);
-              }
-            }
             decoded.push({
               dest: dest.src,
               folder: dest.folder,
@@ -237,7 +231,6 @@ function assetManifestApi() {
               destFile,
               destExists: await exists(destFile),
               sourceData: source.data,
-              runtimeData: runtime.data,
             });
           }
           const destCounts = new Map();
@@ -276,7 +269,7 @@ function assetManifestApi() {
               }
             }
             server.watcher.unwatch(upload.destFile);
-            await writeFile(upload.destFile, upload.runtimeData);
+            await writeFile(upload.destFile, upload.sourceData);
             writtenFiles.push(upload.destFile);
           }
           const manifestChanged = JSON.stringify(next) !== JSON.stringify(manifest);
@@ -334,13 +327,13 @@ function assetManifestApi() {
             const inboxFile = safeChild(inboxRoot, current.lineageId, levelFolder, upload.folder, upload.file);
             const publicFile = safeChild(publicPetRoot, current.lineageId, levelFolder, upload.folder, upload.file);
             if (await exists(inboxFile) || await exists(publicFile)) throw new Error(`${src} đã tồn tại`);
+            const sourceData = decodePng(upload.sourceDataUrl, upload.file).data;
             decoded.push({
               file: upload.file,
               folder: upload.folder,
               inboxFile,
               publicFile,
-              sourceData: decodePng(upload.sourceDataUrl, upload.file).data,
-              runtimeData: decodePng(upload.runtimeDataUrl, `${upload.file} runtime`).data,
+              sourceData,
             });
           }
           const manifestFile = safeChild(manifestRoot, current.lineageId, levelFolder, "asset.json");
@@ -351,7 +344,7 @@ function assetManifestApi() {
             server.watcher.unwatch(upload.inboxFile);
             server.watcher.unwatch(upload.publicFile);
             await writeFile(upload.inboxFile, upload.sourceData);
-            await writeFile(upload.publicFile, upload.runtimeData);
+            await writeFile(upload.publicFile, upload.sourceData);
             writtenFiles.push(upload.inboxFile, upload.publicFile);
           }
           server.watcher.unwatch(manifestFile);

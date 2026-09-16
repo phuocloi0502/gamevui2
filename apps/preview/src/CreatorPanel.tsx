@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { PET_ARCHETYPES, PET_ELEMENTS, archetypeFor, slotsForEvolution, speciesTemplate, type PetElement, type PetSpeciesId } from '../../../packages/asset-core/src/petCatalog';
 import type { CombatVfxPresentation, Layer, PetDefinition } from '../../../packages/asset-core/src/types';
-import { combatVfxPresentation } from '../../../packages/asset-core/src/resolve';
+import { combatVfxPresentation, defaultAttackMeta } from '../../../packages/asset-core/src/resolve';
 import { createPet } from './api';
-import { isPng, readFile, runtimeFile } from './files';
+import { isPng, readFile } from './files';
 import { groupByPetPart, selectedPetKey } from './labels';
 
 export function CreatorPanel({ onClose }: { onClose: () => void }) {
@@ -36,14 +36,14 @@ export function CreatorPanel({ onClose }: { onClose: () => void }) {
     setStatus('Đang lưu ảnh và tạo manifest…');
     try {
       const layers: Layer[] = [];
-      const uploads: Array<{ file: string; folder: 'layers' | 'effects'; sourceDataUrl: string; runtimeDataUrl: string }> = [];
+      const uploads: Array<{ file: string; folder: 'layers' | 'effects'; sourceDataUrl: string }> = [];
       const attack: Record<string, string> = {};
       const attackPresentation: Record<string, CombatVfxPresentation> = {};
       for (const slot of templateSlots) {
         const file = selected.get(slot.id);
         if (!file) continue;
         const src = `/assets/pets/${lineageId}/level-${level}/${slot.folder}/${slot.file}`;
-        uploads.push({ file: slot.file, folder: slot.folder, sourceDataUrl: await readFile(file), runtimeDataUrl: await runtimeFile(file, slot.runtimeSize) });
+        uploads.push({ file: slot.file, folder: slot.folder, sourceDataUrl: await readFile(file) });
         for (const instance of slot.instances ?? []) layers.push({ ...instance, src });
         if (slot.combatVfx) {
           attack[slot.combatVfx] = src;
@@ -59,7 +59,7 @@ export function CreatorPanel({ onClose }: { onClose: () => void }) {
         status: 'production', element: element.id,
         reference: layers.find(item => item.id === 'body')?.src ?? layers[0].src,
         layers, preview: { x: 420, y: 440, scale: 1 },
-        ...(Object.keys(attack).length ? { effects: { color: element.color, attack, attackPresentation } } : {}),
+        ...(Object.keys(attack).length ? { effects: { color: element.color, attack, attackPresentation, attackMeta: defaultAttackMeta(level) } } : {}),
       };
       await createPet(manifest.id, manifest, uploads);
       setStatus('Đã tạo pet. Đang tải lại catalog…');
@@ -82,7 +82,7 @@ export function CreatorPanel({ onClose }: { onClose: () => void }) {
         <div>
           <p className="label">PET LAYER IMPORT</p>
           <h2>Tạo cấp tiến hóa từ bộ PNG</h2>
-          <p className="muted">Chọn species, element và level để lấy đúng rig cùng thông số khởi đầu. Ảnh gốc được giữ trong assets/inbox.</p>
+          <p className="muted">Chọn species, element và level để lấy đúng rig cùng thông số khởi đầu. PNG được giữ nguyên kích thước, alpha và padding; căn chỉnh bằng UI.</p>
         </div>
         <button type="button" id="close-creator" aria-label="Đóng" onClick={onClose}>×</button>
       </div>

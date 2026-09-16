@@ -256,7 +256,7 @@ Quy ước:
 - không trộn hai convention trong cùng dự án;
 - texture key phải ổn định và không phụ thuộc đường dẫn tạm;
 - sprite sheet phải có metadata frame size/FPS/loop;
-- giữ source chất lượng cao khi output game được resize hoặc đóng atlas.
+- giữ source chất lượng cao; Asset Studio không tự resize, crop, căn giữa hoặc nén PNG runtime, còn atlas chỉ được tạo khi có yêu cầu riêng.
 
 ## Quality gate
 
