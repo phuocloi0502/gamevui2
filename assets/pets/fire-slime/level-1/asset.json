@@ -1,0 +1,273 @@
+{
+  "id": "fire-slime-level-1",
+  "lineageId": "fire-slime",
+  "evolutionLevel": 1,
+  "name": "Fire Slime · Level 1",
+  "kind": "pet",
+  "species": "slime",
+  "archetype": "blob",
+  "extends": "blob-base",
+  "status": "production",
+  "element": "fire",
+  "reference": "/assets/pets/fire-slime/level-1/layers/blob.png",
+  "layers": [
+    {
+      "id": "blob",
+      "x": 0,
+      "y": -90,
+      "originX": 0.5,
+      "originY": 0.7,
+      "z": 1,
+      "scale": 0.7,
+      "src": "/assets/pets/fire-slime/level-1/layers/blob.png"
+    },
+    {
+      "id": "inner-core",
+      "x": 0,
+      "y": -100,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 2,
+      "scale": 0.75,
+      "parent": "blob",
+      "src": "/assets/pets/fire-slime/level-1/layers/inner-core.png",
+      "visible": true
+    },
+    {
+      "id": "face",
+      "x": 12,
+      "y": -105,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 3,
+      "scale": 0.85,
+      "parent": "blob",
+      "src": "/assets/pets/fire-slime/level-1/layers/face.png",
+      "visible": true
+    },
+    {
+      "id": "eyes-open",
+      "x": -3,
+      "y": -92,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 3.1,
+      "scale": 0.6,
+      "parent": "blob",
+      "blink": "open",
+      "src": "/assets/pets/fire-slime/level-1/layers/eyes-open.png",
+      "visible": true,
+      "angle": 1
+    },
+    {
+      "id": "eyes-closed",
+      "x": -3,
+      "y": -92,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 3.11,
+      "scale": 0.6,
+      "parent": "blob",
+      "blink": "closed",
+      "src": "/assets/pets/fire-slime/level-1/layers/eyes-closed.png"
+    },
+    {
+      "id": "front-gloss",
+      "x": -15,
+      "y": -61,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 4,
+      "scale": 0.9,
+      "parent": "blob",
+      "src": "/assets/pets/fire-slime/level-1/layers/front-gloss.png",
+      "visible": true,
+      "alpha": 0.4
+    },
+    {
+      "id": "top-effect",
+      "x": -14,
+      "y": -216,
+      "originX": 0.5,
+      "originY": 0.8,
+      "z": 5,
+      "scale": 0.4,
+      "src": "/assets/pets/fire-slime/level-1/effects/top-effect.png",
+      "visible": true
+    }
+  ],
+  "preview": {
+    "x": 420,
+    "y": 440,
+    "scale": 1
+  },
+  "effects": {
+    "color": 16751144,
+    "attack": {
+      "cast": "/assets/pets/fire-slime/level-1/effects/attack-cast.png",
+      "pulse": "/assets/pets/fire-slime/level-1/effects/pulse.png",
+      "impact": "/assets/pets/fire-slime/level-1/effects/impact.png"
+    },
+    "attackPresentation": {
+      "cast": {
+        "enabled": true,
+        "trigger": "attack-start",
+        "startAnchor": "pet",
+        "endAnchor": "pet",
+        "startX": 25,
+        "startY": -100,
+        "endX": 25,
+        "endY": -100,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.2,
+        "endScale": 0.3,
+        "startAngle": 0,
+        "endAngle": 0,
+        "startAlpha": 0.9,
+        "endAlpha": 0,
+        "depth": 20,
+        "delay": 0,
+        "duration": 450,
+        "ease": "Sine.easeInOut",
+        "mirror": true
+      },
+      "pulse": {
+        "enabled": true,
+        "trigger": "attack-release",
+        "startAnchor": "target",
+        "endAnchor": "target",
+        "startX": 0,
+        "startY": 0,
+        "endX": 0,
+        "endY": 0,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.7,
+        "endScale": 0.78,
+        "startAngle": 0,
+        "endAngle": 0,
+        "startAlpha": 0.95,
+        "endAlpha": 0,
+        "depth": 20,
+        "delay": 0,
+        "duration": 520,
+        "ease": "Quad.easeOut",
+        "mirror": true
+      },
+      "impact": {
+        "enabled": true,
+        "trigger": "after-primary",
+        "startAnchor": "target",
+        "endAnchor": "target",
+        "startX": 0,
+        "startY": 0,
+        "endX": 0,
+        "endY": 0,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.1,
+        "endScale": 0.2,
+        "startAngle": 0,
+        "endAngle": 0,
+        "startAlpha": 0.95,
+        "endAlpha": 0,
+        "depth": 21,
+        "delay": 0,
+        "duration": 420,
+        "ease": "Quad.easeOut",
+        "mirror": true
+      }
+    },
+    "attackMeta": {
+      "pattern": "single"
+    }
+  },
+  "overrides": {
+    "clips": {
+      "idle": {
+        "duration": 1400,
+        "loop": true,
+        "tracks": [
+          {
+            "target": "blob",
+            "property": "scaleX",
+            "values": [
+              1,
+              1.035,
+              1
+            ]
+          },
+          {
+            "target": "top-effect",
+            "property": "scaleX",
+            "values": [
+              1,
+              1.035,
+              1
+            ]
+          },
+          {
+            "target": "blob",
+            "property": "scaleY",
+            "values": [
+              1,
+              0.97,
+              1
+            ]
+          }
+        ]
+      },
+      "attack": {
+        "duration": 820,
+        "loop": false,
+        "event": {
+          "at": 520,
+          "name": "attack-release"
+        },
+        "tracks": [
+          {
+            "target": "blob",
+            "property": "scaleX",
+            "values": [
+              1,
+              0.82,
+              1.22,
+              1
+            ]
+          },
+          {
+            "target": "top-effect",
+            "property": "scaleX",
+            "values": [
+              1,
+              0.82,
+              1.22,
+              1
+            ]
+          },
+          {
+            "target": "blob",
+            "property": "scaleY",
+            "values": [
+              1,
+              1.18,
+              0.82,
+              1
+            ]
+          },
+          {
+            "target": "top-effect",
+            "property": "scaleY",
+            "values": [
+              1,
+              1.18,
+              0.82,
+              1
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
