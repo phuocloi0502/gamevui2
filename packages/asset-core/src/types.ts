@@ -6,6 +6,7 @@ export interface Layer {
   y: number;
   originX: number;
   originY: number;
+  /** Render depth among layers with the same parent; child depth may be below the parent's own sprite. */
   z: number;
   scale?: number;
   angle?: number;

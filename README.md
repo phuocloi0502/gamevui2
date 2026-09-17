@@ -36,6 +36,8 @@ Frontend tự tìm `assets/pets/*/level-*/asset.json`, không cần thêm route 
 
 Mọi pet recipe có `head` và blink dùng ba layer thật: `head`, `eyes-open` và `eyes-closed`. `head.png` không chứa mắt; hai layer mắt cùng là con của `head` và được runtime luân phiên visibility theo field `blink`. Không dùng closed-head asset hoặc `closedSrc` trong manifest production.
 
+Slime là ngoại lệ không có `head`: `face.png` luôn hiện và chỉ chứa chân mày, miệng, má/dấu biểu cảm; `face`, `eyes-open` và `eyes-closed` cùng là child của `blob`, runtime chỉ luân phiên hai layer mắt để blink.
+
 Asset Studio có form **Tạo pet từ layer**. Chọn một trong 10 species và element,
 chọn Level 1/2/3 rồi upload các PNG trong suốt theo recipe hiển thị. Hệ thống giữ bản gốc trong
 `assets/inbox/<lineage>/level-<n>/`, tạo runtime files + manifest và dùng rig thuộc một trong

@@ -1,4 +1,33 @@
-import type { AttackMeta, CombatAttackVfx, CombatVfxPresentation, EvolutionLevel, PetDefinition, PetEffects, Rig } from './types';
+import type { AttackMeta, CombatAttackVfx, CombatVfxPresentation, EvolutionLevel, Layer, PetDefinition, PetEffects, Rig } from './types';
+
+/** Return a creation-safe order without changing each layer's render depth. */
+export function orderLayersParentFirst(layers: Layer[]): Layer[] {
+  const byId = new Map<string, Layer>();
+  for (const layer of layers) {
+    if (byId.has(layer.id)) throw new Error(`Duplicate layer: ${layer.id}`);
+    byId.set(layer.id, layer);
+  }
+
+  const ordered: Layer[] = [];
+  const visiting = new Set<string>();
+  const visited = new Set<string>();
+  const visit = (layer: Layer) => {
+    if (visited.has(layer.id)) return;
+    if (visiting.has(layer.id)) throw new Error(`Circular layer parent relationship: ${layer.id}`);
+    visiting.add(layer.id);
+    if (layer.parent) {
+      const parent = byId.get(layer.parent);
+      if (!parent) throw new Error(`Unknown parent ${layer.parent}: ${layer.id}`);
+      visit(parent);
+    }
+    visiting.delete(layer.id);
+    visited.add(layer.id);
+    ordered.push(layer);
+  };
+
+  for (const layer of [...layers].sort((a, b) => a.z - b.z)) visit(layer);
+  return ordered;
+}
 
 export function combatVfxPresentation(semantic: string, override?: Partial<CombatVfxPresentation>): CombatVfxPresentation {
   const base: CombatVfxPresentation = semantic === 'cast' ? {
@@ -78,12 +107,7 @@ export function resolvePetEffects(effects?: PetEffects): PetEffects | undefined 
 export function resolvePet(pet: PetDefinition, rigs: Record<string, Rig>) {
   const rig = rigs[pet.extends];
   if (!rig) throw new Error(`Unknown rig: ${pet.extends}`);
-  const ids = new Set<string>();
-  for (const layer of [...pet.layers].sort((a, b) => a.z - b.z)) {
-    if (ids.has(layer.id)) throw new Error(`Duplicate layer: ${layer.id}`);
-    if (layer.parent && !ids.has(layer.parent)) throw new Error(`Parent must precede child: ${layer.id}`);
-    ids.add(layer.id);
-  }
+  orderLayersParentFirst(pet.layers);
   const clips = rig.clips ? { ...rig.clips, ...pet.overrides?.clips } : undefined;
   if(clips) for(const clip of Object.values(clips)) {
     if(clip.duration<=0)throw new Error('Clip duration must be positive');

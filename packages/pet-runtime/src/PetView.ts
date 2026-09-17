@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { resolvePet } from '../../asset-core/src/resolve';
+import { orderLayersParentFirst, resolvePet } from '../../asset-core/src/resolve';
 import type { State } from '../../asset-core/src/types';
 
 /** Shared layered rig. No pet IDs or fire-specific branches. */
@@ -20,7 +20,7 @@ export class PetView extends Phaser.GameObjects.Container {
   private updateBound: (_time:number, delta:number)=>void;
   constructor(scene: Phaser.Scene, x: number, y: number, readonly pet: ReturnType<typeof resolvePet>) {
     super(scene,x,y);
-    for (const layer of [...pet.layers].sort((a,b)=>a.z-b.z)) {
+    for (const layer of orderLayersParentFirst(pet.layers)) {
       const node=scene.add.container(layer.x,layer.y).setScale(layer.scale ?? 1).setAngle(layer.angle ?? 0).setAlpha(layer.alpha ?? 1).setVisible(layer.visible !== false && layer.blink !== 'closed').setDepth(layer.z);
       const sprite=scene.add.sprite(0,0,layer.src).setOrigin(layer.originX,layer.originY);
       if(layer.tint!==undefined) sprite.setTint(layer.tint);
@@ -29,6 +29,8 @@ export class PetView extends Phaser.GameObjects.Container {
       this.nodes.set(layer.id,node); this.images.set(layer.id,sprite);
       this.bases.set(layer.id,{x:layer.x,y:layer.y,scale:layer.scale??1,angle:layer.angle??0,alpha:layer.alpha??1});
     }
+    this.sort('depth');
+    for (const node of this.nodes.values()) node.sort('depth');
     scene.add.existing(this);
     this.updateBound=(_time,delta)=>this.tick(delta);
     scene.events.on('update',this.updateBound);

@@ -123,6 +123,11 @@ export function CreatorPanel({ onClose }: { onClose: () => void }) {
           ? `${group.name} · ${template.rig} · template đã được kiểm chứng`
           : `${group.name} · ${template.rig} · thông số khởi đầu, cần chỉnh và kiểm chứng bằng pet flagship`}
       </p>
+      {template.id === 'slime' && (
+        <p className="editor-help">
+          Slime không có layer đầu: <code>face.png</code> chỉ chứa chân mày, miệng và má; <code>eyes-open.png</code> / <code>eyes-closed.png</code> chỉ chứa mắt và được luân phiên khi blink.
+        </p>
+      )}
       <div className="upload-groups">
         {groupByPetPart(templateSlots, slot => slot.instances?.[0]?.id ?? slot.id, slot => !!slot.combatVfx).map(group => (
           <details key={group.id} className="layer-group" open>

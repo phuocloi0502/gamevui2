@@ -174,7 +174,18 @@ export const SPECIES_TEMPLATES: SpeciesTemplate[] = [
   },
   {
     id: 'slime', name: 'Slime', archetype: 'blob', rig: 'blob-base', validated: false,
-    slots: [upload('blob', 'Khối slime', [layer('blob', 0, -90, .5, .7, 1, .9)]), upload('inner-core', 'Lõi trong', [layer('inner-core', 0, -100, .5, .5, 2, .75, 'blob')], true), upload('face', 'Khuôn mặt', [layer('face', 12, -105, .5, .5, 3, .85, 'blob')]), upload('front-gloss', 'Highlight phía trước', [layer('front-gloss', -15, -125, .5, .5, 4, .85, 'blob')], true), effect('top-effect', 'Effect trên đỉnh', layer('top-effect', 0, -175, .5, .8, 5, .8)), combat('attack-cast', 'Combat VFX · nén năng lượng', 'cast'), combat('pulse', 'Combat VFX · vòng xung kích'), combat('impact', 'Combat VFX · xung kích trúng đích')],
+    slots: [
+      upload('blob', 'Khối slime · không lõi, mặt hoặc highlight', [layer('blob', 0, -90, .5, .7, 1, .9)]),
+      upload('inner-core', 'Lõi nguyên tố bên trong', [layer('inner-core', 0, -100, .5, .5, 2, .75, 'blob')], true),
+      upload('face', 'Biểu cảm · chân mày, miệng và má · không mắt', [layer('face', 12, -105, .5, .5, 3, .85, 'blob')]),
+      upload('eyes-open', 'Đôi mắt mở · chỉ chứa mắt', [{ ...layer('eyes-open', 12, -105, .5, .5, 3.1, .85, 'blob'), blink: 'open' }]),
+      upload('eyes-closed', 'Đôi mắt nhắm · chỉ chứa mí mắt', [{ ...layer('eyes-closed', 12, -105, .5, .5, 3.11, .85, 'blob'), blink: 'closed' }]),
+      upload('front-gloss', 'Highlight bề mặt phía trước', [layer('front-gloss', -15, -125, .5, .5, 4, .85, 'blob')], true),
+      effect('top-effect', 'Effect nguyên tố trên đỉnh', layer('top-effect', 0, -175, .5, .8, 5, .8)),
+      combat('attack-cast', 'Combat VFX · nén năng lượng', 'cast'),
+      combat('pulse', 'Combat VFX · vòng xung kích 360°'),
+      combat('impact', 'Combat VFX · xung kích trúng đích'),
+    ],
   },
   {
     id: 'serpent', name: 'Serpent', archetype: 'serpent', rig: 'serpent-base', validated: false,

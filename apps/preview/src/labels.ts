@@ -22,8 +22,13 @@ const layerLabels: Record<string, string> = {
   'leg-far': 'Chân xa người xem',
   'leg-near': 'Chân gần người xem',
   head: 'Đầu',
+  blob: 'Khối slime',
+  'inner-core': 'Lõi nguyên tố bên trong',
+  face: 'Biểu cảm · chân mày, miệng và má',
   'eyes-open': 'Đôi mắt mở',
   'eyes-closed': 'Đôi mắt nhắm',
+  'front-gloss': 'Highlight bề mặt phía trước',
+  'top-effect': 'Effect nguyên tố trên đỉnh',
   'effect-front': 'Hiệu ứng phía trước',
   particles: 'Hạt hiệu ứng',
 };
@@ -32,7 +37,7 @@ export const layerLabel = (id: string) => layerLabels[id] ?? id;
 const LAYER_GROUPS = [
   { id: 'legs', label: 'Chân', test: (id: string) => /^(rear-far|rear-near|front-far|front-near|leg-far|leg-near|hind-leg|front-paw|rear-feet|front-feet|rear-leg|front-leg|legs|talons)(-|$)/.test(id) },
   { id: 'body-tail', label: 'Thân và đuôi', test: (id: string) => /^(body|tail|torso|core|blob|shell|inner-core)(-|$)/.test(id) || /^(tail-feathers|tail-fan|shell-runes)$/.test(id) },
-  { id: 'head', label: 'Đầu', test: (id: string) => /^(head|eyes|jaw|mane|horns|crest|face|rear-ear|front-ear|forehead)(-|$)/.test(id) || /ear/.test(id) },
+  { id: 'head', label: 'Đầu / mặt và mắt', test: (id: string) => /^(head|eyes|jaw|mane|horns|crest|face|rear-ear|front-ear|forehead)(-|$)/.test(id) || /ear/.test(id) },
   { id: 'wings-arms', label: 'Cánh và tay', test: (id: string) => /wing/.test(id) || /^(rear-arm|front-arm)(-|$)/.test(id) },
   { id: 'effects', label: 'Hiệu ứng', test: (id: string) => /^(effect|particles|rock-fragments|top-effect|front-gloss)/.test(id) || /aura/.test(id) },
 ] as const;

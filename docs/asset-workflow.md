@@ -42,7 +42,7 @@ Canvas mặc định 512×512 là baseline, không ép kích thước artwork ng
 - head: pivot gần cổ;
 - effect/particles: pivot theo attachment có ý nghĩa với chuyển động.
 
-Layer không có `parent` thuộc root. `z` tăng dần từ sau ra trước; parent phải xuất hiện trước child khi sort theo `z`. Trong một parent, `z` điều khiển thứ tự anh em và toàn bộ nhóm con đi theo transform của parent.
+Layer không có `parent` thuộc root. `z` tăng dần từ sau ra trước trong cùng một parent; child có thể dùng `z` âm để nằm dưới sprite của parent. Runtime luôn khởi tạo parent trước child, sau đó sort từng container theo `z`. Trong một parent, `z` điều khiển thứ tự anh em và toàn bộ nhóm con đi theo transform của parent.
 
 ## Fox production contract
 
@@ -74,6 +74,8 @@ Asset Studio lưu phần tinh chỉnh Combat VFX trong `effects.attackPresentati
 Bốn chân Fox dùng cùng pose `3/4 side view facing right` nhưng khác phối cảnh: near lớn/rõ và có visual weight cao hơn far; front/rear có anatomy tương ứng; near/far không được mirror hoặc dùng cùng silhouette. Mỗi layer chân chứa đầy đủ phần chân trên/đùi tới khớp, còn `body` không chứa đùi. Bàn chân phải cùng ground plane; prompt layer sheet phải nêu rõ camera-facing/far side, foreshortening, overlap và depth cho từng ô chân. Mô tả chi tiết bắt buộc nằm trong `docs/chatgpt-pet-layer-factory.md`.
 
 Không tạo closed-head asset. `head.png` là artwork đầu cố định không chứa mắt. `eyes-open` và `eyes-closed` là hai layer độc lập cùng gắn vào `head`; chúng lần lượt khai báo `blink: "open"` và `blink: "closed"`. Hai PNG mắt chỉ chứa đôi mắt, có cùng canvas, kích thước, alignment, origin và vùng trong suốt; renderer luân phiên visibility của hai layer khi blink. Contract mới không dùng `closedSrc`.
+
+Slime không có `head`: `face`, `eyes-open` và `eyes-closed` cùng là child của `blob` và dùng cùng transform mặc định. `face` luôn hiện, chỉ chứa chân mày, miệng, má/dấu biểu cảm; hai state mắt cùng canvas/alignment và lần lượt mang `blink: "open"` / `blink: "closed"`.
 
 ### Evolution nhiều đuôi
 
@@ -108,6 +110,7 @@ Một pet production mới chỉ hoàn tất khi:
 - bốn chân Fox là bốn artwork riêng;
 - pivot/attachment không nhảy khi tween;
 - `eyes-open` và `eyes-closed` overlay ổn định trên `head` không chứa mắt;
+- với Slime, `eyes-open` và `eyes-closed` overlay ổn định trên `face` luôn hiện và không chứa mắt/mí;
 - animation loop không giật;
 - tên file, manifest, parent, z-order và target ID hợp lệ;
 - preview/master được tạo từ production layers, không được dùng ngược làm source.

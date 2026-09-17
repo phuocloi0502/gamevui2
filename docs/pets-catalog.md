@@ -106,7 +106,7 @@ The table below supplies species routing and artwork identity. Exact required/op
 | `dragon` / Dragon | winged / `winged-base` | `back-wing.png`, `tail.png`, `leg-far.png`, `body.png`, `leg-near.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `horns.png` | Element Meteor: `attack-cast.png`, `meteor.png`, `impact.png`. Spec: `docs/pet-production/dragon-production-spec.md` |
 | `owl` / Owl | winged / `winged-base` | `back-wing.png`, `tail-feathers.png`, `body.png`, `talons.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `forehead-rune.png` | Element Orb: `attack-cast.png`, `projectile.png`, `impact.png`. Spec: `docs/pet-production/owl-production-spec.md` |
 | `golem` / Golem | tank / `tank-base` | `rear-arm.png`, `rear-leg.png`, `torso.png`, `core.png`, `front-leg.png`, `front-arm.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `rock-fragments.png` | Core Quake: `attack-cast.png`, `ground-wave.png`, `impact.png`. Spec: `docs/pet-production/golem-production-spec.md` |
-| `slime` / Slime | blob / `blob-base` | `blob.png`, `face.png` | `inner-core.png`, `front-gloss.png`, `top-effect.png` | Element Pulse: `attack-cast.png`, `pulse.png`, `impact.png`. Spec: `docs/pet-production/slime-production-spec.md` |
+| `slime` / Slime | blob / `blob-base` | `blob.png`, `face.png`, `eyes-open.png`, `eyes-closed.png` | `inner-core.png`, `front-gloss.png`, `top-effect.png` | Element Pulse: `attack-cast.png`, `pulse.png`, `impact.png`. Spec: `docs/pet-production/slime-production-spec.md` |
 | `serpent` / Serpent | serpent / `serpent-base` | `tail.png`, `body-lower.png`, `body-upper.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `jaw.png`, `crest.png` | Element Lance: `attack-cast.png`, `beam.png`, `impact.png`. Spec: `docs/pet-production/serpent-production-spec.md` |
 | `hawk` / Hawk | winged / `winged-base` | `rear-wing.png`, `tail-fan.png`, `body.png`, `talons.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `crest.png` | Cyclone Dive: `attack-trail.png`, `vortex.png`, `impact.png`. Spec: `docs/pet-production/hawk-production-spec.md` |
 
@@ -1333,7 +1333,8 @@ Keep consistent:
 ### Species-specific parts
 
 - blob;
-- face;
+- face (chân mày, miệng, má; không mắt);
+- eyes open / eyes closed;
 - inner core;
 - highlight / gloss;
 - top elemental effect.
@@ -1381,13 +1382,15 @@ Shadow:
 
 ### Suggested production package
 
-Sheet cố định: `docs/pet-production/slime-production-spec.md`. Không dùng head/eyes recipe; mặt ở `face.png`.
+Sheet cố định: `docs/pet-production/slime-production-spec.md`. Slime không có `head`: `face.png` luôn hiện và chỉ chứa chân mày/miệng/má; `face`, `eyes-open` và `eyes-closed` cùng parent `blob`, runtime chỉ đổi hai state mắt để blink.
 
 ```text
 Character / Pet Visual VFX:
 blob
 inner-core
 face
+eyes-open
+eyes-closed
 front-gloss
 top-effect
 

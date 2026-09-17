@@ -187,7 +187,10 @@ export function ImageEditorPanel({ pet, manifest, onClose }: { pet: ResolvedPet;
         <button type="button" aria-label="Đóng" onClick={onClose}>×</button>
       </div>
       <h3>Thay ảnh hiện có</h3>
-      <p className="editor-help">Ảnh được gom theo chân, thân–đuôi, đầu và hiệu ứng. Pet cũ đang dùng chung một file cho nhiều chân hoặc mắt sẽ được tách sang layers/id.png khi bạn thay ảnh đó.</p>
+      <p className="editor-help">Ảnh được gom theo chân, thân–đuôi, đầu/mặt và hiệu ứng. Pet cũ đang dùng chung một file cho nhiều chân hoặc mắt sẽ được tách sang layers/id.png khi bạn thay ảnh đó.</p>
+      {(pet.species ?? pet.lineageId.split('-').at(-1)) === 'slime' && (
+        <p className="editor-help">Với Slime, <code>face</code> luôn hiện và không chứa mắt; blink chỉ đổi visibility giữa <code>eyes-open</code> và <code>eyes-closed</code>.</p>
+      )}
       <div className="upload-groups">
         {groupByPetPart(replacementAssets, asset => asset.id, asset => asset.kind === 'combat').map(group => (
           <details key={group.id} className="layer-group" open>
@@ -223,7 +226,7 @@ export function ImageEditorPanel({ pet, manifest, onClose }: { pet: ResolvedPet;
       {additionSlots.length > 0 && (
         <div className="image-addition">
           <h3>Thêm asset còn thiếu</h3>
-          <p className="editor-help">Slot recipe chưa có trên pet này, gồm mắt mở/nhắm nếu pet cũ chưa tách khỏi đầu.</p>
+          <p className="editor-help">Slot recipe chưa có trên pet này, gồm mắt mở/nhắm nếu pet cũ chưa tách khỏi đầu hoặc mặt.</p>
           <div className="upload-groups">
             {groupByPetPart(additionSlots, slot => slot.instances?.[0]?.id ?? slot.id, slot => !!slot.combatVfx).map(group => (
               <details key={group.id} className="layer-group" open>

@@ -84,6 +84,15 @@ for(const templateId of ['fox','wolf','bunny','turtle','golem','dragon','owl','h
  assert.ok(template.slots.some(slot=>slot.id==='eyes-open'),`${templateId}: eyes-open recipe`);
  assert.ok(template.slots.some(slot=>slot.id==='eyes-closed'),`${templateId}: eyes-closed recipe`);
 }
+const slimeTemplate=speciesTemplate('slime');
+const slimeFace=slimeTemplate.slots.find(slot=>slot.id==='face');
+const slimeEyesOpen=slimeTemplate.slots.find(slot=>slot.id==='eyes-open');
+const slimeEyesClosed=slimeTemplate.slots.find(slot=>slot.id==='eyes-closed');
+assert.ok(slimeFace,'Slime face must remain an independent always-visible layer');
+assert.equal(slimeEyesOpen.instances[0].parent,'blob','Slime open eyes must follow blob transforms');
+assert.equal(slimeEyesOpen.instances[0].blink,'open','Slime open eyes must own the open blink state');
+assert.equal(slimeEyesClosed.instances[0].parent,'blob','Slime closed eyes must follow blob transforms');
+assert.equal(slimeEyesClosed.instances[0].blink,'closed','Slime closed eyes must own the closed blink state');
 for(const id of ['rear-far','rear-near','front-far','front-near']) {
  const slot=foxTemplate.slots.find(candidate=>candidate.id===id);
  assert.equal(slot.file,`${id}.png`,`${id} must use independent production artwork`);
