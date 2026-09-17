@@ -80,7 +80,7 @@
       "scale": 0.25,
       "src": "/assets/pets/fire-wolf/level-1/layers/mane.png",
       "visible": true,
-      "angle": 2
+      "angle": 3
     },
     {
       "id": "rear-near",
@@ -112,9 +112,9 @@
       "originX": 0.5,
       "originY": 0.82,
       "z": 8,
-      "scale": 0.25,
+      "scale": 0.21,
       "src": "/assets/pets/fire-wolf/level-1/layers/head.png",
-      "angle": -6
+      "angle": -18
     },
     {
       "id": "eyes-open",
