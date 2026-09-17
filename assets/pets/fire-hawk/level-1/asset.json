@@ -48,14 +48,26 @@
       "angle": 0
     },
     {
-      "id": "talons",
+      "id": "leg-far",
+      "x": -42,
+      "y": -80,
+      "originX": 0.5,
+      "originY": 0.2,
+      "z": 2.5,
+      "scale": 0.35,
+      "src": "/assets/pets/fire-hawk/level-1/layers/leg-far.png",
+      "visible": true,
+      "angle": -4
+    },
+    {
+      "id": "leg-near",
       "x": -42,
       "y": -80,
       "originX": 0.5,
       "originY": 0.2,
       "z": 4,
       "scale": 0.35,
-      "src": "/assets/pets/fire-hawk/level-1/layers/talons.png",
+      "src": "/assets/pets/fire-hawk/level-1/layers/leg-near.png",
       "visible": true,
       "angle": -4
     },

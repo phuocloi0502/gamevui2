@@ -2,7 +2,7 @@
 
 > Status: Production contract cho mọi lineage Hawk (`*-hawk`, Level 1/2/3).
 >
-> Sheet 12 ô, Cyclone Dive. **Phải** phân biệt Owl: Hawk = dài, aerodynamic; Owl = tròn.
+> Sheet 4×4 / 13 ô artwork (+3 ô trống cấm), Cyclone Dive. **Phải** phân biệt Owl: Hawk = dài, aerodynamic; Owl = tròn.
 
 ## Source of truth
 
@@ -35,8 +35,9 @@ Cánh rộng nhưng dài; thân aerodynamic; đầu nhỏ sắc; đuôi quạt; 
 |---|---|---:|
 | `rear-wing` | `layers/rear-wing.png` | 1 |
 | `tail-fan` | `layers/tail-fan.png` | 2 |
+| `leg-far` | `layers/leg-far.png` | 2.5 | chân xa, nằm sau body |
 | `body` | `layers/body.png` | 3 |
-| `talons` | `layers/talons.png` | 4 |
+| `leg-near` | `layers/leg-near.png` | 4 | chân gần, nằm trước body |
 | `front-wing` | `layers/front-wing.png` | 5 |
 | `head` | `layers/head.png` | 6 | không mắt; không crest |
 | `eyes-open` / `eyes-closed` | `layers/eyes-*.png` | 6.1+ |
@@ -47,16 +48,16 @@ Lưu ý filename cánh: Hawk dùng `rear-wing` (không `back-wing` như Owl/Drag
 
 ---
 
-## 3. Sheet — 3×4 / 12 ô
+## 3. Sheet — 4×4 / 13 ô artwork
 
 ```text
-  1 rear-wing     2 tail-fan      3 body
-  4 talons        5 front-wing    6 head
-  7 eyes-open     8 eyes-closed   9 crest
- 10 attack-trail 11 vortex       12 impact
+  1 rear-wing     2 tail-fan      3 leg-far       4 body
+  5 leg-near      6 front-wing    7 head          8 eyes-open
+  9 eyes-closed  10 crest        11 attack-trail 12 vortex
+ 13 impact       14 EMPTY        15 EMPTY        16 EMPTY
 ```
 
-Luật sheet chung. Không `assembly-ref` trên lưới.
+Ba ô 14–16 phải trong suốt hoàn toàn. Không đặt `assembly-ref` trong lưới crop cố định.
 
 ---
 
@@ -64,7 +65,8 @@ Luật sheet chung. Không `assembly-ref` trên lưới.
 
 - **rear-wing / front-wing:** dài, aerodynamic; front nặng hơn; không mirror cứng.
 - **tail-fan:** quạt đuôi; không lông owl ngắn tròn.
-- **body:** chỉ thân dài, bụng và ngực; không đầu, cánh, tail-fan, talons, bàn chân, đùi hoặc effect. Body có bề mặt hoàn chỉnh phía sau wing/talons.
+- **leg-far / leg-near:** hai artwork chân hoàn chỉnh và riêng biệt, mỗi layer đúng một chân từ đùi/điểm gắn tới móng; không mirror cứng. `leg-far` hẹp, nhỏ và lùi vào trong; `leg-near` lớn, rõ và gần camera hơn. Hai chân cùng pose móng cụp nhưng khác perspective.
+- **body:** chỉ thân dài, bụng và ngực; không đầu, cánh, tail-fan, chân, bàn chân, đùi hoặc effect. Body có bề mặt hoàn chỉnh phía sau wing/chân.
 - **head:** nhỏ sắc; chỗ gắn crest.
 - **crest:** mào nhọn; chỉ crest.
 - **attack-trail:** vệt bổ nhào / dive streak.

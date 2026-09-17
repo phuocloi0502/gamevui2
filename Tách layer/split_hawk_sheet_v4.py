@@ -2,63 +2,39 @@
 from __future__ import annotations
 
 import argparse
-import shutil
 import zipfile
 from pathlib import Path
 
 import numpy as np
 from PIL import Image, ImageDraw
-from scipy import ndimage as ndi
 
 
-# Fire Hawk reference sheet attached by the user:
-# 1086×1448 => exact 3×4 grid => each cell = 362×362.
-EXPECTED_SIZE = (1086, 1448)
-
-GRID_COLS = 3
+# Canonical sheet export. Without --strict-size, proportional 4×4 bounds also
+# support square ImageGen outputs such as 1254×1254 without resizing artwork.
+EXPECTED_SIZE = (1448, 1448)
+GRID_COLS = 4
 GRID_ROWS = 4
 
+# Left to right, top to bottom. Slots 14-16 are reserved and must be empty.
 SLOT_NAMES = [
     "rear-wing.png",
     "tail-fan.png",
+    "leg-far.png",
     "body.png",
-
-    "talons.png",
+    "leg-near.png",
     "front-wing.png",
     "head.png",
-
     "eyes-open.png",
     "eyes-closed.png",
     "crest.png",
-
     "attack-trail.png",
     "vortex.png",
     "impact.png",
 ]
 
-DEFAULT_CORE_ALPHA = 100
-DEFAULT_CORE_MIN_AREA = 24
-DEFAULT_FALLBACK_ALPHA = 2
-DEFAULT_OWNERSHIP_MARGIN = 48
 DEFAULT_OUTPUT_PADDING = 18
-
-
-# For anatomy/overlay slots, keep only the expected number of largest
-# connected alpha components. This removes stray VFX sparks that sometimes
-# leak across a logical cell boundary in generated sheets.
-#
-# VFX slots 10-12 intentionally keep all detached particles.
-KEEP_COMPONENTS_BY_SLOT = {
-    0: 1,  # rear-wing
-    1: 1,  # tail-fan
-    2: 1,  # body
-    3: 2,  # talons: exactly two tucked legs/talons
-    4: 1,  # front-wing
-    5: 1,  # head
-    6: 2,  # eyes-open: near + far eye
-    7: 2,  # eyes-closed: two eyelid curves
-    8: 1,  # crest
-}
+DEFAULT_ALPHA_THRESHOLD = 2
+DEFAULT_MIN_CELL_PADDING = 2
 
 
 def normalize_path(value: str) -> Path:
@@ -69,505 +45,211 @@ def slot_bounds(
     slot_id: int,
     width: int,
     height: int,
-    margin: int = 0,
 ) -> tuple[int, int, int, int]:
+    """Return proportional integer bounds, including non-divisible sizes."""
     row = slot_id // GRID_COLS
     col = slot_id % GRID_COLS
-
-    x0 = col * width // GRID_COLS
-    x1 = (col + 1) * width // GRID_COLS
-    y0 = row * height // GRID_ROWS
-    y1 = (row + 1) * height // GRID_ROWS
-
     return (
-        max(0, x0 - margin),
-        max(0, y0 - margin),
-        min(width, x1 + margin),
-        min(height, y1 + margin),
+        col * width // GRID_COLS,
+        row * height // GRID_ROWS,
+        (col + 1) * width // GRID_COLS,
+        (row + 1) * height // GRID_ROWS,
     )
 
 
-def pixel_slot_ids(
-    xs: np.ndarray,
-    ys: np.ndarray,
-    width: int,
-    height: int,
-) -> np.ndarray:
-    cols = np.minimum(
-        xs * GRID_COLS // width,
-        GRID_COLS - 1,
-    )
-    rows = np.minimum(
-        ys * GRID_ROWS // height,
-        GRID_ROWS - 1,
-    )
-    return rows * GRID_COLS + cols
-
-
-def assign_core_components(
+def alpha_bbox(
     alpha: np.ndarray,
-    core_alpha: int,
-    core_min_area: int,
-) -> list[np.ndarray]:
-    """
-    Detect high-alpha connected components, then assign each component
-    to the logical slot containing the majority of its pixels.
-
-    This is more reliable than nearest-anchor for long assets such as:
-    - rear-wing
-    - front-wing
-    - attack-trail
-    """
-    h, w = alpha.shape
-
-    core_mask = alpha >= core_alpha
-    structure = np.ones((3, 3), dtype=np.uint8)
-
-    labels, _ = ndi.label(
-        core_mask,
-        structure=structure,
-    )
-    objects = ndi.find_objects(labels)
-
-    seeds = [
-        np.zeros((h, w), dtype=bool)
-        for _ in SLOT_NAMES
-    ]
-
-    for component_id, sl in enumerate(objects, start=1):
-        if sl is None:
-            continue
-
-        local_component = labels[sl] == component_id
-        area = int(local_component.sum())
-
-        if area < core_min_area:
-            continue
-
-        y_slice, x_slice = sl
-        yy, xx = np.where(local_component)
-
-        gx = xx + x_slice.start
-        gy = yy + y_slice.start
-
-        logical_slots = pixel_slot_ids(
-            gx,
-            gy,
-            w,
-            h,
-        )
-
-        counts = np.bincount(
-            logical_slots,
-            minlength=GRID_COLS * GRID_ROWS,
-        )
-
-        slot_id = int(np.argmax(counts))
-
-        view = seeds[slot_id][sl]
-        view[local_component] = True
-        seeds[slot_id][sl] = view
-
-    return seeds
-
-
-def fallback_missing_seeds(
-    alpha: np.ndarray,
-    seeds: list[np.ndarray],
-    fallback_alpha: int,
-) -> list[np.ndarray]:
-    """
-    If a slot has no strong high-alpha core, use the largest low-alpha
-    connected component whose majority pixels belong to that slot.
-
-    This is useful for:
-    - subtle shadow-like feather fragments;
-    - thin closed eyelids;
-    - faint elemental VFX particles.
-    """
-    h, w = alpha.shape
-
-    weak_mask = alpha > fallback_alpha
-    structure = np.ones((3, 3), dtype=np.uint8)
-
-    labels, _ = ndi.label(
-        weak_mask,
-        structure=structure,
-    )
-    objects = ndi.find_objects(labels)
-
-    candidates_by_slot: dict[int, list] = {
-        i: []
-        for i in range(len(SLOT_NAMES))
-    }
-
-    for component_id, sl in enumerate(objects, start=1):
-        if sl is None:
-            continue
-
-        local_component = labels[sl] == component_id
-        area = int(local_component.sum())
-
-        if area < 8:
-            continue
-
-        y_slice, x_slice = sl
-        yy, xx = np.where(local_component)
-
-        gx = xx + x_slice.start
-        gy = yy + y_slice.start
-
-        logical_slots = pixel_slot_ids(
-            gx,
-            gy,
-            w,
-            h,
-        )
-
-        counts = np.bincount(
-            logical_slots,
-            minlength=GRID_COLS * GRID_ROWS,
-        )
-
-        slot_id = int(np.argmax(counts))
-
-        candidates_by_slot[slot_id].append(
-            (area, sl, local_component)
-        )
-
-    for slot_id in range(len(SLOT_NAMES)):
-        if seeds[slot_id].any():
-            continue
-
-        candidates = candidates_by_slot[slot_id]
-
-        if not candidates:
-            continue
-
-        _, sl, local_component = max(
-            candidates,
-            key=lambda item: item[0],
-        )
-
-        view = seeds[slot_id][sl]
-        view[local_component] = True
-        seeds[slot_id][sl] = view
-
-    return seeds
-
-
-def build_owner_map(
-    alpha: np.ndarray,
-    seeds: list[np.ndarray],
-    ownership_margin: int,
-) -> np.ndarray:
-    """
-    Assign every non-transparent pixel/glow/fringe/particle to the nearest
-    seed, but only inside that slot's logical cell + ownership margin.
-
-    Benefits:
-    - keeps feather anti-aliasing;
-    - keeps soft elemental glow;
-    - keeps small detached particles;
-    - prevents distant neighboring artwork from being stolen.
-    """
-    h, w = alpha.shape
-
-    owner = np.full(
-        (h, w),
-        -1,
-        dtype=np.int16,
+    threshold: int,
+) -> tuple[int, int, int, int] | None:
+    ys, xs = np.where(alpha > threshold)
+    if len(xs) == 0:
+        return None
+    return (
+        int(xs.min()),
+        int(ys.min()),
+        int(xs.max()) + 1,
+        int(ys.max()) + 1,
     )
 
-    best_distance = np.full(
-        (h, w),
-        np.inf,
-        dtype=np.float32,
-    )
-
-    valid_slots = [
-        i
-        for i, seed in enumerate(seeds)
-        if seed.any()
-    ]
-
-    if not valid_slots:
-        raise RuntimeError(
-            "Không tìm thấy core nào trong Hawk sheet."
-        )
-
-    for slot_id in valid_slots:
-        seed = seeds[slot_id]
-
-        distance = ndi.distance_transform_edt(
-            ~seed
-        ).astype(np.float32)
-
-        x0, y0, x1, y1 = slot_bounds(
-            slot_id,
-            w,
-            h,
-            margin=ownership_margin,
-        )
-
-        allowed = np.zeros(
-            (h, w),
-            dtype=bool,
-        )
-        allowed[y0:y1, x0:x1] = True
-
-        update = (
-            allowed
-            & (alpha > 0)
-            & (distance < best_distance)
-        )
-
-        best_distance[update] = distance[update]
-        owner[update] = slot_id
-
-    # Strong core always belongs to its original slot.
-    for slot_id in valid_slots:
-        owner[seeds[slot_id]] = slot_id
-
-    owner[alpha == 0] = -1
-
-    return owner
-
-
-
-def cleanup_owner_components(
-    owner: np.ndarray,
-    alpha: np.ndarray,
-) -> np.ndarray:
-    """
-    Remove accidental cross-cell contamination from Hawk anatomy/overlay layers.
-
-    Important special case:
-    row-3 eye/crest cells can receive leaked pixels from front-wing/head above
-    or Combat VFX below. The prompt says these overlays are isolated and padded,
-    so for slots eyes-open / eyes-closed / crest we first reject components
-    whose centroid sits too close to the top or bottom cell boundary.
-
-    Then anatomy slots keep only their expected number of largest components.
-    Combat VFX slots keep all particles.
-    """
-    cleaned = owner.copy()
-    structure = np.ones((3, 3), dtype=np.uint8)
-
-    h, w = alpha.shape
-
-    # Slot-specific cleanup for row-3 overlays.
-    # Valid artwork is expected in the central vertical region of its cell.
-    central_overlay_slots = {6, 7, 8}
-
-    for slot_id in central_overlay_slots:
-        mask = (cleaned == slot_id) & (alpha > 0)
-
-        labels, count = ndi.label(
-            mask,
-            structure=structure,
-        )
-
-        if count == 0:
-            continue
-
-        sx0, sy0, sx1, sy1 = slot_bounds(
-            slot_id,
-            w,
-            h,
-            margin=0,
-        )
-        cell_h = sy1 - sy0
-
-        min_cy = sy0 + cell_h * 0.10
-        max_cy = sy0 + cell_h * 0.82
-
-        for component_id in range(1, count + 1):
-            ys, xs = np.where(labels == component_id)
-
-            if len(xs) == 0:
-                continue
-
-            cy = float(ys.mean())
-
-            if cy < min_cy or cy > max_cy:
-                cleaned[labels == component_id] = -1
-
-    # Keep expected connected-component count for non-VFX slots.
-    for slot_id, keep_count in KEEP_COMPONENTS_BY_SLOT.items():
-        mask = (cleaned == slot_id) & (alpha > 0)
-
-        labels, count = ndi.label(
-            mask,
-            structure=structure,
-        )
-
-        if count <= keep_count:
-            continue
-
-        sizes = np.bincount(labels.ravel())
-        sizes[0] = 0
-
-        keep_labels = np.argsort(sizes)[-keep_count:]
-        keep_mask = np.isin(labels, keep_labels)
-
-        cleaned[
-            (cleaned == slot_id)
-            & (~keep_mask)
-        ] = -1
-
-    return cleaned
 
 def validate_image(
     image: Image.Image,
+    *,
     strict_size: bool,
+    alpha_threshold: int,
 ) -> None:
-    w, h = image.size
+    width, height = image.size
 
     if strict_size and image.size != EXPECTED_SIZE:
         raise RuntimeError(
-            f"--strict-size yêu cầu "
-            f"{EXPECTED_SIZE[0]}×{EXPECTED_SIZE[1]}, "
-            f"nhưng ảnh hiện tại là {w}×{h}."
+            f"--strict-size yêu cầu {EXPECTED_SIZE[0]}×{EXPECTED_SIZE[1]}, "
+            f"nhưng ảnh hiện tại là {width}×{height}."
         )
 
-    if w % GRID_COLS != 0 or h % GRID_ROWS != 0:
+    if width < GRID_COLS or height < GRID_ROWS:
         raise RuntimeError(
-            f"Kích thước {w}×{h} không chia đều cho grid 3×4."
+            f"Kích thước {width}×{height} quá nhỏ cho grid 4×4."
         )
 
-    cell_w = w // GRID_COLS
-    cell_h = h // GRID_ROWS
-
-    if cell_w != cell_h:
+    if width != height:
         print(
-            f"WARNING: cell không vuông: {cell_w}×{cell_h}. "
-            "Script vẫn tiếp tục."
+            f"WARNING: sheet không vuông ({width}×{height}); "
+            "script vẫn chia theo biên tỉ lệ 4×4."
+        )
+
+    col_widths = [
+        (col + 1) * width // GRID_COLS - col * width // GRID_COLS
+        for col in range(GRID_COLS)
+    ]
+    row_heights = [
+        (row + 1) * height // GRID_ROWS - row * height // GRID_ROWS
+        for row in range(GRID_ROWS)
+    ]
+
+    if width % GRID_COLS or height % GRID_ROWS:
+        print(
+            f"INFO: {width}×{height} không chia hết cho 4; "
+            f"cell widths={col_widths}, heights={row_heights}."
         )
 
     if image.size != EXPECTED_SIZE:
         print(
-            f"INFO: ảnh hiện tại {w}×{h}; "
-            f"cell={cell_w}×{cell_h}. "
-            f"Reference sheet hiện tại là "
-            f"{EXPECTED_SIZE[0]}×{EXPECTED_SIZE[1]}."
+            f"INFO: canonical={EXPECTED_SIZE[0]}×{EXPECTED_SIZE[1]}; "
+            f"input={width}×{height}. Không resize ảnh nguồn."
         )
 
-    arr = np.array(
-        image,
-        dtype=np.uint8,
-    )
-    alpha = arr[:, :, 3]
-
-    if alpha.min() == 255:
+    alpha = np.asarray(image, dtype=np.uint8)[:, :, 3]
+    if int(alpha.min()) == 255:
         raise RuntimeError(
-            "Ảnh nguồn không có alpha trong suốt.\n"
+            "Ảnh nguồn không có alpha trong suốt. "
             "Hawk splitter không tự xóa background RGB."
         )
+
+    reserved_content = []
+    for slot_id in range(len(SLOT_NAMES), GRID_COLS * GRID_ROWS):
+        x0, y0, x1, y1 = slot_bounds(slot_id, width, height)
+        count = int((alpha[y0:y1, x0:x1] > alpha_threshold).sum())
+        if count:
+            reserved_content.append((slot_id + 1, count))
+
+    if reserved_content:
+        details = ", ".join(
+            f"ô {slot_id}: {count} px"
+            for slot_id, count in reserved_content
+        )
+        raise RuntimeError(
+            "Ba ô reserved 14-16 phải trong suốt hoàn toàn; "
+            f"phát hiện nội dung tại {details}."
+        )
+
+
+def warn_cell_padding(
+    alpha: np.ndarray,
+    slot_id: int,
+    filename: str,
+    *,
+    threshold: int,
+    min_padding: int,
+) -> None:
+    bbox = alpha_bbox(alpha, threshold)
+    if bbox is None:
+        return
+
+    left, top, right, bottom = bbox
+    height, width = alpha.shape
+    margins = (left, top, width - right, height - bottom)
+    if min(margins) < min_padding:
+        print(
+            f"WARNING: slot {slot_id + 1:02d} {filename} "
+            f"chạm/gần biên cell; margins={margins}. "
+            "Nên tạo lại sheet với safe padding lớn hơn."
+        )
+
+
+def export_cell(
+    image: Image.Image,
+    slot_id: int,
+    output_path: Path,
+    *,
+    alpha_threshold: int,
+    output_padding: int,
+    min_cell_padding: int,
+) -> None:
+    width, height = image.size
+    x0, y0, x1, y1 = slot_bounds(slot_id, width, height)
+    cell = image.crop((x0, y0, x1, y1)).convert("RGBA")
+    alpha = np.asarray(cell, dtype=np.uint8)[:, :, 3]
+
+    warn_cell_padding(
+        alpha,
+        slot_id,
+        output_path.name,
+        threshold=alpha_threshold,
+        min_padding=min_cell_padding,
+    )
+
+    bbox = alpha_bbox(alpha, alpha_threshold)
+    if bbox is None:
+        raise RuntimeError(
+            f"Slot {slot_id + 1:02d} rỗng: {output_path.name}"
+        )
+
+    # Expand to every non-zero alpha pixel in the cell. Direct cell ownership
+    # is deterministic and never mixes leg-far with leg-near.
+    full_bbox = cell.getchannel("A").getbbox()
+    if full_bbox is not None:
+        bbox = full_bbox
+
+    artwork = cell.crop(bbox)
+    padding = max(0, int(output_padding))
+    output = Image.new(
+        "RGBA",
+        (artwork.width + padding * 2, artwork.height + padding * 2),
+        (0, 0, 0, 0),
+    )
+    output.alpha_composite(artwork, (padding, padding))
+    output.save(output_path)
 
 
 def save_debug_grid(
     image: Image.Image,
     output_path: Path,
-    ownership_margin: int,
 ) -> None:
-    dbg = image.copy().convert("RGBA")
-    draw = ImageDraw.Draw(dbg)
-
-    w, h = dbg.size
+    debug = image.copy().convert("RGBA")
+    draw = ImageDraw.Draw(debug)
+    width, height = debug.size
 
     for col in range(1, GRID_COLS):
-        x = col * w // GRID_COLS
-        draw.line(
-            [(x, 0), (x, h)],
-            fill=(255, 0, 0, 255),
-            width=2,
-        )
+        x = col * width // GRID_COLS
+        draw.line([(x, 0), (x, height)], fill=(255, 0, 0, 255), width=2)
 
     for row in range(1, GRID_ROWS):
-        y = row * h // GRID_ROWS
-        draw.line(
-            [(0, y), (w, y)],
-            fill=(255, 0, 0, 255),
-            width=2,
-        )
+        y = row * height // GRID_ROWS
+        draw.line([(0, y), (width, y)], fill=(255, 0, 0, 255), width=2)
 
-    for slot_id, filename in enumerate(SLOT_NAMES):
-        row = slot_id // GRID_COLS
-        col = slot_id % GRID_COLS
-
-        x0 = col * w // GRID_COLS
-        y0 = row * h // GRID_ROWS
-
+    for slot_id in range(GRID_COLS * GRID_ROWS):
+        x0, y0, _, _ = slot_bounds(slot_id, width, height)
+        if slot_id < len(SLOT_NAMES):
+            label = SLOT_NAMES[slot_id]
+            color = (255, 255, 0, 255)
+        else:
+            label = "EMPTY (required)"
+            color = (255, 120, 120, 255)
         draw.text(
             (x0 + 6, y0 + 6),
-            f"{slot_id + 1:02d} {filename}",
-            fill=(255, 255, 0, 255),
+            f"{slot_id + 1:02d} {label}",
+            fill=color,
         )
 
-    draw.text(
-        (10, h - 30),
-        f"ownership-margin={ownership_margin}",
-        fill=(255, 255, 0, 255),
-    )
-
-    dbg.save(output_path)
+    debug.save(output_path)
 
 
-def export_layer(
-    arr: np.ndarray,
-    alpha: np.ndarray,
-    owner: np.ndarray,
-    slot_id: int,
-    output_path: Path,
-    output_padding: int,
-) -> None:
-    slot_mask = (
-        (owner == slot_id)
-        & (alpha > 0)
-    )
-
-    ys, xs = np.where(slot_mask)
-
-    if len(xs) == 0:
-        raise RuntimeError(
-            f"Slot rỗng: {output_path.name}"
-        )
-
-    x0 = int(xs.min())
-    x1 = int(xs.max()) + 1
-    y0 = int(ys.min())
-    y1 = int(ys.max()) + 1
-
-    crop = arr[y0:y1, x0:x1].copy()
-    local_mask = slot_mask[y0:y1, x0:x1]
-
-    # Remove every pixel not owned by this layer.
-    crop[~local_mask] = (0, 0, 0, 0)
-
-    pad = max(
-        0,
-        int(output_padding),
-    )
-
-    canvas = np.zeros(
-        (
-            crop.shape[0] + pad * 2,
-            crop.shape[1] + pad * 2,
-            4,
-        ),
-        dtype=np.uint8,
-    )
-
-    canvas[
-        pad:pad + crop.shape[0],
-        pad:pad + crop.shape[1],
-    ] = crop
-
-    Image.fromarray(
-        canvas,
-        "RGBA",
-    ).save(output_path)
+def clear_owned_outputs(output_dir: Path) -> None:
+    """Remove only files produced by this script, never the whole directory."""
+    for filename in [*SLOT_NAMES, "_debug-grid.png"]:
+        path = output_dir / filename
+        if path.exists():
+            path.unlink()
 
 
 def split_sheet(
@@ -575,236 +257,117 @@ def split_sheet(
     output_dir: Path,
     zip_path: Path | None,
     *,
-    core_alpha: int,
-    core_min_area: int,
-    fallback_alpha: int,
-    ownership_margin: int,
+    alpha_threshold: int,
     output_padding: int,
+    min_cell_padding: int,
     debug: bool,
     strict_size: bool,
 ) -> None:
     if not input_path.exists():
-        raise FileNotFoundError(
-            f"Không tìm thấy file: {input_path}"
-        )
+        raise FileNotFoundError(f"Không tìm thấy file: {input_path}")
 
-    image = Image.open(
-        input_path
-    ).convert("RGBA")
-
+    image = Image.open(input_path).convert("RGBA")
     validate_image(
         image,
-        strict_size,
+        strict_size=strict_size,
+        alpha_threshold=alpha_threshold,
     )
 
-    arr = np.array(
-        image,
-        dtype=np.uint8,
-    )
-    alpha = arr[:, :, 3]
-
-    seeds = assign_core_components(
-        alpha=alpha,
-        core_alpha=core_alpha,
-        core_min_area=core_min_area,
-    )
-
-    seeds = fallback_missing_seeds(
-        alpha=alpha,
-        seeds=seeds,
-        fallback_alpha=fallback_alpha,
-    )
-
-    missing = [
-        SLOT_NAMES[i]
-        for i, seed in enumerate(seeds)
-        if not seed.any()
-    ]
-
-    if missing:
-        raise RuntimeError(
-            "Không nhận diện được các slot:\n- "
-            + "\n- ".join(missing)
-            + "\n\nThử giảm --core-alpha "
-            "hoặc --core-min-area."
-        )
-
-    owner = build_owner_map(
-        alpha=alpha,
-        seeds=seeds,
-        ownership_margin=ownership_margin,
-    )
-
-    owner = cleanup_owner_components(
-        owner=owner,
-        alpha=alpha,
-    )
-
-    if output_dir.exists():
-        shutil.rmtree(output_dir)
-
-    output_dir.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
+    output_dir.mkdir(parents=True, exist_ok=True)
+    clear_owned_outputs(output_dir)
 
     if debug:
-        save_debug_grid(
-            image=image,
-            output_path=output_dir / "_debug-grid.png",
-            ownership_margin=ownership_margin,
-        )
+        save_debug_grid(image, output_dir / "_debug-grid.png")
 
     for slot_id, filename in enumerate(SLOT_NAMES):
         output_path = output_dir / filename
-
-        export_layer(
-            arr=arr,
-            alpha=alpha,
-            owner=owner,
-            slot_id=slot_id,
-            output_path=output_path,
+        export_cell(
+            image,
+            slot_id,
+            output_path,
+            alpha_threshold=alpha_threshold,
             output_padding=output_padding,
+            min_cell_padding=min_cell_padding,
         )
-
         with Image.open(output_path) as result:
             print(
-                f"{slot_id + 1:02d}. "
-                f"Saved: {filename:<18} "
+                f"{slot_id + 1:02d}. Saved: {filename:<18} "
                 f"{result.width}x{result.height}"
             )
 
     if zip_path is not None:
-        zip_path.parent.mkdir(
-            parents=True,
-            exist_ok=True,
-        )
-
+        zip_path.parent.mkdir(parents=True, exist_ok=True)
         if zip_path.exists():
             zip_path.unlink()
-
         with zipfile.ZipFile(
             zip_path,
             "w",
             compression=zipfile.ZIP_DEFLATED,
-        ) as zf:
+        ) as archive:
             for filename in SLOT_NAMES:
-                p = output_dir / filename
-                zf.write(
-                    p,
-                    arcname=f"{output_dir.name}/{filename}",
+                path = output_dir / filename
+                archive.write(path, arcname=f"{output_dir.name}/{filename}")
+            debug_path = output_dir / "_debug-grid.png"
+            if debug_path.exists():
+                archive.write(
+                    debug_path,
+                    arcname=f"{output_dir.name}/_debug-grid.png",
                 )
-
-            if debug:
-                dbg = output_dir / "_debug-grid.png"
-
-                if dbg.exists():
-                    zf.write(
-                        dbg,
-                        arcname=f"{output_dir.name}/_debug-grid.png",
-                    )
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
-            "Split Hawk 3x4 production sheet into 12 PNG layers "
-            "using overlap-based core assignment + ownership margin."
+            "Split Hawk 4x4 production sheet into 13 PNG assets: "
+            "rear-wing, tail-fan, leg-far, body, leg-near, front-wing, "
+            "head, eye states, crest and Cyclone Dive VFX."
         )
     )
-
+    parser.add_argument("input", type=str)
+    parser.add_argument("--output", type=str, default="hawk-layer-sheet")
+    parser.add_argument("--zip", dest="zip_path", type=str, default=None)
     parser.add_argument(
-        "input",
-        type=str,
-    )
-
-    parser.add_argument(
-        "--output",
-        type=str,
-        default="hawk-layer-sheet",
-    )
-
-    parser.add_argument(
-        "--zip",
-        dest="zip_path",
-        type=str,
-        default=None,
-    )
-
-    parser.add_argument(
-        "--core-alpha",
+        "--alpha-threshold",
         type=int,
-        default=DEFAULT_CORE_ALPHA,
+        default=DEFAULT_ALPHA_THRESHOLD,
+        help="Alpha threshold used for empty/reserved-cell validation (default: 2).",
     )
-
-    parser.add_argument(
-        "--core-min-area",
-        type=int,
-        default=DEFAULT_CORE_MIN_AREA,
-    )
-
-    parser.add_argument(
-        "--fallback-alpha",
-        type=int,
-        default=DEFAULT_FALLBACK_ALPHA,
-    )
-
-    parser.add_argument(
-        "--ownership-margin",
-        type=int,
-        default=DEFAULT_OWNERSHIP_MARGIN,
-    )
-
     parser.add_argument(
         "--padding",
         type=int,
         default=DEFAULT_OUTPUT_PADDING,
+        help="Transparent padding added around each exported PNG (default: 18).",
     )
-
     parser.add_argument(
-        "--debug",
-        action="store_true",
+        "--min-cell-padding",
+        type=int,
+        default=DEFAULT_MIN_CELL_PADDING,
+        help="Warn when artwork is closer than this many pixels to a cell edge.",
     )
-
-    parser.add_argument(
-        "--strict-size",
-        action="store_true",
-    )
-
+    parser.add_argument("--debug", action="store_true")
+    parser.add_argument("--strict-size", action="store_true")
     args = parser.parse_args()
 
-    input_path = normalize_path(
-        args.input
-    )
-    output_dir = normalize_path(
-        args.output
-    )
-    zip_path = (
-        normalize_path(args.zip_path)
-        if args.zip_path
-        else None
-    )
+    input_path = normalize_path(args.input)
+    output_dir = normalize_path(args.output)
+    zip_path = normalize_path(args.zip_path) if args.zip_path else None
 
     split_sheet(
         input_path=input_path,
         output_dir=output_dir,
         zip_path=zip_path,
-        core_alpha=args.core_alpha,
-        core_min_area=args.core_min_area,
-        fallback_alpha=args.fallback_alpha,
-        ownership_margin=args.ownership_margin,
+        alpha_threshold=max(0, min(254, args.alpha_threshold)),
         output_padding=args.padding,
+        min_cell_padding=max(0, args.min_cell_padding),
         debug=args.debug,
         strict_size=args.strict_size,
     )
 
     print()
     print(f"Done: {output_dir}")
-
     if zip_path is not None:
         print(f"ZIP: {zip_path}")
 
 
 if __name__ == "__main__":
     main()
-

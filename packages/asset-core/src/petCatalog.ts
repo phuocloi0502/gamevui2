@@ -39,11 +39,11 @@ const eyeStates = (originX: number, originY: number, z: number): UploadSlot[] =>
 
 export const PET_ARCHETYPES = [
   { id: 'quadruped', name: 'Bốn chân', rig: 'quadruped-base', species: ['fox', 'wolf'], validated: true },
-  { id: 'hopper', name: 'Nhảy / lao', rig: 'hopper-base', species: ['bunny'], validated: false },
-  { id: 'tank', name: 'Nặng / phòng thủ', rig: 'tank-base', species: ['turtle', 'golem'], validated: false },
-  { id: 'winged', name: 'Bay', rig: 'winged-base', species: ['dragon', 'owl', 'hawk'], validated: false },
-  { id: 'blob', name: 'Khối mềm', rig: 'blob-base', species: ['slime'], validated: false },
-  { id: 'serpent', name: 'Thân dài', rig: 'serpent-base', species: ['serpent'], validated: false },
+  { id: 'hopper', name: 'Nhảy / lao', rig: 'hopper-base', species: ['bunny'], validated: true },
+  { id: 'tank', name: 'Nặng / phòng thủ', rig: 'tank-base', species: ['turtle', 'golem'], validated: true },
+  { id: 'winged', name: 'Bay', rig: 'winged-base', species: ['dragon', 'owl', 'hawk'], validated: true },
+  { id: 'blob', name: 'Khối mềm', rig: 'blob-base', species: ['slime'], validated: true },
+  { id: 'serpent', name: 'Thân dài', rig: 'serpent-base', species: ['serpent'], validated: true },
 ] as const;
 
 export const PET_ELEMENTS: Array<{ id: PetElement; name: string; color: number }> = [
@@ -94,7 +94,7 @@ export const SPECIES_TEMPLATES: SpeciesTemplate[] = [
     },
   },
   {
-    id: 'wolf', name: 'Wolf', archetype: 'quadruped', rig: 'quadruped-base', validated: false,
+    id: 'wolf', name: 'Wolf', archetype: 'quadruped', rig: 'quadruped-base', validated: true,
     slots: [
       upload('shadow', 'Bóng tiếp đất', [layer('shadow', 8, -22, .5, .85, 0, .8)], true),
       upload('tail', 'Đuôi', [layer('tail', -72, -108, .82, .82, 1, .8)]),
@@ -112,7 +112,7 @@ export const SPECIES_TEMPLATES: SpeciesTemplate[] = [
     ],
   },
   {
-    id: 'bunny', name: 'Bunny', archetype: 'hopper', rig: 'hopper-base', validated: false,
+    id: 'bunny', name: 'Bunny', archetype: 'hopper', rig: 'hopper-base', validated: true,
     slots: [
       upload('shadow', 'Bóng tiếp đất', [layer('shadow', 8, -22, .5, .85, 0, .8)], true),
       upload('rear-ear', 'Tai sau', [layer('rear-ear', 8, -210, .5, .9, 1, .8)]),
@@ -127,7 +127,7 @@ export const SPECIES_TEMPLATES: SpeciesTemplate[] = [
     ],
   },
   {
-    id: 'turtle', name: 'Turtle', archetype: 'tank', rig: 'tank-base', validated: false,
+    id: 'turtle', name: 'Turtle', archetype: 'tank', rig: 'tank-base', validated: true,
     slots: [
       upload('shadow', 'Bóng tiếp đất', [layer('shadow', 8, -18, .5, .85, 0, .85)], true),
       upload('rear-feet', 'Hai chân sau', [layer('rear-feet', -35, -58, .5, .2, 1, .8)]),
@@ -143,7 +143,7 @@ export const SPECIES_TEMPLATES: SpeciesTemplate[] = [
     ],
   },
   {
-    id: 'golem', name: 'Golem', archetype: 'tank', rig: 'tank-base', validated: false,
+    id: 'golem', name: 'Golem', archetype: 'tank', rig: 'tank-base', validated: true,
     slots: [
       upload('shadow', 'Bóng tiếp đất', [layer('shadow', 0, -20, .5, .85, 0, .9)], true),
       upload('rear-arm', 'Tay sau', [layer('rear-arm', -62, -130, .55, .18, 1, .85)]),
@@ -161,19 +161,19 @@ export const SPECIES_TEMPLATES: SpeciesTemplate[] = [
     ],
   },
   {
-    id: 'dragon', name: 'Dragon', archetype: 'winged', rig: 'winged-base', validated: false,
+    id: 'dragon', name: 'Dragon', archetype: 'winged', rig: 'winged-base', validated: true,
     slots: [upload('back-wing', 'Cánh sau', [layer('back-wing', -45, -145, .65, .65, 1, .8)]), upload('tail', 'Đuôi', [layer('tail', -75, -105, .82, .7, 2, .8)]), upload('leg-far', 'Chân xa người xem', [layer('leg-far', 62, 11.36, .5, .2, 2.5, .8)]), upload('body', 'Thân / bụng / ngực · không chân hoặc đùi', [layer('body', 0, -120, .5, .5, 3, .78)]), upload('leg-near', 'Chân gần người xem', [layer('leg-near', -80.4, 7.84, .5, .2, 4, .8)]), upload('front-wing', 'Cánh trước', [layer('front-wing', 25, -145, .35, .65, 5, .85)]), upload('head', 'Đầu (không chứa mắt)', [layer('head', 55, -165, .5, .82, 6, .8)]), ...eyeStates(.5, .82, 6.1), upload('horns', 'Sừng', [layer('horns', 52, -205, .5, .85, 7, .8, 'head')], true), combat('attack-cast', 'Combat VFX · tích năng ở miệng', 'cast'), combat('meteor', 'Combat VFX · thiên thạch'), combat('impact', 'Combat VFX · thiên thạch va chạm')],
   },
   {
-    id: 'owl', name: 'Owl', archetype: 'winged', rig: 'winged-base', validated: false,
+    id: 'owl', name: 'Owl', archetype: 'winged', rig: 'winged-base', validated: true,
     slots: [upload('back-wing', 'Cánh sau', [layer('back-wing', -55, -125, .75, .5, 1, .82)]), upload('tail-feathers', 'Lông đuôi', [layer('tail-feathers', 0, -72, .5, .25, 2, .78)]), upload('body', 'Thân / bụng / ngực · không chân hoặc cánh', [layer('body', 0, -125, .5, .5, 3, .82)]), upload('talons', 'Móng', [layer('talons', 0, -62, .5, .2, 4, .72)]), upload('front-wing', 'Cánh trước', [layer('front-wing', 55, -125, .25, .5, 5, .85)]), upload('head', 'Đầu / face disc (không chứa mắt)', [layer('head', 0, -175, .5, .75, 6, .85)]), ...eyeStates(.5, .75, 6.1), upload('forehead-rune', 'Rune trán', [layer('forehead-rune', 0, -190, .5, .5, 7, .85, 'head')], true), combat('attack-cast', 'Combat VFX · tích năng orb', 'cast'), combat('projectile', 'Combat VFX · orb bay'), combat('impact', 'Combat VFX · orb va chạm')],
   },
   {
-    id: 'hawk', name: 'Hawk', archetype: 'winged', rig: 'winged-base', validated: false,
-    slots: [upload('rear-wing', 'Cánh sau', [layer('rear-wing', -65, -130, .75, .5, 1, .82)]), upload('tail-fan', 'Đuôi quạt', [layer('tail-fan', -25, -75, .5, .2, 2, .8)]), upload('body', 'Thân / bụng / ngực · không chân hoặc cánh', [layer('body', 0, -120, .5, .5, 3, .8)]), upload('talons', 'Móng', [layer('talons', 15, -68, .5, .2, 4, .72)]), upload('front-wing', 'Cánh trước', [layer('front-wing', 55, -130, .25, .5, 5, .86)]), upload('head', 'Đầu (không chứa mắt)', [layer('head', 48, -165, .5, .75, 6, .76)]), ...eyeStates(.5, .75, 6.1), upload('crest', 'Mào', [layer('crest', 42, -198, .5, .8, 7, .78, 'head')], true), combat('attack-trail', 'Combat VFX · vệt bổ nhào', 'trail'), combat('vortex', 'Combat VFX · lốc xoáy'), combat('impact', 'Combat VFX · va chạm lốc')],
+    id: 'hawk', name: 'Hawk', archetype: 'winged', rig: 'winged-base', validated: true,
+    slots: [upload('rear-wing', 'Cánh sau', [layer('rear-wing', -65, -130, .75, .5, 1, .82)]), upload('tail-fan', 'Đuôi quạt', [layer('tail-fan', -25, -75, .5, .2, 2, .8)]), upload('leg-far', 'Chân xa người xem', [layer('leg-far', -18, -72, .5, .2, 2.5, .68)]), upload('body', 'Thân / bụng / ngực · không chân, đùi hoặc cánh', [layer('body', 0, -120, .5, .5, 3, .8)]), upload('leg-near', 'Chân gần người xem', [layer('leg-near', 22, -68, .5, .2, 4, .76)]), upload('front-wing', 'Cánh trước', [layer('front-wing', 55, -130, .25, .5, 5, .86)]), upload('head', 'Đầu (không chứa mắt)', [layer('head', 48, -165, .5, .75, 6, .76)]), ...eyeStates(.5, .75, 6.1), upload('crest', 'Mào', [layer('crest', 42, -198, .5, .8, 7, .78, 'head')], true), combat('attack-trail', 'Combat VFX · vệt bổ nhào', 'trail'), combat('vortex', 'Combat VFX · lốc xoáy'), combat('impact', 'Combat VFX · va chạm lốc')],
   },
   {
-    id: 'slime', name: 'Slime', archetype: 'blob', rig: 'blob-base', validated: false,
+    id: 'slime', name: 'Slime', archetype: 'blob', rig: 'blob-base', validated: true,
     slots: [
       upload('blob', 'Khối slime · không lõi, mặt hoặc highlight', [layer('blob', 0, -90, .5, .7, 1, .9)]),
       upload('inner-core', 'Lõi nguyên tố bên trong', [layer('inner-core', 0, -100, .5, .5, 2, .75, 'blob')], true),
@@ -188,7 +188,7 @@ export const SPECIES_TEMPLATES: SpeciesTemplate[] = [
     ],
   },
   {
-    id: 'serpent', name: 'Serpent', archetype: 'serpent', rig: 'serpent-base', validated: false,
+    id: 'serpent', name: 'Serpent', archetype: 'serpent', rig: 'serpent-base', validated: true,
     slots: [
       upload('shadow', 'Bóng tiếp đất', [layer('shadow', 0, -18, .5, .85, 0, .85)], true),
       upload('tail', 'Đuôi', [layer('tail', -65, -60, .8, .5, 1, .8)]),

@@ -78,12 +78,12 @@ motion family can still have different anatomy.
 
 | Group | Species | Rig | Template status |
 |---|---|---|---|
-| Quadruped | Fox, Wolf | Fox: `fox-quadruped`; Wolf: `quadruped-base` | Fox validated; Wolf defaults provisional |
-| Hopper | Bunny | `hopper-base` | Provisional until Fire Bunny |
-| Tank | Turtle, Golem | `tank-base` | Provisional until Fire Turtle and Fire Golem |
-| Winged | Dragon, Owl, Hawk | `winged-base` | Provisional until flying flagships |
-| Blob | Slime | `blob-base` | Provisional until Fire Slime |
-| Serpent | Serpent | `serpent-base` | Provisional until Fire Serpent |
+| Quadruped | Fox, Wolf | Fox: `fox-quadruped`; Wolf: `quadruped-base` | Validated |
+| Hopper | Bunny | `hopper-base` | Validated |
+| Tank | Turtle, Golem | `tank-base` | Validated |
+| Winged | Dragon, Owl, Hawk | `winged-base` | Validated |
+| Blob | Slime | `blob-base` | Validated |
+| Serpent | Serpent | `serpent-base` | Validated |
 
 The executable catalog and per-species layer defaults live in
 `packages/asset-core/src/petCatalog.ts`. Do not copy the Fox layer list into a
@@ -108,7 +108,7 @@ The table below supplies species routing and artwork identity. Exact required/op
 | `golem` / Golem | tank / `tank-base` | `rear-arm.png`, `rear-leg.png`, `torso.png`, `core.png`, `front-leg.png`, `front-arm.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `rock-fragments.png` | Core Quake: `attack-cast.png`, `ground-wave.png`, `impact.png`. Spec: `docs/pet-production/golem-production-spec.md` |
 | `slime` / Slime | blob / `blob-base` | `blob.png`, `face.png`, `eyes-open.png`, `eyes-closed.png` | `inner-core.png`, `front-gloss.png`, `top-effect.png` | Element Pulse: `attack-cast.png`, `pulse.png`, `impact.png`. Spec: `docs/pet-production/slime-production-spec.md` |
 | `serpent` / Serpent | serpent / `serpent-base` | `tail.png`, `body.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `jaw.png`, `crest.png` | Element Lance: `attack-cast.png`, `beam.png`, `impact.png`. Spec: `docs/pet-production/serpent-production-spec.md` |
-| `hawk` / Hawk | winged / `winged-base` | `rear-wing.png`, `tail-fan.png`, `body.png`, `talons.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `crest.png` | Cyclone Dive: `attack-trail.png`, `vortex.png`, `impact.png`. Spec: `docs/pet-production/hawk-production-spec.md` |
+| `hawk` / Hawk | winged / `winged-base` | `rear-wing.png`, `tail-fan.png`, `leg-far.png`, `body.png`, `leg-near.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `crest.png` | Cyclone Dive: `attack-trail.png`, `vortex.png`, `impact.png`. Spec: `docs/pet-production/hawk-production-spec.md` |
 
 Asset Studio does not impose a runtime size. It preserves every uploaded PNG's original dimensions, alpha, transparent padding and artwork offset. Use manifest transforms in the UI to set position, scale and pivot. Keep `eyes-open` and `eyes-closed` on matching canvases so blink does not jump.
 
@@ -1567,7 +1567,7 @@ Keep consistent:
 - aerodynamic body;
 - small sharp head;
 - fan tail;
-- tucked talons;
+- two separately layered tucked legs/talons;
 - pointed crest.
 
 The Hawk must remain visually distinct from Owl.
@@ -1579,7 +1579,8 @@ The Hawk must remain visually distinct from Owl.
 - back wing;
 - front wing;
 - tail fan;
-- talons;
+- far leg / talon;
+- near leg / talon;
 - crest;
 - wing trail;
 - vortex VFX.
@@ -1624,7 +1625,7 @@ Sheet cố định: `docs/pet-production/hawk-production-spec.md`. Phân biệt 
 
 ```text
 Character layers:
-rear-wing, tail-fan, body, talons, front-wing, head, eyes-open, eyes-closed, crest
+rear-wing, tail-fan, leg-far, body, leg-near, front-wing, head, eyes-open, eyes-closed, crest
 
 Combat VFX — Cyclone Dive:
 attack-trail, vortex, impact
