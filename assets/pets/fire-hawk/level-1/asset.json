@@ -49,27 +49,27 @@
     },
     {
       "id": "leg-far",
-      "x": -42,
-      "y": -80,
+      "x": -20,
+      "y": -82,
       "originX": 0.5,
       "originY": 0.2,
       "z": 2.5,
-      "scale": 0.35,
+      "scale": 0.25,
       "src": "/assets/pets/fire-hawk/level-1/layers/leg-far.png",
       "visible": true,
-      "angle": -4
+      "angle": -44
     },
     {
       "id": "leg-near",
-      "x": -42,
-      "y": -80,
+      "x": -47,
+      "y": -86,
       "originX": 0.5,
       "originY": 0.2,
       "z": 4,
-      "scale": 0.35,
+      "scale": 0.27,
       "src": "/assets/pets/fire-hawk/level-1/layers/leg-near.png",
       "visible": true,
-      "angle": -4
+      "angle": -23
     },
     {
       "id": "front-wing",
