@@ -11,35 +11,54 @@ from PIL import Image, ImageDraw
 from scipy import ndimage as ndi
 
 
-# Ảnh Serpent hiện tại của bạn: 1086×1448 => mỗi cell 362×362.
+# Fire Hawk reference sheet attached by the user:
+# 1086×1448 => exact 3×4 grid => each cell = 362×362.
 EXPECTED_SIZE = (1086, 1448)
 
 GRID_COLS = 3
 GRID_ROWS = 4
 
 SLOT_NAMES = [
-    "shadow.png",
-    "tail.png",
+    "rear-wing.png",
+    "tail-fan.png",
     "body.png",
 
+    "talons.png",
+    "front-wing.png",
     "head.png",
+
     "eyes-open.png",
     "eyes-closed.png",
-
-    "jaw.png",
     "crest.png",
-    "attack-cast.png",
 
-    "beam.png",
+    "attack-trail.png",
+    "vortex.png",
     "impact.png",
-    "assembly-ref.png",
 ]
 
 DEFAULT_CORE_ALPHA = 100
-DEFAULT_CORE_MIN_AREA = 30
+DEFAULT_CORE_MIN_AREA = 24
 DEFAULT_FALLBACK_ALPHA = 2
-DEFAULT_OWNERSHIP_MARGIN = 54
+DEFAULT_OWNERSHIP_MARGIN = 48
 DEFAULT_OUTPUT_PADDING = 18
+
+
+# For anatomy/overlay slots, keep only the expected number of largest
+# connected alpha components. This removes stray VFX sparks that sometimes
+# leak across a logical cell boundary in generated sheets.
+#
+# VFX slots 10-12 intentionally keep all detached particles.
+KEEP_COMPONENTS_BY_SLOT = {
+    0: 1,  # rear-wing
+    1: 1,  # tail-fan
+    2: 1,  # body
+    3: 2,  # talons: exactly two tucked legs/talons
+    4: 1,  # front-wing
+    5: 1,  # head
+    6: 2,  # eyes-open: near + far eye
+    7: 2,  # eyes-closed: two eyelid curves
+    8: 1,  # crest
+}
 
 
 def normalize_path(value: str) -> Path:
@@ -91,11 +110,13 @@ def assign_core_components(
     core_min_area: int,
 ) -> list[np.ndarray]:
     """
-    Tìm connected-components alpha mạnh rồi gán mỗi component
-    vào logical slot mà phần lớn pixel của component đang nằm trong.
+    Detect high-alpha connected components, then assign each component
+    to the logical slot containing the majority of its pixels.
 
-    Cách này tốt hơn nearest-anchor khi artwork lệch tâm hoặc có hình dài
-    như tail/body/beam.
+    This is more reliable than nearest-anchor for long assets such as:
+    - rear-wing
+    - front-wing
+    - attack-trail
     """
     h, w = alpha.shape
 
@@ -156,8 +177,13 @@ def fallback_missing_seeds(
     fallback_alpha: int,
 ) -> list[np.ndarray]:
     """
-    Nếu một slot không có core mạnh, tìm component alpha yếu lớn nhất
-    có phần lớn pixel nằm trong slot đó.
+    If a slot has no strong high-alpha core, use the largest low-alpha
+    connected component whose majority pixels belong to that slot.
+
+    This is useful for:
+    - subtle shadow-like feather fragments;
+    - thin closed eyelids;
+    - faint elemental VFX particles.
     """
     h, w = alpha.shape
 
@@ -236,15 +262,14 @@ def build_owner_map(
     ownership_margin: int,
 ) -> np.ndarray:
     """
-    Gán toàn bộ alpha/glow/fringe/particle vào seed gần nhất,
-    nhưng chỉ cho phép mỗi slot nhận pixel trong cell của nó
-    cộng thêm ownership_margin.
+    Assign every non-transparent pixel/glow/fringe/particle to the nearest
+    seed, but only inside that slot's logical cell + ownership margin.
 
-    Nhờ vậy:
-    - viền sáng không bị cắt cụt;
-    - hạt nhỏ gần layer vẫn được giữ;
-    - tail/beam dài không bị nearest-anchor gán nhầm;
-    - pixel ở xa không bị hút sang layer khác.
+    Benefits:
+    - keeps feather anti-aliasing;
+    - keeps soft elemental glow;
+    - keeps small detached particles;
+    - prevents distant neighboring artwork from being stolen.
     """
     h, w = alpha.shape
 
@@ -268,7 +293,7 @@ def build_owner_map(
 
     if not valid_slots:
         raise RuntimeError(
-            "Không tìm thấy core nào trong Serpent sheet."
+            "Không tìm thấy core nào trong Hawk sheet."
         )
 
     for slot_id in valid_slots:
@@ -300,7 +325,7 @@ def build_owner_map(
         best_distance[update] = distance[update]
         owner[update] = slot_id
 
-    # Core luôn thuộc chính layer đó.
+    # Strong core always belongs to its original slot.
     for slot_id in valid_slots:
         owner[seeds[slot_id]] = slot_id
 
@@ -308,6 +333,90 @@ def build_owner_map(
 
     return owner
 
+
+
+def cleanup_owner_components(
+    owner: np.ndarray,
+    alpha: np.ndarray,
+) -> np.ndarray:
+    """
+    Remove accidental cross-cell contamination from Hawk anatomy/overlay layers.
+
+    Important special case:
+    row-3 eye/crest cells can receive leaked pixels from front-wing/head above
+    or Combat VFX below. The prompt says these overlays are isolated and padded,
+    so for slots eyes-open / eyes-closed / crest we first reject components
+    whose centroid sits too close to the top or bottom cell boundary.
+
+    Then anatomy slots keep only their expected number of largest components.
+    Combat VFX slots keep all particles.
+    """
+    cleaned = owner.copy()
+    structure = np.ones((3, 3), dtype=np.uint8)
+
+    h, w = alpha.shape
+
+    # Slot-specific cleanup for row-3 overlays.
+    # Valid artwork is expected in the central vertical region of its cell.
+    central_overlay_slots = {6, 7, 8}
+
+    for slot_id in central_overlay_slots:
+        mask = (cleaned == slot_id) & (alpha > 0)
+
+        labels, count = ndi.label(
+            mask,
+            structure=structure,
+        )
+
+        if count == 0:
+            continue
+
+        sx0, sy0, sx1, sy1 = slot_bounds(
+            slot_id,
+            w,
+            h,
+            margin=0,
+        )
+        cell_h = sy1 - sy0
+
+        min_cy = sy0 + cell_h * 0.10
+        max_cy = sy0 + cell_h * 0.82
+
+        for component_id in range(1, count + 1):
+            ys, xs = np.where(labels == component_id)
+
+            if len(xs) == 0:
+                continue
+
+            cy = float(ys.mean())
+
+            if cy < min_cy or cy > max_cy:
+                cleaned[labels == component_id] = -1
+
+    # Keep expected connected-component count for non-VFX slots.
+    for slot_id, keep_count in KEEP_COMPONENTS_BY_SLOT.items():
+        mask = (cleaned == slot_id) & (alpha > 0)
+
+        labels, count = ndi.label(
+            mask,
+            structure=structure,
+        )
+
+        if count <= keep_count:
+            continue
+
+        sizes = np.bincount(labels.ravel())
+        sizes[0] = 0
+
+        keep_labels = np.argsort(sizes)[-keep_count:]
+        keep_mask = np.isin(labels, keep_labels)
+
+        cleaned[
+            (cleaned == slot_id)
+            & (~keep_mask)
+        ] = -1
+
+    return cleaned
 
 def validate_image(
     image: Image.Image,
@@ -333,14 +442,14 @@ def validate_image(
     if cell_w != cell_h:
         print(
             f"WARNING: cell không vuông: {cell_w}×{cell_h}. "
-            "Script vẫn chạy."
+            "Script vẫn tiếp tục."
         )
 
     if image.size != EXPECTED_SIZE:
         print(
             f"INFO: ảnh hiện tại {w}×{h}; "
             f"cell={cell_w}×{cell_h}. "
-            f"Ảnh tham chiếu hiện tại là "
+            f"Reference sheet hiện tại là "
             f"{EXPECTED_SIZE[0]}×{EXPECTED_SIZE[1]}."
         )
 
@@ -353,7 +462,7 @@ def validate_image(
     if alpha.min() == 255:
         raise RuntimeError(
             "Ảnh nguồn không có alpha trong suốt.\n"
-            "Script không tự xóa background RGB."
+            "Hawk splitter không tự xóa background RGB."
         )
 
 
@@ -433,7 +542,7 @@ def export_layer(
     crop = arr[y0:y1, x0:x1].copy()
     local_mask = slot_mask[y0:y1, x0:x1]
 
-    # Xóa pixel không thuộc layer này.
+    # Remove every pixel not owned by this layer.
     crop[~local_mask] = (0, 0, 0, 0)
 
     pad = max(
@@ -526,6 +635,11 @@ def split_sheet(
         ownership_margin=ownership_margin,
     )
 
+    owner = cleanup_owner_components(
+        owner=owner,
+        alpha=alpha,
+    )
+
     if output_dir.exists():
         shutil.rmtree(output_dir)
 
@@ -594,9 +708,8 @@ def split_sheet(
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
-            "Split Fire Serpent 3x4 production sheet "
-            "into 11 runtime assets plus assembly-ref using overlap-based "
-            "core assignment + ownership margin."
+            "Split Hawk 3x4 production sheet into 12 PNG layers "
+            "using overlap-based core assignment + ownership margin."
         )
     )
 
@@ -608,7 +721,7 @@ def main() -> None:
     parser.add_argument(
         "--output",
         type=str,
-        default="serpent-layer-sheet",
+        default="hawk-layer-sheet",
     )
 
     parser.add_argument(
@@ -694,3 +807,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

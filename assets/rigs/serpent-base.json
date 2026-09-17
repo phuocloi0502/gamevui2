@@ -2,17 +2,17 @@
   "id": "serpent-base", "canvas": { "width": 512, "height": 512 }, "idle": { "duration": 2000, "bob": 2 },
   "clips": {
     "idle": { "duration": 2000, "loop": true, "tracks": [
-      { "target": "body-upper", "property": "angle", "values": [-2, 2, -2] },
+      { "target": "body", "property": "angle", "values": [-2, 2, -2] },
       { "target": "head", "property": "x", "values": [-2, 2, -2] },
       { "target": "tail", "property": "angle", "values": [-3, 3, -3] }
     ] },
     "walk": { "duration": 850, "loop": true, "tracks": [
-      { "target": "body-lower", "property": "scaleX", "values": [1, 1.025, 0.98, 1] },
-      { "target": "body-upper", "property": "angle", "values": [-4, 4, -4] },
+      { "target": "body", "property": "scaleX", "values": [1, 1.025, 0.98, 1] },
+      { "target": "body", "property": "angle", "values": [-4, 4, -4] },
       { "target": "head", "property": "x", "values": [-4, 4, -4] }
     ] },
     "attack": { "duration": 850, "loop": false, "event": { "at": 430, "name": "attack-release" }, "tracks": [
-      { "target": "body-upper", "property": "angle", "values": [0, -9, 8, 0] },
+      { "target": "body", "property": "angle", "values": [0, -9, 8, 0] },
       { "target": "head", "property": "x", "values": [0, -12, 24, 0] },
       { "target": "jaw", "property": "angle", "values": [0, 16, 5, 0] }
     ] }

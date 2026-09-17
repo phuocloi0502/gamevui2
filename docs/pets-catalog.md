@@ -107,7 +107,7 @@ The table below supplies species routing and artwork identity. Exact required/op
 | `owl` / Owl | winged / `winged-base` | `back-wing.png`, `tail-feathers.png`, `body.png`, `talons.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `forehead-rune.png` | Element Orb: `attack-cast.png`, `projectile.png`, `impact.png`. Spec: `docs/pet-production/owl-production-spec.md` |
 | `golem` / Golem | tank / `tank-base` | `rear-arm.png`, `rear-leg.png`, `torso.png`, `core.png`, `front-leg.png`, `front-arm.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `rock-fragments.png` | Core Quake: `attack-cast.png`, `ground-wave.png`, `impact.png`. Spec: `docs/pet-production/golem-production-spec.md` |
 | `slime` / Slime | blob / `blob-base` | `blob.png`, `face.png`, `eyes-open.png`, `eyes-closed.png` | `inner-core.png`, `front-gloss.png`, `top-effect.png` | Element Pulse: `attack-cast.png`, `pulse.png`, `impact.png`. Spec: `docs/pet-production/slime-production-spec.md` |
-| `serpent` / Serpent | serpent / `serpent-base` | `tail.png`, `body-lower.png`, `body-upper.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `jaw.png`, `crest.png` | Element Lance: `attack-cast.png`, `beam.png`, `impact.png`. Spec: `docs/pet-production/serpent-production-spec.md` |
+| `serpent` / Serpent | serpent / `serpent-base` | `tail.png`, `body.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `shadow.png`, `jaw.png`, `crest.png` | Element Lance: `attack-cast.png`, `beam.png`, `impact.png`. Spec: `docs/pet-production/serpent-production-spec.md` |
 | `hawk` / Hawk | winged / `winged-base` | `rear-wing.png`, `tail-fan.png`, `body.png`, `talons.png`, `front-wing.png`, `head.png`, `eyes-open.png`, `eyes-closed.png` | `crest.png` | Cyclone Dive: `attack-trail.png`, `vortex.png`, `impact.png`. Spec: `docs/pet-production/hawk-production-spec.md` |
 
 Asset Studio does not impose a runtime size. It preserves every uploaded PNG's original dimensions, alpha, transparent padding and artwork offset. Use manifest transforms in the UI to set position, scale and pivot. Keep `eyes-open` and `eyes-closed` on matching canvases so blink does not jump.
@@ -1457,9 +1457,7 @@ Keep consistent:
 
 - head;
 - jaw;
-- neck;
-- upper body;
-- lower body;
+- one-piece neck and S-shaped body;
 - tail;
 - crest;
 - mouth VFX.
@@ -1511,7 +1509,7 @@ Sheet cố định: `docs/pet-production/serpent-production-spec.md`. Không ch�
 
 ```text
 Character layers:
-shadow, tail, body-lower, body-upper, head, eyes-open, eyes-closed, jaw, crest
+shadow, tail, body, head, eyes-open, eyes-closed, jaw, crest
 
 Combat VFX — Element Lance:
 attack-cast, beam, impact

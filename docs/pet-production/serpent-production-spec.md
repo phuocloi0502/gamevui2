@@ -34,12 +34,11 @@
 |---|---|---:|---|
 | `shadow` | `layers/shadow.png` | 0 | Optional→**sheet** |
 | `tail` | `layers/tail.png` | 1 | |
-| `body-lower` | `layers/body-lower.png` | 2 | Cuộn / thân dưới |
-| `body-upper` | `layers/body-upper.png` | 3 | Cổ / thân trên |
-| `head` | `layers/head.png` | 4 | Không mắt; không jaw/crest |
-| `eyes-open` / `eyes-closed` | `layers/eyes-*.png` | 4.1+ | Parent head |
-| `jaw` | `layers/jaw.png` | 5 | Optional→**sheet**; parent head |
-| `crest` | `layers/crest.png` | 6 | Optional→**sheet**; parent head |
+| `body` | `layers/body.png` | 2 | Một layer hoàn chỉnh gồm cổ, thân chữ S và phần cuộn dưới |
+| `head` | `layers/head.png` | 3 | Không mắt; không jaw/crest |
+| `eyes-open` / `eyes-closed` | `layers/eyes-*.png` | 3.1+ | Parent head |
+| `jaw` | `layers/jaw.png` | 4 | Optional→**sheet**; parent head |
+| `crest` | `layers/crest.png` | 5 | Optional→**sheet**; parent head |
 | `attack-cast` / `beam` / `impact` | `effects/*.png` | — | |
 
 `jaw` được `serpent-base` attack tween — nên có trên sheet dù recipe optional.
@@ -49,19 +48,20 @@
 ## 3. Sheet — 3×4 / 12 ô
 
 ```text
-  1 shadow        2 tail          3 body-lower
-  4 body-upper    5 head          6 eyes-open
-  7 eyes-closed   8 jaw           9 crest
- 10 attack-cast  11 beam         12 impact
+  1 shadow        2 tail          3 body
+  4 head          5 eyes-open     6 eyes-closed
+  7 jaw           8 crest         9 attack-cast
+ 10 beam         11 impact       12 assembly-ref
 ```
 
-Luật sheet chung. `assembly-ref` file riêng.
+Ô `assembly-ref` chỉ dùng để đối chiếu lắp ghép, không đưa vào runtime layers.
 
 ---
 
 ## 4. Luật layer
 
-- **tail / body-lower / body-upper:** ba đoạn nối được; mỗi ô đủ khớp che; không chân; cùng S-curve facing right.
+- **tail / body:** hai đoạn nối được; mỗi ô đủ vùng khớp bị che; không chân; cùng S-curve facing right.
+- **body:** một artwork liên tục chứa toàn bộ cổ, thân chữ S và phần thân dưới cuộn; không chứa tail, head, jaw, crest, mắt hoặc effect.
 - **head:** oversized; không mắt; chỗ jaw/crest.
 - **jaw:** hàm dưới; đủ pivot để há miệng.
 - **crest:** mào/fin đầu; không vẽ lại cả đầu.
