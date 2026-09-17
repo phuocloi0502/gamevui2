@@ -8,12 +8,14 @@ import type { ResolvedPet } from './studioTypes';
 
 const NUDGE_STEPS = [0.1, 1, 10, 100] as const;
 
-export function StudioEditors({ pet, manifest, view, onSave, onRebuild, onPlay }: {
+export function StudioEditors({ pet, pets, manifest, view, onSave, onRebuild, onPreviewScaleChange, onPlay }: {
   pet: ResolvedPet;
+  pets: ResolvedPet[];
   manifest: PetDefinition;
   view: PetView | undefined;
   onSave: () => void;
   onRebuild: () => void;
+  onPreviewScaleChange: (scale: number) => void;
   onPlay: (state: State) => void;
 }) {
   const [nudgeStep, setNudgeStep] = useState<(typeof NUDGE_STEPS)[number]>(1);
@@ -66,6 +68,14 @@ export function StudioEditors({ pet, manifest, view, onSave, onRebuild, onPlay }
           </select>
         </label>
       </div>
+      <CopyPetSettings
+        pet={pet}
+        pets={pets}
+        manifest={manifest}
+        onSave={onSave}
+        onRebuild={onRebuild}
+        onPreviewScaleChange={onPreviewScaleChange}
+      />
       <p className="label">VỊ TRÍ TOÀN PET</p>
       <p className="editor-help">X/Y đặt pet trong khung xem. Tỷ lệ thay đổi kích thước toàn bộ pet. Mũi tên ô số nhảy theo bước đã chọn.</p>
       <div className="transform-fields">
@@ -75,6 +85,7 @@ export function StudioEditors({ pet, manifest, view, onSave, onRebuild, onPlay }
           preview.scale = value;
           const direction = view ? Math.sign(view.scaleX) || 1 : 1;
           view?.setScale(direction * value, value);
+          onPreviewScaleChange(value);
           onSave();
         }} />
       </div>
@@ -195,6 +206,140 @@ export function StudioEditors({ pet, manifest, view, onSave, onRebuild, onPlay }
         })}
       </div>
     </div>
+  );
+}
+
+const REQUIRED_LAYER_PRESENTATION_FIELDS = ['x', 'y', 'originX', 'originY', 'z'] as const;
+const OPTIONAL_LAYER_PRESENTATION_FIELDS = ['scale', 'angle', 'alpha', 'visible', 'tint'] as const;
+
+function CopyPetSettings({ pet, pets, manifest, onSave, onRebuild, onPreviewScaleChange }: {
+  pet: ResolvedPet;
+  pets: ResolvedPet[];
+  manifest: PetDefinition;
+  onSave: () => void;
+  onRebuild: () => void;
+  onPreviewScaleChange: (scale: number) => void;
+}) {
+  const [sourceId, setSourceId] = useState('');
+  const [copyPreview, setCopyPreview] = useState(true);
+  const [copyLayers, setCopyLayers] = useState(true);
+  const [copyAnimations, setCopyAnimations] = useState(true);
+  const [copyCombat, setCopyCombat] = useState(true);
+  const source = pets.find(item => item.id === sourceId && item.id !== pet.id);
+  const choices = pets
+    .filter(item => item.id !== pet.id)
+    .sort((a, b) => a.name.localeCompare(b.name, 'vi'));
+  const targetLayerIds = new Set(pet.layers.map(layer => layer.id));
+  const targetLayers = new Map(pet.layers.map(layer => [layer.id, layer]));
+  const matchingLayerCount = source?.layers.filter(layer => {
+    const target = targetLayers.get(layer.id);
+    return target && target.parent === layer.parent;
+  }).length ?? 0;
+  const targetCombatIds = new Set(Object.keys(pet.effects?.attack ?? {}));
+  const matchingCombatCount = source
+    ? Object.keys(source.effects?.attack ?? {}).filter(semantic => targetCombatIds.has(semantic)).length
+    : 0;
+  const selectedCount = [copyPreview, copyLayers, copyAnimations, copyCombat].filter(Boolean).length;
+
+  const apply = () => {
+    if (!source || !selectedCount) return;
+    const summary = [
+      copyPreview ? 'vị trí/scale toàn pet' : '',
+      copyLayers ? `${matchingLayerCount} layer trùng ID` : '',
+      copyAnimations ? '3 chuyển động (chỉ giữ target layer tương thích)' : '',
+      copyCombat ? `${matchingCombatCount} Combat VFX trùng loại và pattern đòn` : '',
+    ].filter(Boolean).join(', ');
+    if (!window.confirm(`Lấy thông số từ “${source.name}” và ghi đè ${summary} của “${pet.name}”?\nẢnh, đường dẫn asset, ID, level và rig hiện tại được giữ nguyên.`)) return;
+
+    if (copyPreview) {
+      const nextPreview = structuredClone(source.preview ?? { x: 420, y: 440, scale: 1 });
+      manifest.preview = nextPreview;
+      pet.preview = nextPreview;
+      onPreviewScaleChange(nextPreview.scale);
+    }
+
+    if (copyLayers) {
+      const sourceLayers = new Map(source.layers.map(layer => [layer.id, layer]));
+      for (const layer of pet.layers) {
+        const sourceLayer = sourceLayers.get(layer.id);
+        if (!sourceLayer || sourceLayer.parent !== layer.parent) continue;
+        for (const field of REQUIRED_LAYER_PRESENTATION_FIELDS) {
+          Object.assign(layer, { [field]: sourceLayer[field] });
+        }
+        for (const field of OPTIONAL_LAYER_PRESENTATION_FIELDS) {
+          if (sourceLayer[field] !== undefined) Object.assign(layer, { [field]: sourceLayer[field] });
+          else delete layer[field];
+        }
+      }
+    }
+
+    if (copyAnimations) {
+      manifest.overrides ??= {};
+      manifest.overrides.clips ??= {};
+      pet.rig.clips ??= {} as NonNullable<typeof pet.rig.clips>;
+      for (const state of ['idle', 'walk', 'attack'] as State[]) {
+        const sourceClip = source.rig.clips?.[state];
+        if (!sourceClip) continue;
+        const nextClip: Clip = {
+          ...structuredClone(sourceClip),
+          tracks: structuredClone(sourceClip.tracks.filter(track => targetLayerIds.has(track.target))),
+        };
+        manifest.overrides.clips[state] = nextClip;
+        pet.rig.clips[state] = nextClip;
+      }
+    }
+
+    if (copyCombat) {
+      manifest.effects ??= {};
+      pet.effects ??= {};
+      manifest.effects.attackPresentation ??= {};
+      pet.effects.attackPresentation ??= {};
+      for (const semantic of targetCombatIds) {
+        if (!source.effects?.attack?.[semantic]) continue;
+        const nextPresentation = combatVfxPresentation(semantic, source.effects.attackPresentation?.[semantic]);
+        manifest.effects.attackPresentation[semantic] = structuredClone(nextPresentation);
+        pet.effects.attackPresentation[semantic] = structuredClone(nextPresentation);
+      }
+      const nextAttackMeta = structuredClone(source.effects?.attackMeta ?? { pattern: 'single' as const });
+      manifest.effects.attackMeta = nextAttackMeta;
+      pet.effects.attackMeta = structuredClone(nextAttackMeta);
+    }
+
+    onRebuild();
+    onSave();
+  };
+
+  return (
+    <details className="copy-settings">
+      <summary>
+        <span><b>LẤY THÔNG SỐ TỪ PET KHÁC</b></span>
+        <span>Giữ nguyên ảnh pet hiện tại</span>
+      </summary>
+      <div className="copy-settings-body">
+        <p className="editor-help">Chỉ sao chép thông số tương thích. Layer được ghép khi trùng ID và cùng parent; PNG, đường dẫn ảnh, danh tính, level và rig không thay đổi.</p>
+        <label className="copy-source">
+          <span>Pet nguồn</span>
+          <select value={sourceId} onChange={event => setSourceId(event.target.value)}>
+            <option value="">Chọn pet để lấy thông số…</option>
+            {choices.map(item => (
+              <option key={item.id} value={item.id}>{item.name} · {item.id}</option>
+            ))}
+          </select>
+        </label>
+        {source && (
+          <p className="copy-compatibility">
+            Tương thích: {matchingLayerCount}/{pet.layers.length} layer hiện tại · {matchingCombatCount}/{targetCombatIds.size} loại Combat VFX hiện tại
+          </p>
+        )}
+        <div className="copy-options">
+          <label><input type="checkbox" checked={copyPreview} onChange={event => setCopyPreview(event.target.checked)} /> Vị trí/scale toàn pet</label>
+          <label><input type="checkbox" checked={copyLayers} onChange={event => setCopyLayers(event.target.checked)} /> Transform layer trùng ID</label>
+          <label><input type="checkbox" checked={copyAnimations} onChange={event => setCopyAnimations(event.target.checked)} /> 3 chuyển động</label>
+          <label><input type="checkbox" checked={copyCombat} onChange={event => setCopyCombat(event.target.checked)} /> Combat VFX và pattern đòn</label>
+        </div>
+        <button type="button" disabled={!source || !selectedCount} onClick={apply}>Áp thông số cho pet đang sửa</button>
+      </div>
+    </details>
   );
 }
 

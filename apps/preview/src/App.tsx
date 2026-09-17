@@ -22,7 +22,7 @@ export function App({ petDefinitions, rigs }: { petDefinitions: PetDefinition[];
   const [creatorOpen, setCreatorOpen] = useState(false);
   const [imageEditorOpen, setImageEditorOpen] = useState(false);
   const [paused, setPaused] = useState(false);
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(() => pets.find(item => item.id === selectedId)?.preview?.scale ?? 1);
   const [speed, setSpeed] = useState(1);
   const [background, setBackground] = useState('#141820');
   const [saveStatus, setSaveStatus] = useState('');
@@ -52,13 +52,14 @@ export function App({ petDefinitions, rigs }: { petDefinitions: PetDefinition[];
   }
 
   function selectPet(id: string) {
+    const nextPet = pets.find(item => item.id === id);
     sessionStorage.setItem(selectedPetKey, id);
     setSelectedId(id);
     setPaused(false);
-    setZoom(1);
+    setZoom(nextPet?.preview?.scale ?? 1);
     setSpeed(1);
     setRemountKey(key => key + 1);
-    if (!canManageImages(pets.find(item => item.id === id))) setImageEditorOpen(false);
+    if (!canManageImages(nextPet)) setImageEditorOpen(false);
   }
 
   function onView(view: PetView | undefined) {
@@ -186,10 +187,12 @@ export function App({ petDefinitions, rigs }: { petDefinitions: PetDefinition[];
                     </div>
                     <StudioEditors
                       pet={pet}
+                      pets={pets}
                       manifest={manifest}
                       view={viewRef.current}
                       onSave={() => { scheduleSave(); setTick(value => value + 1); }}
                       onRebuild={() => setRemountKey(key => key + 1)}
+                      onPreviewScaleChange={setZoom}
                       onPlay={state => viewRef.current?.play(state)}
                     />
                     <p className="save-status" aria-live="polite">{saveStatus}</p>

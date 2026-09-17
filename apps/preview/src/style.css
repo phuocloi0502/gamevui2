@@ -233,6 +233,18 @@ select { padding: 8px 16px; border: 1px solid #424958; border-radius: 6px; backg
 .controls select { padding: 5px; }
 #playing { color: #ffc48b; font-size: 11px; }
 .transform-editor { margin-top: 14px; padding-top: 14px; border-top: 1px solid #303644; }
+.copy-settings { margin: 0 0 14px; border: 1px solid #46536a; border-radius: 7px; background: #171d27; }
+.copy-settings > summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px; color: #8e99ac; font-size: 9px; cursor: pointer; }
+.copy-settings > summary b { color: #a8c4f0; font-size: 10px; letter-spacing: 1px; }
+.copy-settings-body { display: grid; gap: 10px; padding: 0 10px 10px; border-top: 1px solid #2b3443; }
+.copy-settings-body .editor-help { margin-bottom: 0; }
+.copy-source { display: grid !important; gap: 4px !important; }
+.copy-source select { width: 100%; min-width: 0; }
+.copy-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px 12px; }
+.copy-options label { min-width: 0; }
+.copy-compatibility { margin: 0; color: #8fbca5; font-size: 10px; line-height: 1.5; }
+.copy-settings-body > button { justify-self: start; }
+.copy-settings-body > button:disabled { cursor: not-allowed; opacity: .45; }
 .nudge-step {
   position: sticky;
   top: -16px;
@@ -342,6 +354,7 @@ dl { color: #b5bcc9; font-size: 12px; line-height: 2; }
   main { padding: 8px 10px; }
   #stage { height: 240px; }
   .layer-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .copy-options { grid-template-columns: 1fr; }
   .toolbar { align-items: start; gap: 10px; }
   .library-select { display: block; max-width: 100%; }
   .toolbar-actions { align-items: end; flex-direction: column; }

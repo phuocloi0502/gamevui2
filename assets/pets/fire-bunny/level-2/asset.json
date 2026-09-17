@@ -1,0 +1,441 @@
+{
+  "id": "fire-bunny-level-2",
+  "lineageId": "fire-bunny",
+  "evolutionLevel": 2,
+  "name": "Fire Bunny · Level 2",
+  "kind": "pet",
+  "species": "bunny",
+  "archetype": "hopper",
+  "extends": "hopper-base",
+  "status": "production",
+  "element": "fire",
+  "reference": "/assets/pets/fire-bunny/level-2/layers/body.png",
+  "layers": [
+    {
+      "id": "shadow",
+      "x": -51,
+      "y": 108,
+      "originX": 0.5,
+      "originY": 0.85,
+      "z": 0,
+      "scale": 1,
+      "src": "/assets/pets/fire-bunny/level-2/layers/shadow.png"
+    },
+    {
+      "id": "rear-ear",
+      "x": 93,
+      "y": -233,
+      "originX": 0.5,
+      "originY": 0.9,
+      "z": 1,
+      "scale": 0.5,
+      "src": "/assets/pets/fire-bunny/level-2/layers/rear-ear.png",
+      "visible": true
+    },
+    {
+      "id": "body",
+      "x": -12,
+      "y": -75,
+      "originX": 0.5,
+      "originY": 0.5,
+      "z": 2,
+      "scale": 0.175,
+      "src": "/assets/pets/fire-bunny/level-2/layers/body.png",
+      "angle": -6,
+      "visible": true
+    },
+    {
+      "id": "hind-leg-far",
+      "x": -71,
+      "y": -24,
+      "originX": 0.5,
+      "originY": 0.25,
+      "z": 3,
+      "scale": 0.4,
+      "src": "/assets/pets/fire-bunny/level-2/layers/hind-leg.png",
+      "angle": -7,
+      "visible": true
+    },
+    {
+      "id": "front-paw-far",
+      "x": 39,
+      "y": -88,
+      "originX": 0.5,
+      "originY": 0.2,
+      "z": 4,
+      "scale": 0.35,
+      "src": "/assets/pets/fire-bunny/level-2/layers/front-paw.png",
+      "angle": 1,
+      "visible": true
+    },
+    {
+      "id": "hind-leg-near",
+      "x": -5,
+      "y": -45,
+      "originX": 0.5,
+      "originY": 0.25,
+      "z": 1,
+      "scale": 0.37,
+      "src": "/assets/pets/fire-bunny/level-2/layers/hind-leg.png",
+      "angle": -6,
+      "visible": true
+    },
+    {
+      "id": "head",
+      "x": 36,
+      "y": -145,
+      "originX": 0.5,
+      "originY": 0.78,
+      "z": 6,
+      "scale": 0.5,
+      "src": "/assets/pets/fire-bunny/level-2/layers/head.png",
+      "visible": true
+    },
+    {
+      "id": "eyes-open",
+      "x": 82,
+      "y": -40,
+      "originX": 0.5,
+      "originY": 0.78,
+      "z": 6.1,
+      "scale": 0.5,
+      "parent": "head",
+      "blink": "open",
+      "src": "/assets/pets/fire-bunny/level-2/layers/eyes-open.png",
+      "angle": -10
+    },
+    {
+      "id": "eyes-closed",
+      "x": 82,
+      "y": -40,
+      "originX": 0.5,
+      "originY": 0.78,
+      "z": 6.109999999999999,
+      "scale": 0.5,
+      "parent": "head",
+      "blink": "closed",
+      "src": "/assets/pets/fire-bunny/level-2/layers/eyes-closed.png",
+      "angle": -10
+    },
+    {
+      "id": "front-paw-near",
+      "x": 81,
+      "y": -94,
+      "originX": 0.5,
+      "originY": 0.2,
+      "z": 0,
+      "scale": 0.3,
+      "src": "/assets/pets/fire-bunny/level-2/layers/front-paw.png",
+      "angle": -12,
+      "visible": true
+    },
+    {
+      "id": "front-ear",
+      "x": -20,
+      "y": -223,
+      "originX": 0.5,
+      "originY": 0.9,
+      "z": 5,
+      "scale": 0.47,
+      "src": "/assets/pets/fire-bunny/level-2/layers/front-ear.png",
+      "angle": 15,
+      "visible": true
+    },
+    {
+      "id": "tail",
+      "x": -120,
+      "y": -65,
+      "originX": 0.7,
+      "originY": 0.7,
+      "z": 1,
+      "scale": 0.5,
+      "src": "/assets/pets/fire-bunny/level-2/layers/tail.png",
+      "visible": true
+    }
+  ],
+  "preview": {
+    "x": 420,
+    "y": 440,
+    "scale": 0.7
+  },
+  "effects": {
+    "color": 16751144,
+    "attack": {
+      "trail": "/assets/pets/fire-bunny/level-2/effects/attack-trail.png",
+      "impact": "/assets/pets/fire-bunny/level-2/effects/impact.png"
+    },
+    "attackPresentation": {
+      "trail": {
+        "enabled": true,
+        "trigger": "attack-release",
+        "startAnchor": "pet",
+        "endAnchor": "target",
+        "startX": 100,
+        "startY": -150,
+        "endX": 7,
+        "endY": 0,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.2,
+        "endScale": 0.3,
+        "startAngle": 4,
+        "endAngle": 0,
+        "startAlpha": 1,
+        "endAlpha": 0,
+        "depth": 20,
+        "delay": 0,
+        "duration": 360,
+        "ease": "Linear",
+        "mirror": true
+      },
+      "impact": {
+        "enabled": true,
+        "trigger": "after-primary",
+        "startAnchor": "target",
+        "endAnchor": "target",
+        "startX": 0,
+        "startY": 0,
+        "endX": 0,
+        "endY": 0,
+        "originX": 0.5,
+        "originY": 0.5,
+        "startScale": 0.3,
+        "endScale": 0.4,
+        "startAngle": 0,
+        "endAngle": 0,
+        "startAlpha": 0.95,
+        "endAlpha": 0,
+        "depth": 21,
+        "delay": 0,
+        "duration": 420,
+        "ease": "Quad.easeOut",
+        "mirror": true
+      }
+    },
+    "attackMeta": {
+      "pattern": "chain",
+      "chainCount": 2
+    }
+  },
+  "overrides": {
+    "clips": {
+      "idle": {
+        "duration": 1700,
+        "loop": true,
+        "tracks": [
+          {
+            "target": "body",
+            "property": "scaleY",
+            "values": [
+              1,
+              1.025,
+              1
+            ]
+          },
+          {
+            "target": "shadow",
+            "property": "alpha",
+            "values": [
+              0.5,
+              0.1,
+              0.5
+            ]
+          },
+          {
+            "target": "shadow",
+            "property": "x",
+            "values": [
+              2,
+              -2,
+              2
+            ]
+          },
+          {
+            "target": "tail",
+            "property": "scaleX",
+            "values": [
+              1,
+              1.125,
+              1
+            ]
+          },
+          {
+            "target": "tail",
+            "property": "angle",
+            "values": [
+              -2,
+              2,
+              -2
+            ]
+          },
+          {
+            "target": "front-ear",
+            "property": "angle",
+            "values": [
+              -2,
+              2,
+              -2
+            ]
+          },
+          {
+            "target": "rear-ear",
+            "property": "angle",
+            "values": [
+              2,
+              -2,
+              2
+            ]
+          },
+          {
+            "target": "front-paw-near",
+            "property": "angle",
+            "values": [
+              2,
+              -2,
+              2
+            ]
+          },
+          {
+            "target": "front-paw-far",
+            "property": "angle",
+            "values": [
+              -2,
+              2,
+              -2
+            ]
+          }
+        ],
+        "event": {
+          "at": 0,
+          "name": "attack-release"
+        }
+      },
+      "walk": {
+        "duration": 720,
+        "loop": true,
+        "tracks": [
+          {
+            "target": "body",
+            "property": "y",
+            "values": [
+              0,
+              7,
+              -18,
+              0
+            ]
+          },
+          {
+            "target": "head",
+            "property": "y",
+            "values": [
+              0,
+              5,
+              -15,
+              0
+            ]
+          },
+          {
+            "target": "hind-leg-near",
+            "property": "angle",
+            "values": [
+              0,
+              -18,
+              12,
+              0
+            ]
+          }
+        ]
+      },
+      "attack": {
+        "duration": 760,
+        "loop": false,
+        "event": {
+          "at": 390,
+          "name": "attack-release"
+        },
+        "tracks": [
+          {
+            "target": "body",
+            "property": "x",
+            "values": [
+              -5,
+              0,
+              5,
+              0
+            ]
+          },
+          {
+            "target": "tail",
+            "property": "scaleX",
+            "values": [
+              1.1,
+              1.2,
+              1.1,
+              1
+            ]
+          },
+          {
+            "target": "tail",
+            "property": "x",
+            "values": [
+              -5,
+              0,
+              5,
+              0
+            ]
+          },
+          {
+            "target": "head",
+            "property": "angle",
+            "values": [
+              -30,
+              -20,
+              -10,
+              0
+            ]
+          },
+          {
+            "target": "hind-leg-far",
+            "property": "angle",
+            "values": [
+              30,
+              20,
+              10,
+              0
+            ]
+          },
+          {
+            "target": "front-paw-far",
+            "property": "angle",
+            "values": [
+              -30,
+              -20,
+              -10,
+              0
+            ]
+          },
+          {
+            "target": "front-ear",
+            "property": "angle",
+            "values": [
+              -40,
+              -30,
+              -20,
+              0
+            ]
+          },
+          {
+            "target": "rear-ear",
+            "property": "angle",
+            "values": [
+              -40,
+              -30,
+              -20,
+              0
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
