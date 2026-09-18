@@ -35,6 +35,7 @@ SLOT_NAMES = [
 DEFAULT_OUTPUT_PADDING = 18
 DEFAULT_ALPHA_THRESHOLD = 2
 DEFAULT_MIN_CELL_PADDING = 2
+DEFAULT_RESERVED_OVERFLOW = 64
 
 
 def normalize_path(value: str) -> Path:
@@ -72,11 +73,203 @@ def alpha_bbox(
     )
 
 
+# Reserved cells can contain a small amount of spill from neighboring VFX.
+# Mapping uses 0-based slot ids:
+#   slot 14 may borrow to impact (left) or crest (top)
+#   slot 15 may borrow to attack-trail (top)
+#   slot 16 may borrow to vortex (top)
+RESERVED_OVERFLOW_OWNERS: dict[int, tuple[tuple[int, str], ...]] = {
+    13: ((12, "left"), (9, "top")),
+    14: ((10, "top"),),
+    15: ((11, "top"),),
+}
+
+
+def classify_reserved_overflow(
+    alpha: np.ndarray,
+    *,
+    threshold: int,
+    max_overflow: int,
+) -> tuple[
+    dict[int, tuple[np.ndarray, np.ndarray]],
+    list[tuple[int, int]],
+    list[tuple[int, int, int]],
+]:
+    """
+    Classify alpha pixels found in reserved slots 14-16.
+
+    Returns:
+      assignments:
+        owner_slot_id -> (global_ys, global_xs)
+      unassigned:
+        [(reserved_slot_number, pixel_count), ...]
+      routed:
+        [(reserved_slot_number, owner_slot_number, pixel_count), ...]
+
+    A reserved pixel is recoverable only when it is close enough to a valid
+    neighboring edge. This keeps real accidental artwork in reserved cells as
+    an error, while allowing glow / anti-alias spill across a cell boundary.
+    """
+    height, width = alpha.shape
+    owner_points: dict[int, list[tuple[int, int]]] = {}
+    unassigned: list[tuple[int, int]] = []
+    routed: list[tuple[int, int, int]] = []
+
+    limit = max(0, int(max_overflow))
+
+    for reserved_slot_id in range(len(SLOT_NAMES), GRID_COLS * GRID_ROWS):
+        x0, y0, x1, y1 = slot_bounds(
+            reserved_slot_id,
+            width,
+            height,
+        )
+        sub = alpha[y0:y1, x0:x1]
+        ys, xs = np.where(sub > threshold)
+        if len(xs) == 0:
+            continue
+
+        candidates = RESERVED_OVERFLOW_OWNERS.get(
+            reserved_slot_id,
+            (),
+        )
+        if not candidates:
+            unassigned.append(
+                (reserved_slot_id + 1, int(len(xs)))
+            )
+            continue
+
+        best_owner = np.full(len(xs), -1, dtype=np.int32)
+        best_distance = np.full(
+            len(xs),
+            np.iinfo(np.int32).max,
+            dtype=np.int32,
+        )
+
+        for owner_slot_id, edge in candidates:
+            if edge == "left":
+                distances = xs
+            elif edge == "top":
+                distances = ys
+            else:
+                raise RuntimeError(
+                    f"Unsupported overflow edge: {edge}"
+                )
+
+            eligible = distances <= limit
+            better = eligible & (distances < best_distance)
+            best_owner[better] = owner_slot_id
+            best_distance[better] = distances[better]
+
+        unresolved = best_owner < 0
+        unresolved_count = int(unresolved.sum())
+        if unresolved_count:
+            unassigned.append(
+                (reserved_slot_id + 1, unresolved_count)
+            )
+
+        for owner_slot_id, _edge in candidates:
+            selected = best_owner == owner_slot_id
+            count = int(selected.sum())
+            if count == 0:
+                continue
+
+            global_ys = ys[selected] + y0
+            global_xs = xs[selected] + x0
+
+            owner_points.setdefault(owner_slot_id, []).extend(
+                zip(
+                    global_ys.tolist(),
+                    global_xs.tolist(),
+                )
+            )
+            routed.append(
+                (
+                    reserved_slot_id + 1,
+                    owner_slot_id + 1,
+                    count,
+                )
+            )
+
+    assignments: dict[int, tuple[np.ndarray, np.ndarray]] = {}
+    for owner_slot_id, points in owner_points.items():
+        coords = np.asarray(points, dtype=np.int32)
+        assignments[owner_slot_id] = (
+            coords[:, 0],
+            coords[:, 1],
+        )
+
+    return assignments, unassigned, routed
+
+
+def build_owned_artwork(
+    image: Image.Image,
+    slot_id: int,
+    *,
+    alpha_threshold: int,
+    reserved_overflow: int,
+) -> Image.Image:
+    """
+    Return one layer containing its normal cell plus recoverable spill from
+    reserved cells. Pixels owned by other slots are masked out.
+    """
+    rgba = np.asarray(image.convert("RGBA"), dtype=np.uint8).copy()
+    alpha = rgba[:, :, 3]
+    height, width = alpha.shape
+
+    owned = np.zeros((height, width), dtype=bool)
+    x0, y0, x1, y1 = slot_bounds(
+        slot_id,
+        width,
+        height,
+    )
+    owned[y0:y1, x0:x1] = True
+
+    # Route only meaningful alpha into reserved cells. Very faint alpha noise
+    # (<= alpha_threshold) is ignored so it cannot enlarge an exported layer.
+    assignments, _unassigned, _routed = classify_reserved_overflow(
+        alpha,
+        threshold=alpha_threshold,
+        max_overflow=reserved_overflow,
+    )
+    coords = assignments.get(slot_id)
+    if coords is not None:
+        ys, xs = coords
+        owned[ys, xs] = True
+
+    rgba[~owned] = 0
+    owned_alpha = rgba[:, :, 3]
+
+    bbox = alpha_bbox(
+        owned_alpha,
+        alpha_threshold,
+    )
+    if bbox is None:
+        raise RuntimeError(
+            f"Slot {slot_id + 1:02d} rỗng: "
+            f"{SLOT_NAMES[slot_id]}"
+        )
+
+    # Once a meaningful bbox exists, include all non-zero alpha pixels already
+    # assigned to this owner so soft glow edges are not clipped.
+    nonzero = np.where(owned_alpha > 0)
+    if len(nonzero[0]):
+        ys, xs = nonzero
+        bbox = (
+            int(xs.min()),
+            int(ys.min()),
+            int(xs.max()) + 1,
+            int(ys.max()) + 1,
+        )
+
+    return Image.fromarray(rgba, mode="RGBA").crop(bbox)
+
+
 def validate_image(
     image: Image.Image,
     *,
     strict_size: bool,
     alpha_threshold: int,
+    reserved_overflow: int,
 ) -> None:
     width, height = image.size
 
@@ -98,11 +291,13 @@ def validate_image(
         )
 
     col_widths = [
-        (col + 1) * width // GRID_COLS - col * width // GRID_COLS
+        (col + 1) * width // GRID_COLS
+        - col * width // GRID_COLS
         for col in range(GRID_COLS)
     ]
     row_heights = [
-        (row + 1) * height // GRID_ROWS - row * height // GRID_ROWS
+        (row + 1) * height // GRID_ROWS
+        - row * height // GRID_ROWS
         for row in range(GRID_ROWS)
     ]
 
@@ -118,28 +313,48 @@ def validate_image(
             f"input={width}×{height}. Không resize ảnh nguồn."
         )
 
-    alpha = np.asarray(image, dtype=np.uint8)[:, :, 3]
+    alpha = np.asarray(
+        image.convert("RGBA"),
+        dtype=np.uint8,
+    )[:, :, 3]
+
     if int(alpha.min()) == 255:
         raise RuntimeError(
             "Ảnh nguồn không có alpha trong suốt. "
             "Hawk splitter không tự xóa background RGB."
         )
 
-    reserved_content = []
-    for slot_id in range(len(SLOT_NAMES), GRID_COLS * GRID_ROWS):
-        x0, y0, x1, y1 = slot_bounds(slot_id, width, height)
-        count = int((alpha[y0:y1, x0:x1] > alpha_threshold).sum())
-        if count:
-            reserved_content.append((slot_id + 1, count))
+    assignments, unassigned, routed = classify_reserved_overflow(
+        alpha,
+        threshold=alpha_threshold,
+        max_overflow=reserved_overflow,
+    )
 
-    if reserved_content:
+    if routed:
+        details = ", ".join(
+            (
+                f"ô {reserved_slot} -> "
+                f"slot {owner_slot:02d} "
+                f"{SLOT_NAMES[owner_slot - 1]}: {count} px"
+            )
+            for reserved_slot, owner_slot, count in routed
+        )
+        print(
+            "INFO: phát hiện VFX/glow tràn sang ô reserved; "
+            f"script sẽ thu hồi về layer lân cận: {details}."
+        )
+
+    if unassigned:
         details = ", ".join(
             f"ô {slot_id}: {count} px"
-            for slot_id, count in reserved_content
+            for slot_id, count in unassigned
         )
         raise RuntimeError(
-            "Ba ô reserved 14-16 phải trong suốt hoàn toàn; "
-            f"phát hiện nội dung tại {details}."
+            "Ô reserved 14-16 có nội dung nằm quá xa biên để "
+            "xem là overflow hợp lệ; "
+            f"phát hiện {details}. "
+            f"Tăng --reserved-overflow nếu đây thực sự là glow/VFX "
+            f"của slot lân cận (hiện tại: {reserved_overflow}px)."
         )
 
 
@@ -174,40 +389,50 @@ def export_cell(
     alpha_threshold: int,
     output_padding: int,
     min_cell_padding: int,
+    reserved_overflow: int,
 ) -> None:
     width, height = image.size
-    x0, y0, x1, y1 = slot_bounds(slot_id, width, height)
-    cell = image.crop((x0, y0, x1, y1)).convert("RGBA")
-    alpha = np.asarray(cell, dtype=np.uint8)[:, :, 3]
+    x0, y0, x1, y1 = slot_bounds(
+        slot_id,
+        width,
+        height,
+    )
+    base_cell = image.crop(
+        (x0, y0, x1, y1)
+    ).convert("RGBA")
+    base_alpha = np.asarray(
+        base_cell,
+        dtype=np.uint8,
+    )[:, :, 3]
 
     warn_cell_padding(
-        alpha,
+        base_alpha,
         slot_id,
         output_path.name,
         threshold=alpha_threshold,
         min_padding=min_cell_padding,
     )
 
-    bbox = alpha_bbox(alpha, alpha_threshold)
-    if bbox is None:
-        raise RuntimeError(
-            f"Slot {slot_id + 1:02d} rỗng: {output_path.name}"
-        )
+    artwork = build_owned_artwork(
+        image,
+        slot_id,
+        alpha_threshold=alpha_threshold,
+        reserved_overflow=reserved_overflow,
+    )
 
-    # Expand to every non-zero alpha pixel in the cell. Direct cell ownership
-    # is deterministic and never mixes leg-far with leg-near.
-    full_bbox = cell.getchannel("A").getbbox()
-    if full_bbox is not None:
-        bbox = full_bbox
-
-    artwork = cell.crop(bbox)
     padding = max(0, int(output_padding))
     output = Image.new(
         "RGBA",
-        (artwork.width + padding * 2, artwork.height + padding * 2),
+        (
+            artwork.width + padding * 2,
+            artwork.height + padding * 2,
+        ),
         (0, 0, 0, 0),
     )
-    output.alpha_composite(artwork, (padding, padding))
+    output.alpha_composite(
+        artwork,
+        (padding, padding),
+    )
     output.save(output_path)
 
 
@@ -260,6 +485,7 @@ def split_sheet(
     alpha_threshold: int,
     output_padding: int,
     min_cell_padding: int,
+    reserved_overflow: int,
     debug: bool,
     strict_size: bool,
 ) -> None:
@@ -271,6 +497,7 @@ def split_sheet(
         image,
         strict_size=strict_size,
         alpha_threshold=alpha_threshold,
+        reserved_overflow=reserved_overflow,
     )
 
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -288,6 +515,7 @@ def split_sheet(
             alpha_threshold=alpha_threshold,
             output_padding=output_padding,
             min_cell_padding=min_cell_padding,
+            reserved_overflow=reserved_overflow,
         )
         with Image.open(output_path) as result:
             print(
@@ -344,6 +572,15 @@ def main() -> None:
         default=DEFAULT_MIN_CELL_PADDING,
         help="Warn when artwork is closer than this many pixels to a cell edge.",
     )
+    parser.add_argument(
+        "--reserved-overflow",
+        type=int,
+        default=DEFAULT_RESERVED_OVERFLOW,
+        help=(
+            "Maximum px allowed for recoverable VFX/glow spill into "
+            "reserved slots 14-16 (default: 64)."
+        ),
+    )
     parser.add_argument("--debug", action="store_true")
     parser.add_argument("--strict-size", action="store_true")
     args = parser.parse_args()
@@ -359,6 +596,7 @@ def main() -> None:
         alpha_threshold=max(0, min(254, args.alpha_threshold)),
         output_padding=args.padding,
         min_cell_padding=max(0, args.min_cell_padding),
+        reserved_overflow=max(0, args.reserved_overflow),
         debug=args.debug,
         strict_size=args.strict_size,
     )

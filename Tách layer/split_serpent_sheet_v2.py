@@ -17,22 +17,28 @@ EXPECTED_SIZE = (1086, 1448)
 GRID_COLS = 3
 GRID_ROWS = 4
 
+# Serpent 3×4 production contract — đọc từ trái sang phải, trên xuống dưới.
+#
+# Row 1: shadow | tail | body-lower
+# Row 2: body-upper | head | eyes-open
+# Row 3: eyes-closed | jaw | crest
+# Row 4: attack-cast | beam | impact
 SLOT_NAMES = [
     "shadow.png",
     "tail.png",
-    "body.png",
+    "body-lower.png",
 
+    "body-upper.png",
     "head.png",
     "eyes-open.png",
-    "eyes-closed.png",
 
+    "eyes-closed.png",
     "jaw.png",
     "crest.png",
-    "attack-cast.png",
 
+    "attack-cast.png",
     "beam.png",
     "impact.png",
-    "assembly-ref.png",
 ]
 
 DEFAULT_CORE_ALPHA = 100
@@ -309,6 +315,106 @@ def build_owner_map(
     return owner
 
 
+def normalize_grid_image(
+    image: Image.Image,
+    strict_size: bool,
+) -> Image.Image:
+    """
+    Chuẩn hóa canvas về kích thước chia đều cho grid 3×4 mà KHÔNG resize
+    artwork.
+
+    Ví dụ:
+        1087×1447 -> 1086×1448
+
+    Cách làm:
+    - chọn cell vuông gần nhất dựa trên cả width/3 và height/4;
+    - nếu canvas dư pixel: crop ở mép phải / mép dưới;
+    - nếu canvas thiếu pixel: pad alpha trong suốt ở mép phải / mép dưới.
+
+    Vì không scale ảnh nên artwork/VFX không bị méo.
+    """
+    image = image.convert("RGBA")
+    w, h = image.size
+
+    if strict_size:
+        if image.size != EXPECTED_SIZE:
+            raise RuntimeError(
+                f"--strict-size yêu cầu "
+                f"{EXPECTED_SIZE[0]}×{EXPECTED_SIZE[1]}, "
+                f"nhưng ảnh hiện tại là {w}×{h}."
+            )
+        return image
+
+    # Nếu đã là grid 3×4 với cell vuông thì giữ nguyên.
+    if (
+        w % GRID_COLS == 0
+        and h % GRID_ROWS == 0
+        and (w // GRID_COLS) == (h // GRID_ROWS)
+    ):
+        return image
+
+    # Suy ra kích thước cell vuông gần nhất.
+    approx_cell_w = w / GRID_COLS
+    approx_cell_h = h / GRID_ROWS
+    cell_size = max(
+        1,
+        int(round((approx_cell_w + approx_cell_h) / 2)),
+    )
+
+    target_w = cell_size * GRID_COLS
+    target_h = cell_size * GRID_ROWS
+
+    # Bảo vệ trường hợp input có tỉ lệ quá xa 3:4.
+    # Khi đó việc ép thành cell vuông có thể crop/pad quá nhiều.
+    max_delta = max(
+        abs(target_w - w),
+        abs(target_h - h),
+    )
+    tolerance = max(8, int(round(cell_size * 0.08)))
+
+    if max_delta > tolerance:
+        raise RuntimeError(
+            f"Kích thước {w}×{h} không phù hợp grid 3×4 cell vuông. "
+            f"Kích thước gần nhất sẽ là {target_w}×{target_h}, "
+            f"lệch tối đa {max_delta}px (> {tolerance}px). "
+            "Hãy kiểm tra lại ảnh nguồn hoặc dùng ảnh đúng tỉ lệ 3:4."
+        )
+
+    if (target_w, target_h) == (w, h):
+        return image
+
+    print(
+        f"INFO: tự chuẩn hóa canvas {w}×{h} "
+        f"-> {target_w}×{target_h} "
+        f"(grid {GRID_COLS}×{GRID_ROWS}, cell {cell_size}×{cell_size})."
+    )
+    print(
+        "INFO: chỉ crop/pad mép phải và mép dưới; "
+        "không resize artwork."
+    )
+
+    # Canvas alpha trong suốt.
+    normalized = Image.new(
+        "RGBA",
+        (target_w, target_h),
+        (0, 0, 0, 0),
+    )
+
+    copy_w = min(w, target_w)
+    copy_h = min(h, target_h)
+
+    # Giữ nguyên gốc tọa độ (0,0), tránh làm lệch các slot nội bộ.
+    source = image.crop(
+        (0, 0, copy_w, copy_h)
+    )
+    normalized.paste(
+        source,
+        (0, 0),
+    )
+
+    return normalized
+
+
 def validate_image(
     image: Image.Image,
     strict_size: bool,
@@ -322,9 +428,12 @@ def validate_image(
             f"nhưng ảnh hiện tại là {w}×{h}."
         )
 
+    # Sau normalize_grid_image(), kích thước phải chia đều.
     if w % GRID_COLS != 0 or h % GRID_ROWS != 0:
         raise RuntimeError(
-            f"Kích thước {w}×{h} không chia đều cho grid 3×4."
+            f"Lỗi nội bộ: kích thước sau normalize vẫn là "
+            f"{w}×{h}, không chia đều cho grid "
+            f"{GRID_COLS}×{GRID_ROWS}."
         )
 
     cell_w = w // GRID_COLS
@@ -338,9 +447,9 @@ def validate_image(
 
     if image.size != EXPECTED_SIZE:
         print(
-            f"INFO: ảnh hiện tại {w}×{h}; "
+            f"INFO: ảnh đang dùng {w}×{h}; "
             f"cell={cell_w}×{cell_h}. "
-            f"Ảnh tham chiếu hiện tại là "
+            f"Ảnh tham chiếu là "
             f"{EXPECTED_SIZE[0]}×{EXPECTED_SIZE[1]}."
         )
 
@@ -483,6 +592,11 @@ def split_sheet(
         input_path
     ).convert("RGBA")
 
+    image = normalize_grid_image(
+        image,
+        strict_size,
+    )
+
     validate_image(
         image,
         strict_size,
@@ -594,9 +708,8 @@ def split_sheet(
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
-            "Split Fire Serpent 3x4 production sheet "
-            "into 11 runtime assets plus assembly-ref using overlap-based "
-            "core assignment + ownership margin."
+            "Split Serpent 3x4 production sheet into exactly 12 runtime layers "
+            "using overlap-based core assignment + ownership margin."
         )
     )
 

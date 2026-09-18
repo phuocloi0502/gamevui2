@@ -278,6 +278,60 @@
             ]
           },
           {
+            "target": "rear-leg",
+            "property": "y",
+            "values": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "target": "rear-leg",
+            "property": "angle",
+            "values": [
+              0,
+              -2,
+              0
+            ]
+          },
+          {
+            "target": "rear-leg",
+            "property": "scaleY",
+            "values": [
+              1,
+              0.965,
+              1
+            ]
+          },
+          {
+            "target": "front-leg",
+            "property": "y",
+            "values": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "target": "front-leg",
+            "property": "angle",
+            "values": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "target": "front-leg",
+            "property": "scaleY",
+            "values": [
+              1,
+              0.965,
+              1
+            ]
+          },
+          {
             "target": "core",
             "property": "alpha",
             "values": [
@@ -317,7 +371,9 @@
             "property": "angle",
             "values": [
               -1.5,
+              0,
               1.5,
+              0,
               -1.5
             ]
           },
@@ -337,26 +393,76 @@
             "property": "angle",
             "values": [
               1.5,
+              0,
               -1.5,
+              0,
               1.5
+            ]
+          },
+          {
+            "target": "rear-leg",
+            "property": "x",
+            "values": [
+              -11,
+              0,
+              11,
+              0,
+              -11
+            ]
+          },
+          {
+            "target": "rear-leg",
+            "property": "y",
+            "values": [
+              0,
+              -9,
+              0,
+              -2,
+              0
             ]
           },
           {
             "target": "rear-leg",
             "property": "angle",
             "values": [
+              -12,
+              0,
+              12,
+              0,
+              -12
+            ]
+          },
+          {
+            "target": "front-leg",
+            "property": "x",
+            "values": [
+              11,
+              0,
+              -11,
+              0,
+              11
+            ]
+          },
+          {
+            "target": "front-leg",
+            "property": "y",
+            "values": [
+              0,
+              -2,
+              0,
               -9,
-              9,
-              -9
+              0
             ]
           },
           {
             "target": "front-leg",
             "property": "angle",
             "values": [
-              9,
-              -9,
-              9
+              12,
+              0,
+              -12,
+              0,
+              12
             ]
           },
           {
@@ -364,7 +470,9 @@
             "property": "angle",
             "values": [
               7,
+              0,
               -7,
+              0,
               7
             ]
           },
@@ -373,7 +481,9 @@
             "property": "angle",
             "values": [
               -7,
+              0,
               7,
+              0,
               -7
             ]
           },
@@ -493,6 +603,42 @@
           },
           {
             "target": "rear-leg",
+            "property": "x",
+            "values": [
+              0,
+              -3,
+              -6,
+              -5,
+              -2,
+              0
+            ]
+          },
+          {
+            "target": "rear-leg",
+            "property": "y",
+            "values": [
+              0,
+              -1,
+              -2,
+              5,
+              2,
+              0
+            ]
+          },
+          {
+            "target": "rear-leg",
+            "property": "angle",
+            "values": [
+              0,
+              -2,
+              -5,
+              3,
+              1,
+              0
+            ]
+          },
+          {
+            "target": "rear-leg",
             "property": "scaleY",
             "values": [
               1,
@@ -501,6 +647,42 @@
               0.9,
               0.97,
               1
+            ]
+          },
+          {
+            "target": "front-leg",
+            "property": "x",
+            "values": [
+              0,
+              3,
+              6,
+              5,
+              2,
+              0
+            ]
+          },
+          {
+            "target": "front-leg",
+            "property": "y",
+            "values": [
+              0,
+              -1,
+              -2,
+              5,
+              2,
+              0
+            ]
+          },
+          {
+            "target": "front-leg",
+            "property": "angle",
+            "values": [
+              0,
+              2,
+              5,
+              -3,
+              -1,
+              0
             ]
           },
           {
