@@ -13,20 +13,20 @@
   "layers": [
     {
       "id": "rear-wing",
-      "x": -85,
-      "y": -169,
+      "x": -16,
+      "y": -164,
       "originX": 0.75,
       "originY": 0.5,
       "z": 1,
       "scale": 0.4,
       "src": "/assets/pets/fire-hawk/level-1/layers/rear-wing.png",
       "visible": true,
-      "angle": -9
+      "angle": 51
     },
     {
       "id": "tail-fan",
       "x": -115,
-      "y": -100,
+      "y": -101,
       "originX": 0.5,
       "originY": 0.2,
       "z": 2,
@@ -218,6 +218,88 @@
     },
     "attackMeta": {
       "pattern": "single"
+    }
+  },
+  "overrides": {
+    "clips": {
+      "idle": {
+        "duration": 1500,
+        "loop": true,
+        "tracks": [
+          {
+            "target": "body",
+            "property": "y",
+            "values": [
+              0,
+              -5,
+              0
+            ]
+          },
+          {
+            "target": "back-wing",
+            "property": "angle",
+            "values": [
+              -5,
+              7,
+              -5
+            ]
+          },
+          {
+            "target": "rear-wing",
+            "property": "angle",
+            "values": [
+              -5,
+              7,
+              -5
+            ]
+          },
+          {
+            "target": "front-wing",
+            "property": "angle",
+            "values": [
+              5,
+              -7,
+              5
+            ]
+          },
+          {
+            "target": "tail-fan",
+            "property": "angle",
+            "values": [
+              5,
+              -7,
+              5
+            ]
+          },
+          {
+            "target": "leg-near",
+            "property": "angle",
+            "values": [
+              5,
+              -7,
+              5
+            ]
+          },
+          {
+            "target": "leg-far",
+            "property": "angle",
+            "values": [
+              5,
+              -7,
+              5
+            ]
+          },
+          {
+            "target": "head",
+            "property": "angle",
+            "values": [
+              5,
+              0,
+              5
+            ]
+          }
+        ]
+      }
     }
   }
 }
