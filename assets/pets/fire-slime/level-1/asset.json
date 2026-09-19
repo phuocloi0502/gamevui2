@@ -218,6 +218,19 @@
           }
         ]
       },
+      "walk": {
+        "duration": 700,
+        "loop": true,
+        "tracks": [
+          { "target": "blob", "property": "y", "values": [0, 5, -11, 0] },
+          { "target": "blob", "property": "scaleX", "values": [1, 1.1, 0.93, 1] },
+          { "target": "blob", "property": "scaleY", "values": [1, 0.9, 1.12, 1] },
+          { "target": "top-effect", "property": "y", "values": [0, 3, -13, 0] },
+          { "target": "top-effect", "property": "scaleX", "values": [1, 1.08, 0.94, 1] },
+          { "target": "top-effect", "property": "scaleY", "values": [1, 0.92, 1.14, 1] },
+          { "target": "top-effect", "property": "angle", "values": [-3, 5, -4, -3] }
+        ]
+      },
       "attack": {
         "duration": 820,
         "loop": false,
@@ -265,7 +278,9 @@
               0.82,
               1
             ]
-          }
+          },
+          { "target": "top-effect", "property": "y", "values": [0, 8, -12, 0] },
+          { "target": "top-effect", "property": "alpha", "values": [0.8, 1, 1, 0.8] }
         ]
       }
     }

@@ -243,5 +243,61 @@
     "attackMeta": {
       "pattern": "single"
     }
+  },
+  "overrides": {
+    "clips": {
+      "idle": {
+        "duration": 1850,
+        "loop": true,
+        "tracks": [
+          { "target": "body", "property": "scaleY", "values": [1, 1.02, 1] },
+          { "target": "head", "property": "y", "values": [0, -2, 0] },
+          { "target": "head", "property": "angle", "values": [-1, 2, -1] },
+          { "target": "tail", "property": "angle", "values": [-3, 4, -3] },
+          { "target": "mane", "property": "scaleY", "values": [1, 1.025, 1] },
+          { "target": "jaw", "property": "angle", "values": [0, 1.5, 0] }
+        ]
+      },
+      "walk": {
+        "duration": 700,
+        "loop": true,
+        "tracks": [
+          { "target": "body", "property": "x", "values": [0, 2, 0, 2, 0] },
+          { "target": "body", "property": "y", "values": [0, -4, 0, -4, 0] },
+          { "target": "body", "property": "angle", "values": [-1.5, 1.5, -1.5, 1.5, -1.5] },
+          { "target": "head", "property": "y", "values": [0, -4, 0, -4, 0] },
+          { "target": "head", "property": "angle", "values": [2, -2, 2, -2, 2] },
+          { "target": "tail", "property": "angle", "values": [-6, 7, -6] },
+          { "target": "rear-far", "property": "angle", "values": [-16, 16, -16] },
+          { "target": "front-near", "property": "angle", "values": [-18, 18, -18] },
+          { "target": "rear-near", "property": "angle", "values": [18, -18, 18] },
+          { "target": "front-far", "property": "angle", "values": [16, -16, 16] },
+          { "target": "rear-far", "property": "y", "values": [-6, 0, -6] },
+          { "target": "front-near", "property": "y", "values": [-7, 0, -7] },
+          { "target": "rear-near", "property": "y", "values": [0, -7, 0] },
+          { "target": "front-far", "property": "y", "values": [0, -6, 0] },
+          { "target": "mane", "property": "angle", "values": [-2, 2, -2] }
+        ]
+      },
+      "attack": {
+        "duration": 820,
+        "loop": false,
+        "event": { "at": 470, "name": "attack-release" },
+        "tracks": [
+          { "target": "body", "property": "x", "values": [0, -8, 25, 8, 0] },
+          { "target": "body", "property": "y", "values": [0, 3, -5, 0, 0] },
+          { "target": "body", "property": "scaleX", "values": [1, 0.93, 1.08, 1.02, 1] },
+          { "target": "head", "property": "x", "values": [0, -6, 22, 6, 0] },
+          { "target": "head", "property": "angle", "values": [0, -10, 9, 3, 0] },
+          { "target": "jaw", "property": "angle", "values": [0, 18, 2, 8, 0] },
+          { "target": "tail", "property": "angle", "values": [0, 10, -14, -4, 0] },
+          { "target": "front-near", "property": "angle", "values": [0, -12, 16, 4, 0] },
+          { "target": "front-far", "property": "angle", "values": [0, -8, 12, 3, 0] },
+          { "target": "rear-near", "property": "angle", "values": [0, 10, -10, -3, 0] },
+          { "target": "rear-far", "property": "angle", "values": [0, 7, -8, -2, 0] },
+          { "target": "mane", "property": "scaleX", "values": [1, 0.96, 1.08, 1.02, 1] }
+        ]
+      }
+    }
   }
 }

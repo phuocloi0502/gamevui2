@@ -265,6 +265,21 @@
           }
         ]
       },
+      "walk": {
+        "duration": 620,
+        "loop": true,
+        "tracks": [
+          { "target": "body", "property": "y", "values": [0, -9, 0, -7, 0] },
+          { "target": "body", "property": "angle", "values": [-2, 2, -2, 2, -2] },
+          { "target": "back-wing", "property": "angle", "values": [-14, 18, -14] },
+          { "target": "front-wing", "property": "angle", "values": [14, -18, 14] },
+          { "target": "tail", "property": "angle", "values": [-8, 8, -8] },
+          { "target": "head", "property": "y", "values": [0, -4, 0, -4, 0] },
+          { "target": "head", "property": "angle", "values": [2, -3, 2] },
+          { "target": "leg-far", "property": "angle", "values": [-7, 7, -7] },
+          { "target": "leg-near", "property": "angle", "values": [7, -7, 7] }
+        ]
+      },
       "attack": {
         "duration": 900,
         "loop": false,
@@ -273,6 +288,11 @@
           "name": "attack-release"
         },
         "tracks": [
+          { "target": "body", "property": "x", "values": [0, -9, 16, 4, 0] },
+          { "target": "body", "property": "angle", "values": [0, -4, 7, 2, 0] },
+          { "target": "back-wing", "property": "angle", "values": [0, 14, -18, -5, 0] },
+          { "target": "front-wing", "property": "angle", "values": [0, -14, 18, 5, 0] },
+          { "target": "tail", "property": "angle", "values": [0, 12, -15, -4, 0] },
           {
             "target": "head",
             "property": "angle",
@@ -282,7 +302,10 @@
               6,
               0
             ]
-          }
+          },
+          { "target": "head", "property": "x", "values": [0, -8, 18, 5, 0] },
+          { "target": "leg-far", "property": "angle", "values": [0, -8, 12, 3, 0] },
+          { "target": "leg-near", "property": "angle", "values": [0, 8, -12, -3, 0] }
         ]
       }
     }

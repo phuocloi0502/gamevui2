@@ -195,5 +195,52 @@
     "attackMeta": {
       "pattern": "single"
     }
+  },
+  "overrides": {
+    "clips": {
+      "idle": {
+        "duration": 2000,
+        "loop": true,
+        "tracks": [
+          { "target": "body", "property": "angle", "values": [-2.5, 2.5, -2.5] },
+          { "target": "body", "property": "scaleX", "values": [1, 1.018, 1] },
+          { "target": "head", "property": "x", "values": [-2, 3, -2] },
+          { "target": "head", "property": "angle", "values": [1.5, -2, 1.5] },
+          { "target": "tail", "property": "angle", "values": [-4, 5, -4] },
+          { "target": "crest", "property": "angle", "values": [-2, 3, -2] },
+          { "target": "jaw", "property": "angle", "values": [0, 1.5, 0] }
+        ]
+      },
+      "walk": {
+        "duration": 820,
+        "loop": true,
+        "tracks": [
+          { "target": "body", "property": "x", "values": [-4, 4, -4, 4, -4] },
+          { "target": "body", "property": "y", "values": [0, -3, 0, -3, 0] },
+          { "target": "body", "property": "angle", "values": [-5, 5, -5] },
+          { "target": "body", "property": "scaleX", "values": [1, 1.035, 0.97, 1.035, 1] },
+          { "target": "head", "property": "x", "values": [-5, 5, -5, 5, -5] },
+          { "target": "head", "property": "y", "values": [0, -4, 0, -4, 0] },
+          { "target": "head", "property": "angle", "values": [4, -4, 4] },
+          { "target": "tail", "property": "angle", "values": [-9, 9, -9] },
+          { "target": "crest", "property": "angle", "values": [-4, 5, -4] }
+        ]
+      },
+      "attack": {
+        "duration": 880,
+        "loop": false,
+        "event": { "at": 500, "name": "attack-release" },
+        "tracks": [
+          { "target": "body", "property": "angle", "values": [0, -8, -12, 9, 3, 0] },
+          { "target": "body", "property": "scaleX", "values": [1, 0.96, 0.92, 1.08, 1.02, 1] },
+          { "target": "head", "property": "x", "values": [0, -10, -16, 28, 8, 0] },
+          { "target": "head", "property": "y", "values": [0, 3, 5, -6, -2, 0] },
+          { "target": "head", "property": "angle", "values": [0, -9, -14, 11, 4, 0] },
+          { "target": "jaw", "property": "angle", "values": [0, 8, 18, 3, 9, 0] },
+          { "target": "tail", "property": "angle", "values": [0, 8, 14, -12, -4, 0] },
+          { "target": "crest", "property": "angle", "values": [0, -7, -12, 10, 3, 0] }
+        ]
+      }
+    }
   }
 }

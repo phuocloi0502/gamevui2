@@ -20,14 +20,22 @@ export class PetView extends Phaser.GameObjects.Container {
   private updateBound: (_time:number, delta:number)=>void;
   constructor(scene: Phaser.Scene, x: number, y: number, readonly pet: ReturnType<typeof resolvePet>) {
     super(scene,x,y);
-    for (const layer of orderLayersParentFirst(pet.layers)) {
+    const layers = orderLayersParentFirst(pet.layers);
+    // Build every node before attaching the hierarchy. Child depth is local to
+    // its parent, so a negative child z must not require the parent to sort first.
+    for (const layer of layers) {
       const node=scene.add.container(layer.x,layer.y).setScale(layer.scale ?? 1).setAngle(layer.angle ?? 0).setAlpha(layer.alpha ?? 1).setVisible(layer.visible !== false && layer.blink !== 'closed').setDepth(layer.z);
       const sprite=scene.add.sprite(0,0,layer.src).setOrigin(layer.originX,layer.originY);
       if(layer.tint!==undefined) sprite.setTint(layer.tint);
       node.add(sprite);
-      (layer.parent ? this.nodes.get(layer.parent)! : this).add(node);
       this.nodes.set(layer.id,node); this.images.set(layer.id,sprite);
       this.bases.set(layer.id,{x:layer.x,y:layer.y,scale:layer.scale??1,angle:layer.angle??0,alpha:layer.alpha??1});
+    }
+    for (const layer of layers) {
+      const node = this.nodes.get(layer.id)!;
+      const parent = layer.parent ? this.nodes.get(layer.parent) : this;
+      if (!parent) throw new Error(`Unknown parent ${layer.parent}: ${layer.id}`);
+      parent.add(node);
     }
     this.sort('depth');
     for (const node of this.nodes.values()) node.sort('depth');
